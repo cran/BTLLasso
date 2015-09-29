@@ -1,4 +1,4 @@
-38039be9a48099fdc40ae0b72a05a2be *DESCRIPTION
+b09ff65a87298afea9e4e6a956f0929a *DESCRIPTION
 6e2db843d63dae926f554ee8f753dec5 *NAMESPACE
 d955d4920bbda3153491d957ded1a81a *R/BTLLasso.R
 07d8ec6252b589bb8a04c3861201bc94 *R/RcppExports.R
@@ -27,4 +27,4 @@ fd8fce46c24dda78a593abc3b3240f06 *man/singlepaths.Rd
 2a6f9e9e044a78154d3cfda5936d6f48 *src/Makevars
 8d46d69896a1f1d31ed76035a0e49d67 *src/Makevars.win
 be278f9eca9bf75d38460af53363b9b1 *src/RcppExports.cpp
-1604b5e208aeaf5cf7b336e3d36bb3b7 *src/cppfunctions.cpp
+83b5f36af94e2419d916d3a626f268e1 *src/cppfunctions.cpp

@@ -34,7 +34,7 @@ mat L1(mat xi,
 mat group(mat xi,
             double c){
               int dfj = xi.n_rows;
-              mat ret = sqrt(dfj)/sqrt(trans(xi)*xi +c);
+              mat ret = sqrt((double)(dfj))/sqrt(trans(xi)*xi +c);
               return(repmat(ret,dfj,1));
             }
 
