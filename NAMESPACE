@@ -3,12 +3,13 @@ useDynLib(BTLLasso)
 importFrom(Rcpp, evalCpp)
 importFrom(Matrix, rankMatrix)
 importFrom(stringr,word)
+importFrom(stringr,fixed)
 importFrom(parallel, makeCluster,clusterExport,parLapply,stopCluster,parSapply)
 
 export(BTLLasso,
 cv.BTLLasso, singlepaths,
 paths, boot.BTLLasso, ci.BTLLasso,
-BTLLasso.ctrl
+ctrl.BTLLasso, response.BTLLasso
 )
 
 exportClasses("BTLLasso")
@@ -16,9 +17,11 @@ exportClasses("cv.BTLLasso")
 exportClasses("boot.BTLLasso")
 
   importFrom("graphics", "abline", "axis", "layout", "lines", "mtext",
-             "par", "plot", "segments")
+             "par", "plot", "segments","title")
   importFrom("stats", "binomial", "coef", "glm.fit", "quantile", "var")
   importFrom("utils", "combn")
 
 
 S3method(print, cv.BTLLasso)
+S3method(print, BTLLasso)
+S3method(print, boot.BTLLasso)

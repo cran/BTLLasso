@@ -1,14 +1,122 @@
-boot.BTLLasso <- function(model, B=500, lambda = NULL, cores = 1, trace = TRUE, 
-                          trace.cv = TRUE, control = BTLLasso.ctrl()){
+#' Bootstrap function for BTLLasso
+#' 
+#' Performs bootstrap for BTLLasso to get bootstrap confidence intervals. Main
+#' input argument is a \code{cv.BTLLasso} object. The bootstrap is performed on
+#' level of the cross-validation. Therefore, within every bootstrap iteration
+#' the complete cross-validation procedure from the \code{cv.BTLLasso} object
+#' is performed. The resulting \code{boot.BTLLasso} object is put into
+#' \code{\link{ci.BTLLasso}} to plot bootstrap confidence intervals.
+#' 
+#' The method can be highly time-consuming, for high numbers of tuning
+#' parameters, high numbers of folds in the crossvalidation and high number of
+#' bootstrap iterations B.  The number of tuning parameters can be reduced by
+#' specifying lambda in the \code{boot.BTLLasso} function. You can control if
+#' the range of prespecified tuning parameters was to small by looking at the
+#' output values \code{lambda.max.alert} and \code{lambda.min.alert}. They are
+#' set \code{TRUE} if the smallest or largest of the specifed lambda values was
+#' chosen in at least one bootstrap iteration.
+#' 
+#' @param model A \code{cv.BTLLasso} object.
+#' @param quantiles Vector of two quantiles that are computed, 
+#' will be used as borders of confidence intervals 
+#' plotted by \code{\link{ci.BTLLasso}}.
+#' @param B Number of bootstrap iterations.
+#' @param lambda Vector of tuning parameters. If not specified (default),
+#' tuning parameters from \code{cv.BTLLasso} object are used. See also details.
+#' @param cores Number of cores for (parallelized) computation.
+#' @param trace Should the trace of the BTLLasso algorithm be printed?
+#' @param trace.cv Should the trace fo the cross-validation be printed? If
+#' parallelized, the trace is not working on Windows machines.
+#' @return \item{cv.model}{\code{cv.BTLLasso} object} \item{estimatesB}{Matrix
+#' containing all B estimates for original parameters. For internal use.}
+#' \item{estimatesBrepar}{Matrix containing all B estimates for reparameterized
+#' (symmetric side constraints) parameters.} \item{lambdaB}{vector of used
+#' tuning parameters} \item{conf.ints}{Bootstrap confidence intervals for
+#' original parameters. For internal use.} \item{conf.ints.repar}{Bootstrap
+#' confidence intervals for reparameterized (symmetric side constraint)
+#' parameters.} \item{lambda.max.alert}{Was the largest value of lambda chosen
+#' in at least one bootstrap iteration?} \item{lambda.min.alert}{Was the
+#' smallest value of lambda chosen in at least one bootstrap iteration?}
+#' @author Gunther Schauberger\cr \email{gunther@@stat.uni-muenchen.de}\cr
+#' \url{http://www.statistik.lmu.de/~schauberger/}
+#' @seealso \code{\link{BTLLasso}}, \code{\link{cv.BTLLasso}},
+#' \code{\link{ci.BTLLasso}}
+#' @references Schauberger, Gunther and Tutz, Gerhard (2015): Modelling
+#' Heterogeneity in Paired Comparison Data - an L1 Penalty Approach with an
+#' Application to Party Preference Data, \emph{Department of Statistics, LMU
+#' Munich}, Technical Report 183
+#' @keywords BTLLasso confidence interval bootstrap
+#' @examples
+#' 
+#' \dontrun{
+#' ##### Example with simulated data set containing X, Z1 and Z2
+#' data(SimData)
+#' 
+#' ## Specify tuning parameters
+#' lambda <- exp(seq(log(151),log(1.05),length=30))-1
+#' 
+#' ## Specify control argument, allow for object-specific order effects and penalize intercepts
+#' ctrl <- ctrl.BTLLasso(penalize.intercepts = TRUE, object.order.effect = TRUE,
+#'                       penalize.order.effect.diffs = TRUE)
+#' 
+#' ## Simple BTLLasso model for tuning parameters lambda
+#' m.sim <- BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
+#'                   Z2 = SimData$Z2, lambda = lambda, control = ctrl)
+#' 
+#' singlepaths(m.sim, x.axis = "loglambda")
+#' 
+#' ## Cross-validate BTLLasso model for tuning parameters lambda
+#' set.seed(5)
+#' m.sim.cv <- cv.BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
+#'                         Z2 = SimData$Z2, lambda = lambda, control = ctrl)
+#' 
+#' 
+#' singlepaths(m.sim.cv, x.axis = "loglambda", plot.order.effect = FALSE, plot.intercepts = FALSE, 
+#'             plot.Z2 = FALSE)
+#' paths(m.sim.cv, y.axis="L2")
+#' 
+#' ## Example for bootstrap confidence intervals for illustration only
+#' ## Don't calculate bootstrap confidence intervals with B = 10
+#' set.seed(5)
+#' m.sim.boot <- boot.BTLLasso(m.sim.cv, B = 10, cores = 10)
+#' ci.BTLLasso(m.sim.boot)
+#' 
+#' ##### Example with small version from GLES data set
+#' data(GLESsmall)
+#' 
+#' ## vector of subtitles, containing the coding of the X covariates
+#' subs.X <- c("","female (1); male (0)")
+#' 
+#' ## vector of tuning parameters
+#' lambda <- exp(seq(log(61),log(1),length=30))-1
+#' 
+#' 
+#' ## compute BTLLasso model 
+#' m.gles <- BTLLasso(Y = GLESsmall$Y, X = GLESsmall$X, Z1 = GLESsmall$Z1, lambda = lambda)
+#' 
+#' singlepaths(m.gles, x.axis = "loglambda", subs.X = subs.X)
+#' paths(m.gles, y.axis="L2")
+#' 
+#' ## Cross-validate BTLLasso model 
+#' m.gles.cv <- cv.BTLLasso(Y = GLESsmall$Y, X = GLESsmall$X, Z1 = GLESsmall$Z1, lambda = lambda)
+#' 
+#' singlepaths(m.gles.cv, x.axis = "loglambda", subs.X = subs.X)
+#' }
+#' 
+#' @export boot.BTLLasso
+boot.BTLLasso <- function(model, quantiles = c(0.025, 0.975), B = 500, lambda = NULL, 
+                          cores = 1, trace = TRUE, trace.cv = TRUE){
+
+  cv.crit <- model$cv.crit
+
+  design <- model$design$design
+  response <- model$response
+  penalty <- model$penalty
+  control <- model$control
   
-  Y <- model$Y
-  X <- model$X
-  I <- ncol(Y)
-  m <- (1 + sqrt(1+8*I))/2
-  p <- ncol(X)
-  n <- nrow(Y)
-  n.theta <- model$n.theta
-  
+  q <- model$Y$q
+  n.design <- nrow(design)/q
+  m <- model$Y$m
   folds <- model$folds
   
   if(is.null(lambda)){
@@ -17,29 +125,26 @@ boot.BTLLasso <- function(model, B=500, lambda = NULL, cores = 1, trace = TRUE,
   
   
   boot.fun <- function(b){
-      cat("Bootstrap sample:",b,"out of", B,"\n")
-#       options(error = recover) 
-#       options(showErrorCalls = T) 
+      cat("Bootstrap sample:", b, "out of", B, "\n")
 
-      fullrank <- FALSE
+      sample.b <- sample(x = 1:n.design, size = n.design, replace = TRUE)
+    
+      id.vec <- c(t(matrix(1:nrow(design),ncol=q,byrow=TRUE)[sample.b,]))
       
-      while(!fullrank){
-      sample.b <- sample(1:n,replace=TRUE)
+
+      design.b <- design[id.vec,]
+      response.b <- response[id.vec]
       
-      X.b <- X[sample.b,]
-      Y.b <- Y[sample.b,]
-      
-      fullrank <- rankMatrix(X.b)[[1]] == ncol(X.b)
-      }
-      
-      model.b <- try(cv.BTLLasso(Y=Y.b,X=X.b,folds=folds,lambda=lambda,cores=1,trace=trace,
-                                trace.cv = trace.cv, control = control))
+      model.b <- try(fit.cv.BTLLasso(response = response.b, design = design.b, penalty = penalty,
+                                     q = q, m = m, folds = folds, lambda = lambda, control = control,
+                                     cores = 1, trace = trace, trace.cv = trace.cv,
+                                     cv.crit = cv.crit))
       if(inherits(model.b, "try-error")){
         coef.b <- NA
         lambda.b <- NA
       }else{
-      coef.b <- model.b$coefs[which.min(model.b$deviances),]
-      lambda.b <- lambda[which.min(model.b$deviances)]
+      coef.b <- model.b$coefs[which.min(model.b$criterion),]
+      lambda.b <- lambda[which.min(model.b$criterion)]
       }
     return(list(coef.b = coef.b, lambda.b = lambda.b))
   }
@@ -47,18 +152,20 @@ boot.BTLLasso <- function(model, B=500, lambda = NULL, cores = 1, trace = TRUE,
 
   if(cores>1){
     cl <- makeCluster(cores,outfile="")
-
-    clusterExport(cl, varlist = c("X","Y","folds","lambda", "B","n"), 
+    
+    clusterExport(cl, varlist = c("design","response", "penalty", "q", "m", 
+                                  "control","folds","lambda", "cores", "B","n.design", 
+                                  "trace", "trace.cv", "cv.crit"), 
                   envir = sys.frame(sys.nframe()))
+    
     outputB <- parLapply(cl, seq(B), boot.fun)
     stopCluster(cl)
   }else{
     outputB <- lapply(seq(B), boot.fun)
   }
-
   
   
-  estimatesB <- matrix(0,ncol=(m-1)*(p+1)+n.theta,nrow = B)
+  estimatesB <- matrix(0,ncol=ncol(design),nrow = B)
   lambdaB <- c()
   for(b in 1:B){    
     if(any(is.na(outputB[[b]]$coef.b))){
@@ -70,11 +177,11 @@ boot.BTLLasso <- function(model, B=500, lambda = NULL, cores = 1, trace = TRUE,
     }
   }
   
-  estimatesBrepar <- expand.coefs(estimatesB,m=model$m, n.theta = model$n.theta)
+  estimatesBrepar <- expand.coefs(estimatesB ,model$design, model$Y, symmetric = TRUE)
   
   
-  conf.ints <- apply(estimatesB,2,quantile, probs = c(0.025,0.975), type=1)
-  conf.ints.repar <- apply(estimatesBrepar,2,quantile, probs = c(0.025,0.975), type=1)
+  conf.ints <- apply(estimatesB,2,quantile, probs = quantiles, type=1)
+  conf.ints.repar <- apply(estimatesBrepar,2,quantile, probs = quantiles, type=1)
   
   lambda.min.alert <- any(lambdaB==min(lambda))
   lambda.max.alert <- any(lambdaB==max(lambda))

@@ -1,62 +1,239 @@
-paths <- function(model){
+#' Plot covariate paths for BTLLasso
+#' 
+#' Plots paths for every covariate of a BTLLasso object or a cv.BTLLasso
+#' object. In contrast, to \code{\link{singlepaths}}, only one plot is created,
+#' every covariate is illustrated by one path. For cv.BTLLasso object, the
+#' optimal model according to the cross-validation is marked by a vertical
+#' dashed line.
+#' 
+#' Plots for BTLLasso and cv.BTLLasso objects only differ by the additional
+#' vertical line indicating the optimal model according to cross-validation.
+#' 
+#' @param model BTLLasso or cv.BTLLasso object
+#' @param y.axis Two possible values for the y-axis. Variables can either be plotted
+#' with regard to their contribution to the total penalty term (\code{y.axis="penalty"}) or
+#' with regard to the $L_2$ norm of the corresponding parameter vector (\code{y.axis="L2"}).
+#' @param x.axis Should the paths be plotted against the scaled penalty term (between 0 and 1),
+#' against lambda or against log(lambda+1)?
+#' @author Gunther Schauberger\cr \email{gunther@@stat.uni-muenchen.de}\cr
+#' \url{http://www.statistik.lmu.de/~schauberger/}
+#' @seealso \code{\link{BTLLasso}}, \code{\link{cv.BTLLasso}},
+#' \code{\link{singlepaths}}
+#' @references Schauberger, Gunther and Tutz, Gerhard (2015): Modelling
+#' Heterogeneity in Paired Comparison Data - an L1 Penalty Approach with an
+#' Application to Party Preference Data, \emph{Department of Statistics, LMU
+#' Munich}, Technical Report 183
+#' @keywords BTLLasso paths covariate paths
+#' @examples
+#' 
+#' \dontrun{
+#' ##### Example with simulated data set containing X, Z1 and Z2
+#' data(SimData)
+#' 
+#' ## Specify tuning parameters
+#' lambda <- exp(seq(log(151),log(1.05),length=30))-1
+#' 
+#' ## Specify control argument, allow for object-specific order effects and penalize intercepts
+#' ctrl <- ctrl.BTLLasso(penalize.intercepts = TRUE, object.order.effect = TRUE,
+#'                       penalize.order.effect.diffs = TRUE)
+#' 
+#' ## Simple BTLLasso model for tuning parameters lambda
+#' m.sim <- BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
+#'                   Z2 = SimData$Z2, lambda = lambda, control = ctrl)
+#' 
+#' singlepaths(m.sim, x.axis = "loglambda")
+#' 
+#' ## Cross-validate BTLLasso model for tuning parameters lambda
+#' set.seed(5)
+#' m.sim.cv <- cv.BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
+#'                         Z2 = SimData$Z2, lambda = lambda, control = ctrl)
+#' 
+#' 
+#' singlepaths(m.sim.cv, x.axis = "loglambda", plot.order.effect = FALSE, plot.intercepts = FALSE, 
+#'             plot.Z2 = FALSE)
+#' paths(m.sim.cv, y.axis="L2")
+#' 
+#' ## Example for bootstrap confidence intervals for illustration only
+#' ## Don't calculate bootstrap confidence intervals with B = 10
+#' set.seed(5)
+#' m.sim.boot <- boot.BTLLasso(m.sim.cv, B = 10, cores = 10)
+#' ci.BTLLasso(m.sim.boot)
+#' 
+#' ##### Example with small version from GLES data set
+#' data(GLESsmall)
+#' 
+#' ## vector of subtitles, containing the coding of the X covariates
+#' subs.X <- c("","female (1); male (0)")
+#' 
+#' ## vector of tuning parameters
+#' lambda <- exp(seq(log(61),log(1),length=30))-1
+#' 
+#' 
+#' ## compute BTLLasso model 
+#' m.gles <- BTLLasso(Y = GLESsmall$Y, X = GLESsmall$X, Z1 = GLESsmall$Z1, lambda = lambda)
+#' 
+#' singlepaths(m.gles, x.axis = "loglambda", subs.X = subs.X)
+#' paths(m.gles, y.axis="L2")
+#' 
+#' ## Cross-validate BTLLasso model 
+#' m.gles.cv <- cv.BTLLasso(Y = GLESsmall$Y, X = GLESsmall$X, Z1 = GLESsmall$Z1, lambda = lambda)
+#' 
+#' singlepaths(m.gles.cv, x.axis = "loglambda", subs.X = subs.X)
+#' }
+#' 
+#' @export paths
+paths <- function(model, y.axis = c("penalty", "L2"), x.axis = c("penalty", "lambda", "loglambda")){
+
+  x.axis <- match.arg(x.axis)
+  y.axis <- match.arg(y.axis)
   
-  coef <- model$coefs
-  covar <- colnames(model$X)
-  
-  acoefs <- model$acoefs
-  norm <- rowSums(abs(coef%*%acoefs))
+  coefs <- model$coefs
+  covar <- c(model$design$vars.X, model$design$vars.Z1, model$design$vars.Z2)
+
+  acoefs <- model$penalty$acoefs
+  norm <- rowSums(abs(coefs%*%acoefs))
   norm <- norm/max(norm)
+  norm.range <- range(norm)
   
-  m <- model$m
-  n.theta <- model$n.theta
-  
-  deviances <- model$deviances
-  
- coef <- model$coefs.repar
-
-
-  if(n.theta>0){
-  theta <- coef[,1:n.theta,drop=FALSE]
+  if(x.axis == "lambda"){
+    norm <- model$lambda
+    norm.range <- rev(range(norm))
   }
   
-  intercepts <- coef[,(n.theta+1):(n.theta+m)]
+  if(x.axis == "loglambda"){
+    norm <- log(model$lambda+1)
+    norm.range <- rev(range(norm))
+  }
   
-  gamma <- coef[,(n.theta+m+1):ncol(coef)]
-  
-  p <- ncol(gamma)/(m)
 
-  if(!is.null(deviances)){
-    x.axis.min <- norm[which.min(deviances)]
+  
+  x.axis.name <- x.axis
+  if(x.axis == "loglambda"){
+    x.axis.name <- expression(log(lambda+1))
+  }
+  if(x.axis == "lambda"){
+    x.axis.name <- expression(lambda)
+  }
+  
+  m <- model$Y$m
+  n.theta <- model$design$n.theta
+  n.order <- model$design$n.order
+  n.intercepts <- model$design$n.intercepts
+  p.X <- model$design$p.X
+  p.Z1 <- model$design$p.Z1
+  p.Z2 <- model$design$p.Z2
+  
+  #acoefs.intercepts <- acoefs.X <- acoefs.Z1 <- acoefs.Z2 <- c()
+  numpen.order <- model$penalty$numpen.order
+  numpen.intercepts <- model$penalty$numpen.intercepts
+  numpen.X <- model$penalty$numpen.X
+  numpen.Z1 <- model$penalty$numpen.Z1
+  numpen.Z2 <- model$penalty$numpen.Z2
+  
+  labels <- model$Y$object.names
+  
+  criterion <- model$criterion
+
+  order.effects <- intercepts <- gamma.X <- gamma.Z1 <- gamma.Z2 <- c()
+  
+  index.cols.X <- index.cols.Z1 <- index.cols.Z2 <- c()
+  index.rows.X <- index.rows.Z1 <- index.rows.Z2 <- c()
+  
+  if(n.order>0){
+    order.effects <- coefs[,(n.theta+1):(n.theta+n.order)]
+  }
+  
+  if(n.intercepts>0){
+    intercepts <- coefs[,(n.theta+n.order+1):(n.theta+n.order+n.intercepts)]
+  }
+  
+  p <- p.X + p.Z1 + p.Z2
+
+  paths <- c()
+  
+  start.row <- n.theta+n.intercepts+n.order
+  if(p.X>0){
+    index <- rep( (1:p.X), each = m-1)
+    for(i in 1:p.X){
+      if(y.axis=="penalty"){
+        paths <- cbind(paths, rowSums(abs(coefs[,start.row+which(index==i),drop=FALSE] %*% 
+                                            acoefs[start.row+which(index==i),,drop=FALSE])))  
+      }else{
+        paths <- cbind(paths, sqrt(rowSums(coefs[,start.row+which(index==i),drop=FALSE]^2)) )
+      }
+      
+    }
+    start.row <- start.row + length(index)
+  }
+  
+  if(p.Z1>0){
+    index <- rep(1:p.Z1, each = m)
+    for(i in 1:p.Z1){
+      if(y.axis=="penalty"){
+        paths <- cbind(paths, rowSums(abs(coefs[,start.row+which(index==i),drop=FALSE] %*% 
+                                            acoefs[start.row+which(index==i),,drop=FALSE])))
+      }else{
+        paths <- cbind(paths, sqrt(rowSums(coefs[,start.row+which(index==i),drop=FALSE]^2)) )
+      }
+      
+    }
+    start.row <- start.row + length(index)
+  }
+  
+  if(p.Z2>0){
+    index <- 1:p.Z2
+    for(i in 1:p.Z2){
+      if(y.axis=="penalty"){
+        paths <- cbind(paths, rowSums(abs(coefs[,start.row+which(index==i),drop=FALSE] %*% 
+                                            acoefs[start.row+which(index==i),,drop=FALSE])))  
+      }else{
+        paths <- cbind(paths, sqrt(rowSums(coefs[,start.row+which(index==i),drop=FALSE]^2)) )
+      }
+
+    }
+  }
+  
+
+
+  if(!is.null(criterion)){
+    x.axis.min <- norm[which.min(criterion)]
   }
 
-pos <- combn(m,2)
-diff_mat <- matrix(0,nrow=m,ncol=choose(m,2))
-for(o in 1:ncol(pos)){
-  diff_mat[pos[1,o],o] <- 1
-  diff_mat[pos[2,o],o] <- -1
+
+  
+if(numpen.intercepts>0){
+  if(y.axis=="penalty"){
+    paths <- cbind(rowSums(abs(intercepts %*% acoefs[(n.theta+n.order+1):(n.theta+n.order+n.intercepts),
+                                                     (numpen.order+1):(numpen.order+numpen.intercepts)])),paths)
+  }else{
+    paths <- cbind(sqrt(rowSums(intercepts^2)),paths)  }
+ 
+  p <- p+1
+  covar <- c("Intercept", covar)
 }
 
-cov_norms <- matrix(0,nrow=nrow(coef),ncol=p)
-index = 1
-for(o in 1:p){
-  gamma_p <- gamma[,index:(index+m-1)]
-  cov_norms[,o] <- rowSums(abs(gamma_p%*%diff_mat))
-  index <- index + m
+if(numpen.order>0){
+  if(y.axis=="penalty"){
+    paths <- cbind(rowSums(abs(order.effects %*% acoefs[(n.theta+1):(n.theta+n.order),1:numpen.order])),paths)
+  }else{
+    paths <- cbind(sqrt(rowSums(order.effects^2)),paths)  
+  }
+  p <- p+1
+  covar <- c(model$control$name.order, covar)
 }
 
 
-plot(norm,cov_norms[,1],type="l",ylim=range(cov_norms),ylab="",
-     xlab=expression(sum(sum(abs(beta["rj"]-beta["sj"]),"r<s"),"j")
-                     /max(sum(sum(abs(beta["rj"]-beta["sj"]),"r<s"),"j"))),
+plot(norm,paths[,1],type="l",ylim=range(paths),ylab="",
+     xlab=x.axis.name, xlim = norm.range,
      las=1)
 for(o in 2:p){
-  lines(norm,cov_norms[,o])
+  lines(norm,paths[,o])
 }
-if(!is.null(deviances)){
+if(!is.null(criterion)){
 abline(v=x.axis.min,lty=2,col=2)
 }  
 
-axis(4,at=cov_norms[nrow(cov_norms),],labels=covar,las=2)
+axis(4,at=paths[nrow(paths),],labels=covar,las=2)
 
 
 

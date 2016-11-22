@@ -2,7 +2,7 @@
 
 
 bin.fit.Cpp <- function(
-resp, design, kat, epsilon = 1e-5, acoefs, lambda, 
+resp, design, kat, epsilon = 1e-5, penalty, lambda, 
 max.iter = 200, start = NULL, adaptive = NULL, norm = "L1",
 control = list(c = 1e-6, gama = 20, index = NULL), m, hat.matrix = FALSE,
 lambda2 = 1e-4
@@ -13,6 +13,8 @@ lambda2 = 1e-4
 N <- length(resp)
 q <- kat - 1
 n <- N/q
+
+acoefs <- penalty$acoefs
 
 if(is.null(start)){
 start <- coef(glm.fit(y = resp, x = design, family = binomial()))
@@ -26,6 +28,18 @@ weight <-  abs(t(acoefs)%*%adaptive)
 if (any(weight==0)) weight[which(weight==0)] <- epsilon
 weight <- as.vector(weight^(-1))
 } 
+
+pen.nums <- c(penalty$numpen.order, penalty$numpen.intercepts, 
+              penalty$numpen.X, penalty$numpen.Z1, penalty$numpen.Z2)
+
+if(sum(pen.nums)>0){
+  if(penalty$weight.penalties){
+    pen.nums.scaled <- c(penalty$numpen.order/penalty$n.order, penalty$numpen.intercepts/(m-1), 
+                         penalty$numpen.X/penalty$p.X/(m-1), 
+                         penalty$numpen.Z1/penalty$p.Z1/m, penalty$numpen.Z2/penalty$p.Z2)
+    weight <- weight/rep(pen.nums.scaled, pen.nums)
+  }
+}
 
 beta.old <- beta.new  <- start
 diff <- 1

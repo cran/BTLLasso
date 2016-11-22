@@ -1,10 +1,14 @@
 // [[Rcpp::depends(RcppArmadillo)]]
-#define ARMA_64BIT_WORD
+
 #include <RcppArmadillo.h>
 #include <Rcpp.h>
 
 using namespace Rcpp;
 using namespace arma;
+
+//#define ARMA_64BIT_WORD
+#define ARMA_DONT_USE_CXX11
+
 
 mat matsqrt2(mat A){
 vec eigval;
@@ -16,6 +20,28 @@ colvec d = (eigval+abs(eigval))*0.5;
 colvec d2 = sqrt(d);
 mat B = eigvec*diagmat(d2)*trans(eigvec);
   return B;
+}
+
+mat betaupdate(mat betaold, mat delta, mat checktheta, int ntheta){
+int thetaOK = 0;
+double update_fac = 1;
+int rep = 1;
+mat betareturn;
+
+while(thetaOK == 0){
+  thetaOK = 1;
+update_fac = pow(0.5,(rep-1));
+betareturn = betaold + update_fac*delta;
+checktheta(span(0,(ntheta-1)),span::all) = betareturn(span(0,(ntheta-1)),span::all);
+for(int xx = 1; xx < ntheta+1; xx += 1){
+  if(checktheta(xx,0)-checktheta(xx-1,0)<0){
+    Rcout<<"!Step-Halving!"<<endl;
+    thetaOK = 0;
+  }
+}
+rep = rep+1;
+}
+return betareturn;
 }
 
 mat mueta(mat eta){
@@ -99,7 +125,8 @@ List cumfit(NumericMatrix betanew2,
            double gama,
            std::string norm,
            int hatmatrix,
-           double lambda2) { 
+           double lambda2,
+           NumericMatrix checktheta2) { 
 
 
 
@@ -108,20 +135,23 @@ mat acoefs = as<arma::mat>(acoefs2);
 mat weight = as<arma::mat>(weight2);
 mat design = as<arma::mat>(design2);
 mat resp = as<arma::mat>(resp2);
+mat checktheta = as<arma::mat>(checktheta2);
 
 
 int i = 1;
 double diff = 1.1;
 int pp = design.n_cols;
 
-mat Sigmainv = mat(N,N);
+//mat Sigmainv = mat(N,N);
+
 mat eta(N,1);
 mat Ai;
 
-
+int ntheta = floor(q/2);
 
 while((diff > epsilon) & (i < maxiter)){
      mat betaold = betanew;
+
 
 Ai = A(betaold, 
       acoefs, 
@@ -138,7 +168,7 @@ Ai = Ai + diagmat(ones(Ai.n_cols)*lambda2);
       
  eta = design*betanew;
  mat mu = exp(eta)/(1+exp(eta));
- 
+
  
 
      mat D = mueta(eta);
@@ -148,7 +178,7 @@ Ai = Ai + diagmat(ones(Ai.n_cols)*lambda2);
     mat designD = trans(design%D);
      mat scorepart = mat(pp,N);
      
-   if(q>1){
+//   if(q>1){
      for(int r=1; r<(n+1); r += 1){
 
        mat sig1 = mu(span((r-1)*q,r*q-1),0)*trans(1-mu(span((r-1)*q,r*q-1),0));
@@ -157,16 +187,16 @@ Ai = Ai + diagmat(ones(Ai.n_cols)*lambda2);
         sig1 = sig1 + diagmat(ones(sig1.n_cols)*0.0001);
 
         mat sig1i = inv(sig1);        
-        Sigmainv(span((r-1)*q,r*q-1),span((r-1)*q,r*q-1)) = sig1i;
+//        Sigmainv(span((r-1)*q,r*q-1),span((r-1)*q,r*q-1)) = sig1i;
         
         mat desDsub = designD(span::all,span((r-1)*q,r*q-1));
         
         scorepart(span::all,span((r-1)*q,r*q-1)) = desDsub*sig1i;
      }
-     }else{
-       Sigmainv = diagmat(1/(mu%(1-mu)));
-       mat scorepart = designD*Sigmainv;
-     }
+//     }else{
+//       Sigmainv = diagmat(1/(mu%(1-mu)));
+//       mat scorepart = designD*Sigmainv;
+//     }
   
 
 
@@ -175,49 +205,52 @@ Ai = Ai + diagmat(ones(Ai.n_cols)*lambda2);
      mat Fisher = (scorepart%trans(D))*design +Ai;
 
      mat delta = solve(Fisher,score);
-     betanew = betaold + delta;
+     
+     betanew = betaupdate(betaold, delta, checktheta, ntheta);
 
+  
      diff = sqrt(accu(pow(betaold-betanew,2)))/sqrt(accu(pow(betaold,2)));
 
      i += 1;
 }
 
+
 double df = 0;
 
-if(hatmatrix>0){
-
- eta = design*betanew;
-
-mat D = mueta(eta);
-
-     D = repmat(D,1,Sigmainv.n_cols);
-
-mat help = zeros(pp,pp);
-mat help2(N,pp);
-
-for(int r=1; r<(n+1); r += 1){
-mat Dsub = D(span((r-1)*q,r*q-1),span((r-1)*q,r*q-1));
-mat Wsub = Dsub%trans(Sigmainv(span((r-1)*q,r*q-1),span((r-1)*q,r*q-1))%Dsub);
-mat W12sub = matsqrt2(Wsub);
-         mat desSub = design(span((r-1)*q,r*q-1),span::all);
-        
-       help = help + trans(desSub)*Wsub*desSub ;
-        
-        help2(span((r-1)*q,r*q-1),span::all) = W12sub*design(span((r-1)*q,r*q-1),span::all);
-     }
-
-    help = help + Ai;
-
-
-mat H = help2*solve(help,trans(help2));
-
-rowvec diagH2 = sum(H%H,0);
-colvec dd = diagvec(2*H); 
-rowvec d2 = conv_to< rowvec >::from(dd);
-
-
-df = as_scalar(sum(d2-diagH2));
-}
+//if(hatmatrix>0){
+//
+// eta = design*betanew;
+//
+//mat D = mueta(eta);
+//
+//     D = repmat(D,1,Sigmainv.n_cols);
+//
+//mat help = zeros(pp,pp);
+//mat help2(N,pp);
+//
+//for(int r=1; r<(n+1); r += 1){
+//mat Dsub = D(span((r-1)*q,r*q-1),span((r-1)*q,r*q-1));
+//mat Wsub = Dsub%trans(Sigmainv(span((r-1)*q,r*q-1),span((r-1)*q,r*q-1))%Dsub);
+//mat W12sub = matsqrt2(Wsub);
+//         mat desSub = design(span((r-1)*q,r*q-1),span::all);
+//        
+//       help = help + trans(desSub)*Wsub*desSub ;
+//        
+//        help2(span((r-1)*q,r*q-1),span::all) = W12sub*design(span((r-1)*q,r*q-1),span::all);
+//     }
+//
+//    help = help + Ai;
+//
+//
+//mat H = help2*solve(help,trans(help2));
+//
+//rowvec diagH2 = sum(H%H,0);
+//colvec dd = diagvec(2*H); 
+//rowvec d2 = conv_to< rowvec >::from(dd);
+//
+//
+//df = as_scalar(sum(d2-diagH2));
+//}
 
 return List::create(Named("beta.new") = betanew,
                       Named("df") = df);

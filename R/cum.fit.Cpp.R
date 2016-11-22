@@ -2,22 +2,23 @@
 
 
 cum.fit.Cpp <- function(
-resp, design, kat, epsilon = 1e-5, acoefs, lambda, 
+resp, design, kat, epsilon = 1e-5, penalty, lambda, 
 max.iter = 200, start = NULL, adaptive = NULL, norm = "L1",
 control = list(c = 1e-6, gama = 20, index = NULL), m, hat.matrix = FALSE,
 lambda2 = 1e-4
 )
 {
 
-    
+
 N <- length(resp)
 q <- kat - 1
 n <- N/q
 
-if(is.null(start)){
-start <- coef(glm.fit(y = resp, x = design, family = binomial()))
+acoefs <- penalty$acoefs
 
-start[which(rowSums(abs(acoefs))!=0)] <- 0
+if(is.null(start)){
+start <- rep(0, ncol(design))  
+start[which(rowSums(abs(acoefs))==0)] <- coef(glm.fit(y = resp, x = design[,which(rowSums(abs(acoefs))==0)], family = binomial()))
 if(any(is.na(start))){start[which(is.na(start))] <- 0}
 }
 
@@ -27,11 +28,26 @@ if (any(weight==0)) weight[which(weight==0)] <- epsilon
 weight <- as.vector(weight^(-1))
 } 
 
+pen.nums <- c(penalty$numpen.order, penalty$numpen.intercepts, 
+              penalty$numpen.X, penalty$numpen.Z1, penalty$numpen.Z2)
+
+if(sum(pen.nums)>0){
+if(penalty$weight.penalties){
+  pen.nums.scaled <- c(penalty$numpen.order/penalty$n.order, penalty$numpen.intercepts/(m-1), 
+                penalty$numpen.X/penalty$p.X/(m-1), 
+                penalty$numpen.Z1/penalty$p.Z1/m, penalty$numpen.Z2/penalty$p.Z2)
+  weight <- weight/rep(pen.nums.scaled, pen.nums)
+}
+}
 
 beta.old <- beta.new  <- start
 diff <- 1
 delta.new <- delta.old <- 1
 
+check.theta <- c(beta.new[1:floor(q/2)],0)
+if(!all(diff(check.theta)>0)){
+  beta.new[1:floor(q/2)] <- check.theta[1:floor(q/2)] <- (floor(q/2):1)*(-0.5)
+}
 
 rcpp.out <- cumfit(matrix(beta.new,ncol=1),
                   epsilon,
@@ -49,7 +65,8 @@ rcpp.out <- cumfit(matrix(beta.new,ncol=1),
                   control$c,control$gama,
                   norm,
                   as.numeric(hat.matrix),
-                  lambda2
+                  lambda2,
+                  matrix(check.theta,ncol=1)
                   )
 
 
