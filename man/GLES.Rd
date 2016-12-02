@@ -28,7 +28,7 @@ levels, 0: else}
 else} 
 \item{Church: Frequency of attendence in a
 church/synagogue/mosque/..., 1: at least once a month, 0: else}
-\item{Migration: Have you been a German citizen since birth? 1: yes,
+\item{Migration: Are you a migrant / not German since birth? 1: yes,
 0: no} 
 }
 }
@@ -36,7 +36,7 @@ church/synagogue/mosque/..., 1: at least once a month, 0: else}
 \itemize{
 \item{Climate: Self-perceived distance of each person to all five parties with respect to 
 ones attitude towards climate change.}
-\item{SocEc: Self-perceived distance of each person to all five parties with respect to 
+\item{SocioEcon: Self-perceived distance of each person to all five parties with respect to 
 ones attitude towards socio-economic issues.}
 \item{Immigration: Self-perceived distance of each person to all five parties with respect to 
 ones attitude towards immigration.}

@@ -18,7 +18,7 @@ exportClasses("boot.BTLLasso")
 
   importFrom("graphics", "abline", "axis", "layout", "lines", "mtext",
              "par", "plot", "segments","title")
-  importFrom("stats", "binomial", "coef", "glm.fit", "quantile", "var")
+  importFrom("stats", "binomial", "coef", "glm.fit", "quantile", "var", "sd")
   importFrom("utils", "combn")
 
 

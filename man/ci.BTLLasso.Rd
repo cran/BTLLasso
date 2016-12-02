@@ -4,12 +4,15 @@
 \alias{ci.BTLLasso}
 \title{Plot confidence intervals for BTLLasso}
 \usage{
-ci.BTLLasso(object, plot.X = TRUE, plot.Z1 = TRUE, plot.Z2 = TRUE,
-  plot.intercepts = TRUE, plot.order.effects = TRUE, include.zero = TRUE,
-  columns = NULL, subs.X = NULL, subs.Z1 = NULL)
+ci.BTLLasso(object, rescale = FALSE, plot.X = TRUE, plot.Z1 = TRUE,
+  plot.Z2 = TRUE, plot.intercepts = TRUE, plot.order.effects = TRUE,
+  include.zero = TRUE, columns = NULL, subs.X = NULL, subs.Z1 = NULL)
 }
 \arguments{
 \item{object}{boot.BTLLasso object}
+
+\item{rescale}{Should the parameter estimates be rescaled for plotting? Only 
+applies if \code{scale = TRUE} was specified in \code{BTLLasso} or \code{cv.BTLLasso}.}
 
 \item{plot.X}{Should confidence intervals for variables in \code{X} (if present) be plotted?}
 

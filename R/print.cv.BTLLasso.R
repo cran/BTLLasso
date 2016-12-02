@@ -4,6 +4,8 @@
 #' 
 #' @method print cv.BTLLasso
 #' @param x \code{cv.BTLLasso} object
+#' @param rescale Should the parameter estimates be rescaled for plotting? Only 
+#' applies if \code{scale = TRUE} was specified in \code{BTLLasso} or \code{cv.BTLLasso}.
 #' @param \dots possible further arguments for print command
 #' @return \item{x}{cv.BTLLasso object}
 #' @author Gunther Schauberger\cr \email{gunther@@stat.uni-muenchen.de}\cr
@@ -38,7 +40,7 @@
 #' 
 #' print(m.cv)
 #' }
-print.cv.BTLLasso <- function(x, ...){
+print.cv.BTLLasso <- function(x, rescale = FALSE, ...){
 
   m <- x$Y$m
   n <- x$Y$n
@@ -126,6 +128,9 @@ print.cv.BTLLasso <- function(x, ...){
     cat("object-specific effects for subject-specific covariate(s):","\n")
     gamma.X <- matrix(coefs[(n.theta+ n.order+ n.intercepts + 1): 
                               (n.theta+ n.order + n.intercepts + p.X*m)], nrow = p.X, byrow =TRUE)
+    if(rescale){
+      gamma.X <- t(t(gamma.X)/rep(x$design$sd.X, each = m))
+    }
     colnames(gamma.X) <- labels
     rownames(gamma.X) <- vars.X
     print(gamma.X)
@@ -136,6 +141,9 @@ print.cv.BTLLasso <- function(x, ...){
     cat("object-specific effects for subject-object-specific covariate(s):","\n")
     gamma.Z1 <- matrix(coefs[(n.theta+ n.order+ n.intercepts + p.X * m + 1): 
                                (n.theta+ n.order+ n.intercepts + p.X * m + p.Z1 * m)], nrow = p.Z1, byrow =TRUE)
+    if(rescale){
+      gamma.Z1 <- t(t(gamma.Z1)/rep(x$design$sd.Z1, each = m))
+    }
     colnames(gamma.Z1) <- labels
     rownames(gamma.Z1) <- vars.Z1
     print(gamma.Z1)
@@ -147,6 +155,9 @@ print.cv.BTLLasso <- function(x, ...){
     cat("global effects for (subject-)object-specific covariate(s):","\n")
     gamma.Z2 <- coefs[(n.theta+ n.order+ n.intercepts + p.X * m + p.Z1 * m + 1): 
                         (n.theta+ n.order+ n.intercepts + p.X * m + p.Z1 * m + p.Z2)]
+    if(rescale){
+      gamma.Z2 <- t(t(gamma.Z2)/x$design$sd.Z2)
+    }
     names(gamma.Z2) <- vars.Z2
     print(gamma.Z2)
     cat("\n")
@@ -162,7 +173,11 @@ print.cv.BTLLasso <- function(x, ...){
   
   cat("log likelihood:",x$logLik[which.min(x$criterion)],"\n")
   
-  invisible(x)
+  
+  coef.opt <- list(theta = theta, intercepts = intercepts, order.effects = order.effects,
+                   gamma.X = gamma.X, gamma.Z1 = gamma.Z1, gamma.Z2 = gamma.Z2)
+  
+  invisible(coef.opt)
   
   
 }

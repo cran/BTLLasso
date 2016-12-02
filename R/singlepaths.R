@@ -10,6 +10,8 @@
 #' vertical line indicating the optimal model according to cross-validation.
 #' 
 #' @param model BTLLasso or cv.BTLLasso object
+#' @param rescale Should the parameter estimates be rescaled for plotting? Only 
+#' applies if \code{scale = TRUE} was specified in \code{BTLLasso} or \code{cv.BTLLasso}.
 #' @param colors Optional. If specified, vector with length equal to the number
 #' of objects. Each object can be represented by another color.
 #' @param equal.ranges Should all single plots (for different covariates) have
@@ -99,7 +101,7 @@
 #' }
 #' 
 #' @export singlepaths
-singlepaths <- function(model, colors = NULL, equal.ranges = FALSE,
+singlepaths <- function(model, rescale = FALSE, colors = NULL, equal.ranges = FALSE,
                         plot.X = TRUE, plot.Z1 = TRUE, plot.Z2 = TRUE, plot.intercepts = TRUE,
                         plot.order.effects = TRUE, x.axis = c("penalty", "lambda", "loglambda"), 
                         columns = NULL, subs.X = NULL, subs.Z1 = NULL, subs.Z2 = NULL){
@@ -155,18 +157,27 @@ p.Z2 <- model$design$p.Z2
   if(n.intercepts>0){
   intercepts <- coefs[,(n.theta+n.order+1):(n.theta+n.order + n.intercepts),drop=FALSE]
   }
-  
+
   if(p.X>0){
-  gamma.X <- coefs[,(n.theta+n.order+ n.intercepts + 1): (n.theta+n.order + n.intercepts + p.X*m)]
+  gamma.X <- coefs[,(n.theta+n.order+ n.intercepts + 1): (n.theta+n.order + n.intercepts + p.X*m),drop=FALSE]
+  if(rescale){
+    gamma.X <- t(t(gamma.X)/rep(model$design$sd.X, each = m))
+  }
   }
 
   if(p.Z1>0){
-  gamma.Z1 <- coefs[,(n.theta+n.order+ n.intercepts + p.X * m + 1): (n.theta+n.order+ n.intercepts + p.X * m + p.Z1 * m)]
+  gamma.Z1 <- coefs[,(n.theta+n.order+ n.intercepts + p.X * m + 1): (n.theta+n.order+ n.intercepts + p.X * m + p.Z1 * m), drop = FALSE]
+  if(rescale){
+    gamma.Z1 <- t(t(gamma.Z1)/rep(model$design$sd.Z1, each = m))
+  }
   }
   
   if(p.Z2>0){
   gamma.Z2 <- coefs[,(n.theta+n.order+ n.intercepts + p.X * m + p.Z1 * m + 1): 
                       (n.theta+n.order+ n.intercepts + p.X * m + p.Z1 * m + p.Z2), drop = FALSE]
+  if(rescale){
+    gamma.Z2 <- t(t(gamma.Z2)/model$design$sd.Z2)
+  }
   }
 
   p <- p.tot <- 0
@@ -202,7 +213,7 @@ p.Z2 <- model$design$p.Z2
 
   
   if(plot.intercepts & n.intercepts>0){
-    covar <- c("Intercept", covar)
+    covar <- c("Intercepts", covar)
     gamma <- cbind(intercepts, gamma)
     p <- 1+ p
     p.tot <- p.tot + 1
@@ -243,7 +254,7 @@ if(is.null(columns)){
   }
   
   if(plot.order.effects & n.order==1){
-    plot(norm, order.effects,type="l",main=model$control$name.order, ylab="",
+    plot(norm, order.effects,type="l",main=model$control$name.order, ylab="estimates",
          xlab=x.axis.name, xlim = norm.range)
     if(!is.null(model$criterion)){
       abline(v=x.axis.min,lty=2,col=2)
@@ -256,7 +267,7 @@ if(is.null(columns)){
   for(i in 1:p){
     if(!equal.ranges){y.range <- range(gamma[,index:(index+m-1)])}
     
-    plot(norm, gamma[,index],ylim=y.range,type="l",main="",ylab="",
+    plot(norm, gamma[,index],ylim=y.range,type="l",main="",ylab="estimates",
          xlab=x.axis.name, xlim = norm.range,
          col=colors[1])
 
@@ -274,8 +285,9 @@ if(is.null(columns)){
 
   if(p.Z2>0 & plot.Z2){
     for(i in 1:p.Z2){
-      plot(norm, gamma.Z2[,i],type="l",main=model$design$vars.Z2[i], ylab="",
+      plot(norm, gamma.Z2[,i],type="l",main="", ylab="estimates",
            xlab=x.axis.name,  xlim = norm.range)
+      title(main=model$design$vars.Z2[i],line=1.2)
       if(!is.null(model$criterion)){
         abline(v=x.axis.min,lty=2,col=2)
       }

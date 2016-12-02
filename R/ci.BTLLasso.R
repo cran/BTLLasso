@@ -7,6 +7,8 @@
 #' 
 #' 
 #' @param object boot.BTLLasso object
+#' @param rescale Should the parameter estimates be rescaled for plotting? Only 
+#' applies if \code{scale = TRUE} was specified in \code{BTLLasso} or \code{cv.BTLLasso}.
 #' @param plot.X Should confidence intervals for variables in \code{X} (if present) be plotted?
 #' @param plot.Z1 Should confidence intervals for variables in \code{Z1} (if present) be plotted?
 #' @param plot.Z2 Should confidence intervals for variables in \code{Z2} (if present) be plotted?
@@ -87,7 +89,7 @@
 #' }
 #' 
 #' @export ci.BTLLasso
-ci.BTLLasso <- function(object, plot.X = TRUE, plot.Z1 = TRUE, plot.Z2 = TRUE, 
+ci.BTLLasso <- function(object, rescale = FALSE, plot.X = TRUE, plot.Z1 = TRUE, plot.Z2 = TRUE, 
                         plot.intercepts = TRUE, plot.order.effects = TRUE,
                         include.zero = TRUE, columns = NULL, subs.X = NULL, subs.Z1 = NULL ){
 
@@ -155,8 +157,15 @@ ci.BTLLasso <- function(object, plot.X = TRUE, plot.Z1 = TRUE, plot.Z2 = TRUE,
   if(p.X>0 & plot.X){
     end <- start+p.X*m-1
     covar <- c(covar, model$design$vars.X)
-    gamma <- c(gamma, estimates[start:end])
-    gamma.ci <- cbind(gamma.ci, conf.ints[,start:end])
+    if(rescale){
+      est <-  estimates[start:end]/rep(model$design$sd.X, each = m)
+      est.ci <-   t(t(conf.ints[,start:end])/rep(model$design$sd.X, each = m))
+    }else{
+      est <-  estimates[start:end]
+      est.ci <-   conf.ints[,start:end]
+    }
+    gamma <- c(gamma, est)
+    gamma.ci <- cbind(gamma.ci, est.ci)
     p <- p+ p.X
     if(is.null(subs.X)){
       subs.X <- rep("",p.X)
@@ -169,8 +178,15 @@ ci.BTLLasso <- function(object, plot.X = TRUE, plot.Z1 = TRUE, plot.Z2 = TRUE,
   if(p.Z1>0 & plot.Z1){
     end <- start+p.Z1*m-1
     covar <- c(covar, model$design$vars.Z1)
-    gamma <- c(gamma, estimates[start:end])
-    gamma.ci <- cbind(gamma.ci, conf.ints[,start:end])
+    if(rescale){
+      est <-  estimates[start:end]/rep(model$design$sd.Z1, each = m)
+      est.ci <-   t(t(conf.ints[,start:end])/rep(model$design$sd.Z1, each = m))
+    }else{
+      est <-  estimates[start:end]
+      est.ci <-   conf.ints[,start:end]
+    }
+    gamma <- c(gamma, est)
+    gamma.ci <- cbind(gamma.ci, est.ci)
     p <- p+ p.Z1
     if(is.null(subs.Z1)){
       subs.Z1 <- rep("",p.Z1)
@@ -184,8 +200,15 @@ ci.BTLLasso <- function(object, plot.X = TRUE, plot.Z1 = TRUE, plot.Z2 = TRUE,
   if(p.Z2>0 & plot.Z2){
     end <- start+p.Z2-1
     covar.global <- c(covar.global, model$design$vars.Z2)
-    global <- c(global, estimates[start:end])
-    global.ci <- cbind(global.ci, conf.ints[,start:end])
+    if(rescale){
+      est <-  estimates[start:end]/model$design$sd.Z2
+      est.ci <-   t(t(conf.ints[,start:end])/model$design$sd.Z2)
+    }else{
+      est <-  estimates[start:end]
+      est.ci <-   conf.ints[,start:end]
+    }
+    global <- c(global, est)
+    global.ci <- cbind(global.ci, est.ci)
     p.global <- p.global+ p.Z2
   }
   

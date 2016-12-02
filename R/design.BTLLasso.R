@@ -27,11 +27,12 @@ design.BTLLasso <- function(Y, X=NULL, Z1=NULL, Z2=NULL, control = ctrl.BTLLasso
   ####
   withX <- withZ1 <- withZ2 <- FALSE
   p.X <- p.Z1 <- p.Z2 <- 0
+  sd.X <- sd.Z1 <- sd.Z2 <- NULL
   par.names.X <- par.names.Z1 <- par.names.Z2 <- c()
   vars.X <- vars.Z1 <- vars.Z2 <- c()
   acoefs.X <- acoefs.Z1 <- acoefs.Z2 <- c()
   order.Z1 <- order.Z2 <- order(object.names)
-  
+
   if(!is.null(X)){
     withX <- TRUE
     p.X <- ncol(X)
@@ -39,7 +40,8 @@ design.BTLLasso <- function(Y, X=NULL, Z1=NULL, Z2=NULL, control = ctrl.BTLLasso
     if(!is.matrix(X))
       stop("X has to be a matrix")
     if(control$scale){
-      X <- scale(X)
+      sd.X <- apply(X,2,sd, na.rm = TRUE)
+      X <- t(t(X)/sd.X)
     }
     par.names.X <- paste(rep(vars.X, each = m-1),object.names[1:(m-1)],sep=".")
   }
@@ -53,15 +55,18 @@ design.BTLLasso <- function(Y, X=NULL, Z1=NULL, Z2=NULL, control = ctrl.BTLLasso
     if(!is.matrix(Z1))
       stop("Z1 has to be a matrix")
     if(control$scale){
-      Z1 <- matrix(c(scale(matrix(c(Z1),ncol=p.Z1))),ncol=ncol(Z1),
+      Z1.help <- matrix(c(Z1),ncol=p.Z1)
+      sd.Z1 <- apply(Z1.help,2, sd, na.rm = TRUE)
+      Z1 <- matrix(c(t(t(Z1.help)/sd.Z1)),ncol=ncol(Z1),
                    dimnames = list(rownames(Z1),colnames(Z1)))
+      Z1.help <- NULL
     }
     check.Z1 <- check(Z = Z1, object.names = object.names, subject)
     vars.Z1 <- check.Z1$vars.Z
     order.Z1 <- check.Z1$order.Z
     par.names.Z1 <- paste(rep(vars.Z1, each = m),object.names[1:m],sep=".")
   }
-  
+
   if(!is.null(Z2)){
     withZ2 <- TRUE
     p.Z2 <- ncol(Z2)/m
@@ -69,8 +74,18 @@ design.BTLLasso <- function(Y, X=NULL, Z1=NULL, Z2=NULL, control = ctrl.BTLLasso
     vars.Z2 <- check.Z2$vars.Z
     order.Z2 <- check.Z2$order.Z
     if(control$scale){
-      Z2 <- matrix(c(scale(matrix(c(Z2),ncol=p.Z2))),ncol=ncol(Z2),
-                   dimnames = list(rownames(Z2),colnames(Z2)))
+      if(all(apply(Z2,2,var)==0)){
+        Z2.help <- matrix(c(Z2[1,]),ncol=p.Z2)
+        sd.Z2 <- apply(Z2.help,2, sd, na.rm = TRUE)
+        Z2 <- Z2/rep(sd.Z2, each = m)
+        Z2.help <- NULL
+      }else{
+        Z2.help <- matrix(c(Z2),ncol=p.Z2)
+        sd.Z2 <- apply(Z2.help,2, sd, na.rm = TRUE)
+        Z2 <- matrix(c(t(t(Z2.help)/sd.Z2)),ncol=ncol(Z2),
+                     dimnames = list(rownames(Z2),colnames(Z2)))
+        Z2.help <- NULL
+      }
     }
     par.names.Z2 <- vars.Z2
   }
@@ -125,7 +140,8 @@ design.BTLLasso <- function(Y, X=NULL, Z1=NULL, Z2=NULL, control = ctrl.BTLLasso
   
   RET <- list(design = design, p.X = p.X, p.Z1 = p.Z1, p.Z2 = p.Z2, 
               vars.X = vars.X, vars.Z1 = vars.Z1, vars.Z2 = vars.Z2, n.theta = n.theta,
-              n.intercepts = n.intercepts, n.order = n.order)
+              n.intercepts = n.intercepts, n.order = n.order, sd.X = sd.X,
+              sd.Z1 = sd.Z1, sd.Z2 = sd.Z2)
   
   return(RET)
 }

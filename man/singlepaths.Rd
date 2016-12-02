@@ -4,13 +4,16 @@
 \alias{singlepaths}
 \title{Plot parameter paths for BTLLasso}
 \usage{
-singlepaths(model, colors = NULL, equal.ranges = FALSE, plot.X = TRUE,
-  plot.Z1 = TRUE, plot.Z2 = TRUE, plot.intercepts = TRUE,
+singlepaths(model, rescale = FALSE, colors = NULL, equal.ranges = FALSE,
+  plot.X = TRUE, plot.Z1 = TRUE, plot.Z2 = TRUE, plot.intercepts = TRUE,
   plot.order.effects = TRUE, x.axis = c("penalty", "lambda", "loglambda"),
   columns = NULL, subs.X = NULL, subs.Z1 = NULL, subs.Z2 = NULL)
 }
 \arguments{
 \item{model}{BTLLasso or cv.BTLLasso object}
+
+\item{rescale}{Should the parameter estimates be rescaled for plotting? Only 
+applies if \code{scale = TRUE} was specified in \code{BTLLasso} or \code{cv.BTLLasso}.}
 
 \item{colors}{Optional. If specified, vector with length equal to the number
 of objects. Each object can be represented by another color.}

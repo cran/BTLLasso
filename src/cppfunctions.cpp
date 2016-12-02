@@ -1,3 +1,6 @@
+//#define ARMA_64BIT_WORD
+#define ARMA_DONT_USE_CXX11
+
 // [[Rcpp::depends(RcppArmadillo)]]
 
 #include <RcppArmadillo.h>
@@ -5,9 +8,6 @@
 
 using namespace Rcpp;
 using namespace arma;
-
-//#define ARMA_64BIT_WORD
-#define ARMA_DONT_USE_CXX11
 
 
 mat matsqrt2(mat A){
@@ -118,7 +118,7 @@ List cumfit(NumericMatrix betanew2,
            NumericMatrix design2,
            int N,
            int n,
-           int q,
+           double q,
            NumericMatrix resp2,
            NumericVector index,
            double c,

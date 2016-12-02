@@ -87,6 +87,13 @@ paths <- function(model, y.axis = c("penalty", "L2"), x.axis = c("penalty", "lam
   x.axis <- match.arg(x.axis)
   y.axis <- match.arg(y.axis)
   
+  if(y.axis=="penalty"){
+    y.text <- "penalty size"
+  }
+  if(y.axis=="L2"){
+    y.text <- "L2 norm"
+  }
+  
   coefs <- model$coefs
   covar <- c(model$design$vars.X, model$design$vars.Z1, model$design$vars.Z2)
 
@@ -223,7 +230,7 @@ if(numpen.order>0){
 }
 
 
-plot(norm,paths[,1],type="l",ylim=range(paths),ylab="",
+plot(norm,paths[,1],type="l",ylim=range(paths),ylab=y.text,
      xlab=x.axis.name, xlim = norm.range,
      las=1)
 for(o in 2:p){

@@ -4,10 +4,13 @@
 \alias{print.cv.BTLLasso}
 \title{Print function for cv.BTLLasso objects}
 \usage{
-\method{print}{cv.BTLLasso}(x, ...)
+\method{print}{cv.BTLLasso}(x, rescale = FALSE, ...)
 }
 \arguments{
 \item{x}{\code{cv.BTLLasso} object}
+
+\item{rescale}{Should the parameter estimates be rescaled for plotting? Only 
+applies if \code{scale = TRUE} was specified in \code{BTLLasso} or \code{cv.BTLLasso}.}
 
 \item{\dots}{possible further arguments for print command}
 }
