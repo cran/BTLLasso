@@ -23,8 +23,8 @@ covariate and object. Column names have to follow the scheme
 'firstvar.object1',...,'firstvar.objectm',...,'lastvar.objectm'. The object
 names 'object1',...,'objectm' have to be identical to the object names used
 in the \code{response.BTLLasso} object \code{Y}. The variable names and the
-object names have to be separated by '.'.  The rownames of the matrix",
-Z.name, "have to be equal to the subjects specified in the response object.
+object names have to be separated by '.'.  The rownames of the matrix',
+Z.name, 'have to be equal to the subjects specified in the response object.
 Z1 has to be standardized.}
 
 \item{Z2}{Matrix containing all \bold{object-subject-specific covariates or
@@ -35,7 +35,7 @@ scheme 'firstvar.object1',...,'firstvar.objectm',...,'lastvar.objectm'. The
 object names 'object1',...,'objectm' have to be identical to the object
 names used in the \code{response.BTLLasso} object \code{Y}. The variable
 names and the object names have to be separated by '.'.  The rownames of the
-matrix", Z.name, "have to be equal to the subjects specified in the response
+matrix', Z.name, 'have to be equal to the subjects specified in the response
 object. Z2 has to be standardized.}
 
 \item{folds}{Number of folds for the crossvalidation. Default is 10.}
@@ -97,54 +97,65 @@ and \code{\link{ci.BTLLasso}}.
 data(SimData)
 
 ## Specify tuning parameters
-lambda <- exp(seq(log(151),log(1.05),length=30))-1
+lambda <- exp(seq(log(151), log(1.05), length = 30)) - 1
 
-## Specify control argument, allow for object-specific order effects and penalize intercepts
+## Specify control argument
+## -> allow for object-specific order effects and penalize intercepts
 ctrl <- ctrl.BTLLasso(penalize.intercepts = TRUE, object.order.effect = TRUE,
                       penalize.order.effect.diffs = TRUE)
 
 ## Simple BTLLasso model for tuning parameters lambda
 m.sim <- BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
                   Z2 = SimData$Z2, lambda = lambda, control = ctrl)
+print(m.sim)
 
-singlepaths(m.sim, x.axis = "loglambda")
+singlepaths(m.sim)
 
 ## Cross-validate BTLLasso model for tuning parameters lambda
 set.seed(5)
 m.sim.cv <- cv.BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
                         Z2 = SimData$Z2, lambda = lambda, control = ctrl)
+print(m.sim.cv)
 
-
-singlepaths(m.sim.cv, x.axis = "loglambda", plot.order.effect = FALSE, plot.intercepts = FALSE, 
-            plot.Z2 = FALSE)
-paths(m.sim.cv, y.axis="L2")
+singlepaths(m.sim.cv, plot.order.effect = FALSE, 
+            plot.intercepts = FALSE, plot.Z2 = FALSE)
+paths(m.sim.cv, y.axis = 'L2')
 
 ## Example for bootstrap confidence intervals for illustration only
-## Don't calculate bootstrap confidence intervals with B = 10
+## Don't calculate bootstrap confidence intervals with B = 10!!!!
 set.seed(5)
 m.sim.boot <- boot.BTLLasso(m.sim.cv, B = 10, cores = 10)
+print(m.sim.boot)
 ci.BTLLasso(m.sim.boot)
+
 
 ##### Example with small version from GLES data set
 data(GLESsmall)
 
+## extract data and center covariates for better interpretability
+Y <- GLESsmall$Y
+X <- scale(GLESsmall$X, scale = FALSE)
+Z1 <- scale(GLESsmall$Z1, scale = FALSE)
+
 ## vector of subtitles, containing the coding of the X covariates
-subs.X <- c("","female (1); male (0)")
+subs.X <- c('', 'female (1); male (0)')
 
 ## vector of tuning parameters
-lambda <- exp(seq(log(61),log(1),length=30))-1
+lambda <- exp(seq(log(61), log(1), length = 30)) - 1
 
 
 ## compute BTLLasso model 
-m.gles <- BTLLasso(Y = GLESsmall$Y, X = GLESsmall$X, Z1 = GLESsmall$Z1, lambda = lambda)
+m.gles <- BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
+print(m.gles)
 
-singlepaths(m.gles, x.axis = "loglambda", subs.X = subs.X)
-paths(m.gles, y.axis="L2")
+singlepaths(m.gles, subs.X = subs.X)
+paths(m.gles, y.axis = 'L2')
 
 ## Cross-validate BTLLasso model 
-m.gles.cv <- cv.BTLLasso(Y = GLESsmall$Y, X = GLESsmall$X, Z1 = GLESsmall$Z1, lambda = lambda)
+m.gles.cv <- cv.BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
+print(m.gles.cv)
 
-singlepaths(m.gles.cv, x.axis = "loglambda", subs.X = subs.X)
+singlepaths(m.gles.cv, subs.X = subs.X)
 }
 
 }
@@ -157,6 +168,10 @@ Schauberger, Gunther and Tutz, Gerhard (2015): Modelling
 Heterogeneity in Paired Comparison Data - an L1 Penalty Approach with an
 Application to Party Preference Data, \emph{Department of Statistics, LMU
 Munich}, Technical Report 183
+
+Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
+Football Results in the German Bundesliga Using Match-specific Covariates, 
+\emph{Department of Statistics, LMU Munich}, Technical Report 197
 }
 \seealso{
 \code{\link{BTLLasso}}, \code{\link{boot.BTLLasso}}, \code{\link{ctrl.BTLLasso}},

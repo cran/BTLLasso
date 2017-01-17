@@ -20,8 +20,8 @@
 #' 'firstvar.object1',...,'firstvar.objectm',...,'lastvar.objectm'. The object
 #' names 'object1',...,'objectm' have to be identical to the object names used
 #' in the \code{response.BTLLasso} object \code{Y}. The variable names and the
-#' object names have to be separated by '.'.  The rownames of the matrix",
-#' Z.name, "have to be equal to the subjects specified in the response object.
+#' object names have to be separated by '.'.  The rownames of the matrix',
+#' Z.name, 'have to be equal to the subjects specified in the response object.
 #' Z1 has to be standardized.
 #' @param Z2 Matrix containing all \bold{object-subject-specific covariates or
 #' object-specific covariates} that are to be included with \bold{global
@@ -31,7 +31,7 @@
 #' object names 'object1',...,'objectm' have to be identical to the object
 #' names used in the \code{response.BTLLasso} object \code{Y}. The variable
 #' names and the object names have to be separated by '.'.  The rownames of the
-#' matrix", Z.name, "have to be equal to the subjects specified in the response
+#' matrix', Z.name, 'have to be equal to the subjects specified in the response
 #' object. Z2 has to be standardized.
 #' @param folds Number of folds for the crossvalidation. Default is 10.
 #' @param lambda Vector of tuning parameters.
@@ -75,6 +75,10 @@
 #' Heterogeneity in Paired Comparison Data - an L1 Penalty Approach with an
 #' Application to Party Preference Data, \emph{Department of Statistics, LMU
 #' Munich}, Technical Report 183
+#' 
+#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
+#' Football Results in the German Bundesliga Using Match-specific Covariates, 
+#' \emph{Department of Statistics, LMU Munich}, Technical Report 197
 #' @keywords BTLLasso cross validation
 #' @examples
 #' 
@@ -83,68 +87,82 @@
 #' data(SimData)
 #' 
 #' ## Specify tuning parameters
-#' lambda <- exp(seq(log(151),log(1.05),length=30))-1
+#' lambda <- exp(seq(log(151), log(1.05), length = 30)) - 1
 #' 
-#' ## Specify control argument, allow for object-specific order effects and penalize intercepts
+#' ## Specify control argument
+#' ## -> allow for object-specific order effects and penalize intercepts
 #' ctrl <- ctrl.BTLLasso(penalize.intercepts = TRUE, object.order.effect = TRUE,
 #'                       penalize.order.effect.diffs = TRUE)
 #' 
 #' ## Simple BTLLasso model for tuning parameters lambda
 #' m.sim <- BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
 #'                   Z2 = SimData$Z2, lambda = lambda, control = ctrl)
+#' print(m.sim)
 #' 
-#' singlepaths(m.sim, x.axis = "loglambda")
+#' singlepaths(m.sim)
 #' 
 #' ## Cross-validate BTLLasso model for tuning parameters lambda
 #' set.seed(5)
 #' m.sim.cv <- cv.BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
 #'                         Z2 = SimData$Z2, lambda = lambda, control = ctrl)
+#' print(m.sim.cv)
 #' 
-#' 
-#' singlepaths(m.sim.cv, x.axis = "loglambda", plot.order.effect = FALSE, plot.intercepts = FALSE, 
-#'             plot.Z2 = FALSE)
-#' paths(m.sim.cv, y.axis="L2")
+#' singlepaths(m.sim.cv, plot.order.effect = FALSE, 
+#'             plot.intercepts = FALSE, plot.Z2 = FALSE)
+#' paths(m.sim.cv, y.axis = 'L2')
 #' 
 #' ## Example for bootstrap confidence intervals for illustration only
-#' ## Don't calculate bootstrap confidence intervals with B = 10
+#' ## Don't calculate bootstrap confidence intervals with B = 10!!!!
 #' set.seed(5)
 #' m.sim.boot <- boot.BTLLasso(m.sim.cv, B = 10, cores = 10)
+#' print(m.sim.boot)
 #' ci.BTLLasso(m.sim.boot)
+#' 
 #' 
 #' ##### Example with small version from GLES data set
 #' data(GLESsmall)
 #' 
+#' ## extract data and center covariates for better interpretability
+#' Y <- GLESsmall$Y
+#' X <- scale(GLESsmall$X, scale = FALSE)
+#' Z1 <- scale(GLESsmall$Z1, scale = FALSE)
+#' 
 #' ## vector of subtitles, containing the coding of the X covariates
-#' subs.X <- c("","female (1); male (0)")
+#' subs.X <- c('', 'female (1); male (0)')
 #' 
 #' ## vector of tuning parameters
-#' lambda <- exp(seq(log(61),log(1),length=30))-1
+#' lambda <- exp(seq(log(61), log(1), length = 30)) - 1
 #' 
 #' 
 #' ## compute BTLLasso model 
-#' m.gles <- BTLLasso(Y = GLESsmall$Y, X = GLESsmall$X, Z1 = GLESsmall$Z1, lambda = lambda)
+#' m.gles <- BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
+#' print(m.gles)
 #' 
-#' singlepaths(m.gles, x.axis = "loglambda", subs.X = subs.X)
-#' paths(m.gles, y.axis="L2")
+#' singlepaths(m.gles, subs.X = subs.X)
+#' paths(m.gles, y.axis = 'L2')
 #' 
 #' ## Cross-validate BTLLasso model 
-#' m.gles.cv <- cv.BTLLasso(Y = GLESsmall$Y, X = GLESsmall$X, Z1 = GLESsmall$Z1, lambda = lambda)
+#' m.gles.cv <- cv.BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
+#' print(m.gles.cv)
 #' 
-#' singlepaths(m.gles.cv, x.axis = "loglambda", subs.X = subs.X)
+#' singlepaths(m.gles.cv, subs.X = subs.X)
 #' }
 #' 
 #' @export cv.BTLLasso
-cv.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL, folds = 10, lambda, control = ctrl.BTLLasso(), 
-                        cores = folds, trace = TRUE, trace.cv = TRUE, cv.crit = c("RPS","Deviance")){
-
+cv.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL, folds = 10, 
+  lambda, control = ctrl.BTLLasso(), cores = folds, trace = TRUE, 
+  trace.cv = TRUE, cv.crit = c("RPS", "Deviance")) {
+  
   cv.crit <- match.arg(cv.crit)
-
-
-  get.design <- design.BTLLasso(Y = Y, X = X, Z1 = Z1, Z2 = Z2, control = control)
+  
+  
+  get.design <- design.BTLLasso(Y = Y, X = X, Z1 = Z1, Z2 = Z2, 
+    control = control)
   
   ## exclude missing values
   na.response <- is.na(Y$response)
-  na.design <- colSums(matrix(is.na(rowSums(get.design$design)),nrow=Y$q))!=0
+  na.design <- colSums(matrix(is.na(rowSums(get.design$design)), 
+    nrow = Y$q)) != 0
   na.total <- na.response | na.design
   Y$response <- Y$response[!na.total]
   Y$first.object <- Y$first.object[!na.total]
@@ -153,37 +171,42 @@ cv.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL, folds = 10, lambda, c
   Y$subject.names <- levels(as.factor(Y$subject))
   Y$n <- length(Y$subject.names)
   
-  get.design$design <- get.design$design[!rep(na.total,each=Y$q),]
+  get.design$design <- get.design$design[!rep(na.total, each = Y$q), 
+    ]
   
   ## create response vector
-  if(Y$q==1){
-    response <- as.numeric(Y$response)-1
-  }else{
+  if (Y$q == 1) {
+    response <- as.numeric(Y$response) - 1
+  } else {
     response <- cumul.response(Y)
   }
   
-  get.penalties <- penalties.BTLLasso(Y = Y, X = X, Z1 = Z1, Z2 = Z2, control = control)
+  get.penalties <- penalties.BTLLasso(Y = Y, X = X, Z1 = Z1, 
+    Z2 = Z2, control = control)
   
   
-  fit <- fit.cv.BTLLasso(response = response, design = get.design$design, penalty = get.penalties, 
-                      q = Y$q, m = Y$m, folds = folds, lambda = lambda, control = control, 
-                      cores = cores, trace = trace, trace.cv = trace.cv, cv.crit = cv.crit)
+  fit <- fit.cv.BTLLasso(response = response, design = get.design$design, 
+    penalty = get.penalties, q = Y$q, m = Y$m, folds = folds, 
+    lambda = lambda, control = control, cores = cores, trace = trace, 
+    trace.cv = trace.cv, cv.crit = cv.crit)
   
   
   logLik <- c()
-  for(j in 1:nrow(fit$coefs)){
-    logLik[j] <- loglik(fit$coefs[j,], Y$response, get.design$design, Y$k)
+  for (j in 1:nrow(fit$coefs)) {
+    logLik[j] <- loglik(fit$coefs[j, ], Y$response, get.design$design, 
+      Y$k)
   }
   
   
-  coefs.repar <- round(expand.coefs(fit$coefs, get.design, Y), control$precision)
-
-
-  ret.list <- list(coefs = fit$coefs, coefs.repar = coefs.repar, logLik = logLik, 
-                   design = get.design, Y = Y, penalty = get.penalties,
-                   response = response, X = X, Z1 = Z1, Z2 = Z2, lambda = lambda, 
-                   control = control, criterion = fit$criterion, folds = folds,
-                   cv.crit = cv.crit)
+  coefs.repar <- round(expand.coefs(fit$coefs, get.design, 
+    Y), control$precision)
+  
+  
+  ret.list <- list(coefs = fit$coefs, coefs.repar = coefs.repar, 
+    logLik = logLik, design = get.design, Y = Y, penalty = get.penalties, 
+    response = response, X = X, Z1 = Z1, Z2 = Z2, lambda = lambda, 
+    control = control, criterion = fit$criterion, folds = folds, 
+    cv.crit = cv.crit)
   
   
   class(ret.list) <- c("cv.BTLLasso", "BTLLasso")

@@ -45,23 +45,30 @@ originate from the pre-election study for 2013.
 \dontrun{
 data(GLESsmall)
 
+## extract data and center covariates for better interpretability
+Y <- GLESsmall$Y
+X <- scale(GLESsmall$X, scale = FALSE)
+Z1 <- scale(GLESsmall$Z1, scale = FALSE)
+
 ## vector of subtitles, containing the coding of the X covariates
-subs.X <- c("","female (1); male (0)")
+subs.X <- c("", "female (1); male (0)")
 
 ## vector of tuning parameters
-lambda <- exp(seq(log(61),log(1),length=30))-1
+lambda <- exp(seq(log(61), log(1), length = 30)) - 1
 
 
 ## compute BTLLasso model 
-m.gles <- BTLLasso(Y = GLESsmall$Y, X = GLESsmall$X, Z1 = GLESsmall$Z1, lambda = lambda)
+m.gles <- BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
+print(m.gles)
 
 singlepaths(m.gles, x.axis = "loglambda", subs.X = subs.X)
-paths(m.gles, y.axis="L2")
+paths(m.gles, y.axis = "L2")
 
 ## Cross-validate BTLLasso model 
-m.gles.cv <- cv.BTLLasso(Y = GLESsmall$Y, X = GLESsmall$X, Z1 = GLESsmall$Z1, lambda = lambda)
+m.gles.cv <- cv.BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
+print(m.gles.cv)
 
-singlepaths(m.gles.cv, x.axis = "loglambda", subs.X = subs.X)
+singlepaths(m.gles.cv, subs.X = subs.X)
 }
 
 }
@@ -70,10 +77,14 @@ Rattinger, H., S. Rossteutscher, R. Schmitt-Beck, B. Wessels,
 and C. Wolf (2014): Pre-election cross section (GLES 2013). \emph{GESIS Data
 Archive, Cologne ZA5700 Data file Version 2.0.0.}
 
-Schauberger, Gunther and Tutz, Gerhard (2015): Modelling Heterogeneity in
-Paired Comparison Data - an L1 Penalty Approach with an Application to Party
-Preference Data, \emph{Department of Statistics, LMU Munich}, Technical
-Report 183
+Schauberger, Gunther and Tutz, Gerhard (2015): Modelling
+Heterogeneity in Paired Comparison Data - an L1 Penalty Approach with an
+Application to Party Preference Data, \emph{Department of Statistics, LMU
+Munich}, Technical Report 183
+
+Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
+Football Results in the German Bundesliga Using Match-specific Covariates, 
+\emph{Department of Statistics, LMU Munich}, Technical Report 197
 }
 \keyword{datasets}
 

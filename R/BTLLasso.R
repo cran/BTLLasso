@@ -8,7 +8,7 @@
 #' Variables will be properly scaled AND centered. Please note that results will refer to scaled covariates.
 #' If \code{adaptive = TRUE} scaling is not necessary to keep penalties comparable.
 #' @param norm Specifies the norm used in the penalty term. Currently, only
-#' "L1" and "L2" are possible. Default is to "L1", only "L1" allows for
+#' 'L1' and 'L2' are possible. Default is to 'L1', only 'L1' allows for
 #' clustering and variable selection.
 #' @param epsilon Threshold value for convergence of the algorithm.
 #' @param lambda2 Tuning parameter for ridge penalty on all coefficients.
@@ -53,6 +53,10 @@
 #' Heterogeneity in Paired Comparison Data - an L1 Penalty Approach with an
 #' Application to Party Preference Data, \emph{Department of Statistics, LMU
 #' Munich}, Technical Report 183
+#' 
+#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
+#' Football Results in the German Bundesliga Using Match-specific Covariates, 
+#' \emph{Department of Statistics, LMU Munich}, Technical Report 197
 #' @keywords BTLLasso control
 #' @examples
 #' 
@@ -61,79 +65,87 @@
 #' data(SimData)
 #' 
 #' ## Specify tuning parameters
-#' lambda <- exp(seq(log(151),log(1.05),length=30))-1
+#' lambda <- exp(seq(log(151), log(1.05), length = 30)) - 1
 #' 
-#' ## Specify control argument, allow for object-specific order effects and penalize intercepts
+#' ## Specify control argument
+#' ## -> allow for object-specific order effects and penalize intercepts
 #' ctrl <- ctrl.BTLLasso(penalize.intercepts = TRUE, object.order.effect = TRUE,
 #'                       penalize.order.effect.diffs = TRUE)
 #' 
 #' ## Simple BTLLasso model for tuning parameters lambda
 #' m.sim <- BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
 #'                   Z2 = SimData$Z2, lambda = lambda, control = ctrl)
+#' print(m.sim)
 #' 
-#' singlepaths(m.sim, x.axis = "loglambda")
+#' singlepaths(m.sim)
 #' 
 #' ## Cross-validate BTLLasso model for tuning parameters lambda
 #' set.seed(5)
 #' m.sim.cv <- cv.BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
 #'                         Z2 = SimData$Z2, lambda = lambda, control = ctrl)
+#' print(m.sim.cv)
 #' 
-#' 
-#' singlepaths(m.sim.cv, x.axis = "loglambda", plot.order.effect = FALSE, plot.intercepts = FALSE, 
-#'             plot.Z2 = FALSE)
-#' paths(m.sim.cv, y.axis="L2")
+#' singlepaths(m.sim.cv, plot.order.effect = FALSE, 
+#'             plot.intercepts = FALSE, plot.Z2 = FALSE)
+#' paths(m.sim.cv, y.axis = 'L2')
 #' 
 #' ## Example for bootstrap confidence intervals for illustration only
-#' ## Don't calculate bootstrap confidence intervals with B = 10
+#' ## Don't calculate bootstrap confidence intervals with B = 10!!!!
 #' set.seed(5)
 #' m.sim.boot <- boot.BTLLasso(m.sim.cv, B = 10, cores = 10)
+#' print(m.sim.boot)
 #' ci.BTLLasso(m.sim.boot)
+#' 
 #' 
 #' ##### Example with small version from GLES data set
 #' data(GLESsmall)
 #' 
+#' ## extract data and center covariates for better interpretability
+#' Y <- GLESsmall$Y
+#' X <- scale(GLESsmall$X, scale = FALSE)
+#' Z1 <- scale(GLESsmall$Z1, scale = FALSE)
+#' 
 #' ## vector of subtitles, containing the coding of the X covariates
-#' subs.X <- c("","female (1); male (0)")
+#' subs.X <- c('', 'female (1); male (0)')
 #' 
 #' ## vector of tuning parameters
-#' lambda <- exp(seq(log(61),log(1),length=30))-1
+#' lambda <- exp(seq(log(61), log(1), length = 30)) - 1
 #' 
 #' 
 #' ## compute BTLLasso model 
-#' m.gles <- BTLLasso(Y = GLESsmall$Y, X = GLESsmall$X, Z1 = GLESsmall$Z1, lambda = lambda)
+#' m.gles <- BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
+#' print(m.gles)
 #' 
-#' singlepaths(m.gles, x.axis = "loglambda", subs.X = subs.X)
-#' paths(m.gles, y.axis="L2")
+#' singlepaths(m.gles, subs.X = subs.X)
+#' paths(m.gles, y.axis = 'L2')
 #' 
 #' ## Cross-validate BTLLasso model 
-#' m.gles.cv <- cv.BTLLasso(Y = GLESsmall$Y, X = GLESsmall$X, Z1 = GLESsmall$Z1, lambda = lambda)
+#' m.gles.cv <- cv.BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
+#' print(m.gles.cv)
 #' 
-#' singlepaths(m.gles.cv, x.axis = "loglambda", subs.X = subs.X)
+#' singlepaths(m.gles.cv, subs.X = subs.X)
 #' }
-#' 
 #' @export ctrl.BTLLasso
-ctrl.BTLLasso <- 
-  function (adaptive = TRUE, scale = TRUE, norm = c("L1","L2"), epsilon = 1e-4, lambda2 = 1e-4, c = 1e-9,
-            precision = 3,  weight.penalties = TRUE, include.intercepts = TRUE, 
-            order.effect = FALSE, object.order.effect = FALSE, 
-            order.center = FALSE, name.order = "Order", penalize.intercepts = FALSE, penalize.X = TRUE, 
-            penalize.Z2 = FALSE,  penalize.Z1.absolute = TRUE, penalize.Z1.diffs = TRUE, 
-            penalize.order.effect.absolute = TRUE, penalize.order.effect.diffs = FALSE) 
-  { 
-    norm <- match.arg(norm)
-    
-    RET <- list(adaptive = adaptive, scale = scale, norm = norm, epsilon = epsilon, lambda2 = lambda2,
-                c = c, penalize.X = penalize.X, penalize.Z1.diffs = penalize.Z1.diffs, 
-                penalize.Z2 = penalize.Z2, penalize.Z1.absolute = penalize.Z1.absolute,
-                penalize.intercepts = penalize.intercepts, 
-                include.intercepts = include.intercepts, order.effect = order.effect, 
-                object.order.effect = object.order.effect, order.center = order.center,
-                penalize.order.effect.diffs = penalize.order.effect.diffs, 
-                penalize.order.effect.absolute = penalize.order.effect.absolute,
-                name.order = name.order, precision = precision, 
-                weight.penalties = weight.penalties)
-    RET
-  }
+ctrl.BTLLasso <- function(adaptive = TRUE, scale = TRUE, norm = c("L1", 
+  "L2"), epsilon = 1e-04, lambda2 = 1e-04, c = 1e-09, precision = 3, 
+  weight.penalties = TRUE, include.intercepts = TRUE, order.effect = FALSE, 
+  object.order.effect = FALSE, order.center = FALSE, name.order = "Order", 
+  penalize.intercepts = FALSE, penalize.X = TRUE, penalize.Z2 = FALSE, 
+  penalize.Z1.absolute = TRUE, penalize.Z1.diffs = TRUE, penalize.order.effect.absolute = TRUE, 
+  penalize.order.effect.diffs = FALSE) {
+  norm <- match.arg(norm)
+  
+  RET <- list(adaptive = adaptive, scale = scale, norm = norm, 
+    epsilon = epsilon, lambda2 = lambda2, c = c, penalize.X = penalize.X, 
+    penalize.Z1.diffs = penalize.Z1.diffs, penalize.Z2 = penalize.Z2, 
+    penalize.Z1.absolute = penalize.Z1.absolute, penalize.intercepts = penalize.intercepts, 
+    include.intercepts = include.intercepts, order.effect = order.effect, 
+    object.order.effect = object.order.effect, order.center = order.center, 
+    penalize.order.effect.diffs = penalize.order.effect.diffs, 
+    penalize.order.effect.absolute = penalize.order.effect.absolute, 
+    name.order = name.order, precision = precision, weight.penalties = weight.penalties)
+  RET
+}
 
 
 
@@ -160,8 +172,8 @@ ctrl.BTLLasso <-
 #' 'firstvar.object1',...,'firstvar.objectm',...,'lastvar.objectm'. The object
 #' names 'object1',...,'objectm' have to be identical to the object names used
 #' in the \code{response.BTLLasso} object \code{Y}. The variable names and the
-#' object names have to be separated by '.'.  The rownames of the matrix",
-#' Z.name, "have to be equal to the subjects specified in the response object.
+#' object names have to be separated by '.'.  The rownames of the matrix',
+#' Z.name, 'have to be equal to the subjects specified in the response object.
 #' Z1 has to be standardized.
 #' @param Z2 Matrix containing all \bold{object-subject-specific covariates or
 #' object-specific covariates} that are to be included with \bold{global
@@ -171,7 +183,7 @@ ctrl.BTLLasso <-
 #' object names 'object1',...,'objectm' have to be identical to the object
 #' names used in the \code{response.BTLLasso} object \code{Y}. The variable
 #' names and the object names have to be separated by '.'.  The rownames of the
-#' matrix", Z.name, "have to be equal to the subjects specified in the response
+#' matrix', Z.name, 'have to be equal to the subjects specified in the response
 #' object. Z2 has to be standardized.
 #' @param lambda Vector of tuning parameters.
 #' @param control Function for control arguments, mostly for internal use. See
@@ -211,67 +223,80 @@ ctrl.BTLLasso <-
 #' data(SimData)
 #' 
 #' ## Specify tuning parameters
-#' lambda <- exp(seq(log(151),log(1.05),length=30))-1
+#' lambda <- exp(seq(log(151), log(1.05), length = 30)) - 1
 #' 
-#' ## Specify control argument, allow for object-specific order effects and penalize intercepts
+#' ## Specify control argument
+#' ## -> allow for object-specific order effects and penalize intercepts
 #' ctrl <- ctrl.BTLLasso(penalize.intercepts = TRUE, object.order.effect = TRUE,
 #'                       penalize.order.effect.diffs = TRUE)
 #' 
 #' ## Simple BTLLasso model for tuning parameters lambda
 #' m.sim <- BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
 #'                   Z2 = SimData$Z2, lambda = lambda, control = ctrl)
+#' print(m.sim)
 #' 
-#' singlepaths(m.sim, x.axis = "loglambda")
+#' singlepaths(m.sim)
 #' 
 #' ## Cross-validate BTLLasso model for tuning parameters lambda
 #' set.seed(5)
 #' m.sim.cv <- cv.BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
 #'                         Z2 = SimData$Z2, lambda = lambda, control = ctrl)
+#' print(m.sim.cv)
 #' 
-#' 
-#' singlepaths(m.sim.cv, x.axis = "loglambda", plot.order.effect = FALSE, plot.intercepts = FALSE, 
-#'             plot.Z2 = FALSE)
-#' paths(m.sim.cv, y.axis="L2")
+#' singlepaths(m.sim.cv, plot.order.effect = FALSE, 
+#'             plot.intercepts = FALSE, plot.Z2 = FALSE)
+#' paths(m.sim.cv, y.axis = 'L2')
 #' 
 #' ## Example for bootstrap confidence intervals for illustration only
-#' ## Don't calculate bootstrap confidence intervals with B = 10
+#' ## Don't calculate bootstrap confidence intervals with B = 10!!!!
 #' set.seed(5)
 #' m.sim.boot <- boot.BTLLasso(m.sim.cv, B = 10, cores = 10)
+#' print(m.sim.boot)
 #' ci.BTLLasso(m.sim.boot)
+#' 
 #' 
 #' ##### Example with small version from GLES data set
 #' data(GLESsmall)
 #' 
+#' ## extract data and center covariates for better interpretability
+#' Y <- GLESsmall$Y
+#' X <- scale(GLESsmall$X, scale = FALSE)
+#' Z1 <- scale(GLESsmall$Z1, scale = FALSE)
+#' 
 #' ## vector of subtitles, containing the coding of the X covariates
-#' subs.X <- c("","female (1); male (0)")
+#' subs.X <- c('', 'female (1); male (0)')
 #' 
 #' ## vector of tuning parameters
-#' lambda <- exp(seq(log(61),log(1),length=30))-1
+#' lambda <- exp(seq(log(61), log(1), length = 30)) - 1
 #' 
 #' 
 #' ## compute BTLLasso model 
-#' m.gles <- BTLLasso(Y = GLESsmall$Y, X = GLESsmall$X, Z1 = GLESsmall$Z1, lambda = lambda)
+#' m.gles <- BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
+#' print(m.gles)
 #' 
-#' singlepaths(m.gles, x.axis = "loglambda", subs.X = subs.X)
-#' paths(m.gles, y.axis="L2")
+#' singlepaths(m.gles, subs.X = subs.X)
+#' paths(m.gles, y.axis = 'L2')
 #' 
 #' ## Cross-validate BTLLasso model 
-#' m.gles.cv <- cv.BTLLasso(Y = GLESsmall$Y, X = GLESsmall$X, Z1 = GLESsmall$Z1, lambda = lambda)
+#' m.gles.cv <- cv.BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
+#' print(m.gles.cv)
 #' 
-#' singlepaths(m.gles.cv, x.axis = "loglambda", subs.X = subs.X)
+#' singlepaths(m.gles.cv, subs.X = subs.X)
 #' }
 #' 
 #' @export BTLLasso
-BTLLasso <- function(Y, X=NULL, Z1=NULL, Z2=NULL, 
-                     lambda, control = ctrl.BTLLasso(), trace = TRUE){
-
-
+BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL, lambda, 
+  control = ctrl.BTLLasso(), trace = TRUE) {
+  
+  
   ## create design matrix
-  get.design <- design.BTLLasso(Y = Y, X = X, Z1 = Z1, Z2 = Z2, control = control)
+  get.design <- design.BTLLasso(Y = Y, X = X, Z1 = Z1, Z2 = Z2, 
+    control = control)
   
   ## exclude missing values
   na.response <- is.na(Y$response)
-  na.design <- colSums(matrix(is.na(rowSums(get.design$design)),nrow=Y$q))!=0
+  na.design <- colSums(matrix(is.na(rowSums(get.design$design)), 
+    nrow = Y$q)) != 0
   na.total <- na.response | na.design
   Y$response <- Y$response[!na.total]
   Y$first.object <- Y$first.object[!na.total]
@@ -280,36 +305,44 @@ BTLLasso <- function(Y, X=NULL, Z1=NULL, Z2=NULL,
   Y$subject.names <- levels(as.factor(Y$subject))
   Y$n <- length(Y$subject.names)
   
-  get.design$design <- get.design$design[!rep(na.total,each=Y$q),]
+  get.design$design <- get.design$design[!rep(na.total, each = Y$q), 
+    ]
   
   ## create response vector
-  if(Y$q==1){
-    response <- as.numeric(Y$response)-1
-  }else{
+  if (Y$q == 1) {
+    response <- as.numeric(Y$response) - 1
+  } else {
     response <- cumul.response(Y)
   }
-
-  ## create penalty matrix
-  get.penalties <- penalties.BTLLasso(Y = Y, X = X, Z1 = Z1, Z2 = Z2, control = control)
   
-  ## fit BTLLasso model, with coefficients and degrees of freedom
-  fit <- fit.BTLLasso(response, get.design$design, get.penalties, lambda, Y$k, Y$m, control, trace)
+  ## create penalty matrix
+  get.penalties <- penalties.BTLLasso(Y = Y, X = X, Z1 = Z1, 
+    Z2 = Z2, control = control)
+  
+  ## fit BTLLasso model, with coefficients and degrees of
+  ## freedom
+  fit <- fit.BTLLasso(response, get.design$design, get.penalties, 
+    lambda, Y$k, Y$m, control, trace)
   coefs <- fit$coefs
   df <- fit$df
   
   ## calculate log likelihood
   logLik <- c()
-  for(j in 1:nrow(coefs)){
-    logLik[j] <- loglik(coefs[j,],Y$response,get.design$design,Y$k)
+  for (j in 1:nrow(coefs)) {
+    logLik[j] <- loglik(coefs[j, ], Y$response, get.design$design, 
+      Y$k)
   }
-
-  ## reparameterize coefficients, from reference object to symmetric side constraint
-  coefs.repar <- round(expand.coefs(coefs, get.design, Y),control$precision)
+  
+  ## reparameterize coefficients, from reference object to
+  ## symmetric side constraint
+  coefs.repar <- round(expand.coefs(coefs, get.design, Y), 
+    control$precision)
   
   ## return stuff
-  ret.list <- list(coefs = coefs, coefs.repar = coefs.repar, logLik = logLik, design = get.design, Y = Y, 
-                   penalty = get.penalties, response = response, X = X, Z1 = Z1, Z2 = Z2, lambda = lambda, 
-                   control = control)
+  ret.list <- list(coefs = coefs, coefs.repar = coefs.repar, 
+    logLik = logLik, design = get.design, Y = Y, penalty = get.penalties, 
+    response = response, X = X, Z1 = Z1, Z2 = Z2, lambda = lambda, 
+    control = control)
   
   class(ret.list) <- "BTLLasso"
   

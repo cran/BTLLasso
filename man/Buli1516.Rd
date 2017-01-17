@@ -7,7 +7,14 @@
 \format{A list containing data from the German Bundesliga with 306 observations. 
 The list contains both information on the response (paired comparisons) and different covariates.
 \describe{ 
-\item{Y}{A response.BTLLasso object for the Buli1516 data including
+\item{Y5}{A response.BTLLasso object with 5 response categories for the Buli1516 data including
+\itemize{
+\item{response: Ordinal paired comparison response vector} 
+\item{first.object: Vector containing the first-named team per paired comparison (home team)}
+\item{second.object: Vector containing the second-named team per paired comparison (away team)}
+\item{subject: Vector containing a match-day identifier per paired comparison}
+}}
+\item{Y3}{A response.BTLLasso object with 3 response categories for the Buli1516 data including
 \itemize{
 \item{response: Ordinal paired comparison response vector} 
 \item{first.object: Vector containing the first-named team per paired comparison (home team)}
@@ -42,10 +49,14 @@ data(Buli1516)
 
 }
 \references{
-Schauberger, Gunther and Tutz, Gerhard (2015): Modelling Heterogeneity in
-Paired Comparison Data - an L1 Penalty Approach with an Application to Party
-Preference Data, \emph{Department of Statistics, LMU Munich}, Technical
-Report 183
+Schauberger, Gunther and Tutz, Gerhard (2015): Modelling
+Heterogeneity in Paired Comparison Data - an L1 Penalty Approach with an
+Application to Party Preference Data, \emph{Department of Statistics, LMU
+Munich}, Technical Report 183
+
+Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
+Football Results in the German Bundesliga Using Match-specific Covariates, 
+\emph{Department of Statistics, LMU Munich}, Technical Report 197
 }
 \keyword{datasets}
 

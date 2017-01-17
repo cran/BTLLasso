@@ -34,6 +34,10 @@ Schauberger, Gunther and Tutz, Gerhard (2015): Modelling
 Heterogeneity in Paired Comparison Data - an L1 Penalty Approach with an
 Application to Party Preference Data, \emph{Department of Statistics, LMU
 Munich}, Technical Report 183
+
+Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
+Football Results in the German Bundesliga Using Match-specific Covariates, 
+\emph{Department of Statistics, LMU Munich}, Technical Report 197
 }
 \seealso{
 \code{\link{BTLLasso}}, \code{\link{cv.BTLLasso}}

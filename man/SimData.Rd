@@ -45,15 +45,17 @@ four objects with five different response categories from 200 subjects.
 data(SimData)
 
 ## Specify tuning parameters
-lambda <- exp(seq(log(151),log(1.05),length=30))-1
+lambda <- exp(seq(log(151), log(1.05), length = 30)) - 1
 
-## Specify control argument, allow for object-specific order effects and penalize intercepts
+## Specify control argument
+## -> allow for object-specific order effects and penalize intercepts
 ctrl <- ctrl.BTLLasso(penalize.intercepts = TRUE, object.order.effect = TRUE,
                       penalize.order.effect.diffs = TRUE)
 
 ## Simple BTLLasso model for tuning parameters lambda
 m.sim <- BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
                   Z2 = SimData$Z2, lambda = lambda, control = ctrl)
+print(m.sim)
 
 singlepaths(m.sim, x.axis = "loglambda")
 
@@ -61,11 +63,47 @@ singlepaths(m.sim, x.axis = "loglambda")
 set.seed(5)
 m.sim.cv <- cv.BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
                         Z2 = SimData$Z2, lambda = lambda, control = ctrl)
+print(m.sim.cv)
+
+singlepaths(m.sim.cv, x.axis = "loglambda", plot.order.effect = FALSE, 
+            plot.intercepts = FALSE, plot.Z2 = FALSE)
+paths(m.sim.cv, y.axis = "L2")
+
+## Example for bootstrap confidence intervals for illustration only
+## Don't calculate bootstrap confidence intervals with B = 10!!!!
+set.seed(5)
+m.sim.boot <- boot.BTLLasso(m.sim.cv, B = 10, cores = 10)
+print(m.sim.boot)
+ci.BTLLasso(m.sim.boot)
 
 
-singlepaths(m.sim.cv, x.axis = "loglambda", plot.order.effect = FALSE, plot.intercepts = FALSE, 
-            plot.Z2 = FALSE)
-paths(m.sim.cv, y.axis="L2")
+##### Example with small version from GLES data set
+data(GLESsmall)
+
+## extract data and center covariates for better interpretability
+Y <- GLESsmall$Y
+X <- scale(GLESsmall$X, scale = FALSE)
+Z1 <- scale(GLESsmall$Z1, scale = FALSE)
+
+## vector of subtitles, containing the coding of the X covariates
+subs.X <- c("", "female (1); male (0)")
+
+## vector of tuning parameters
+lambda <- exp(seq(log(61), log(1), length = 30)) - 1
+
+
+## compute BTLLasso model 
+m.gles <- BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
+print(m.gles)
+
+singlepaths(m.gles, x.axis = "loglambda", subs.X = subs.X)
+paths(m.gles, y.axis = "L2")
+
+## Cross-validate BTLLasso model 
+m.gles.cv <- cv.BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
+print(m.gles.cv)
+
+singlepaths(m.gles.cv, x.axis = "loglambda", subs.X = subs.X)
 }
 
 }

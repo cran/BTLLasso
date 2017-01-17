@@ -21,8 +21,8 @@
 #' @param plot.Z2 Should paths for variables in \code{Z2} (if present) be plotted?
 #' @param plot.intercepts Should paths for intercepts be plotted separately?
 #' @param plot.order.effects Should paths for order effects be plotted separately?
-#' @param x.axis Should the paths be plotted against the (scaled) penalty term (between 0 and 1),
-#' against lambda or against log(lambda+1)?
+#' @param x.axis Should the paths be plotted against log(lambda+1), against lambda or
+#' against the scaled penalty term (between 0 and 1)?
 #' @param columns How many columns should be used to arrange the plots. If unspecified, plots 
 #' are arranged automatically in a quadratic manner.
 #' @param subs.X Optional vector of subtitles for variables in \code{X}. Can be used
@@ -42,6 +42,10 @@
 #' Heterogeneity in Paired Comparison Data - an L1 Penalty Approach with an
 #' Application to Party Preference Data, \emph{Department of Statistics, LMU
 #' Munich}, Technical Report 183
+#' 
+#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
+#' Football Results in the German Bundesliga Using Match-specific Covariates, 
+#' \emph{Department of Statistics, LMU Munich}, Technical Report 197
 #' @keywords BTLLasso paths parameter paths
 #' @examples
 #' 
@@ -50,252 +54,278 @@
 #' data(SimData)
 #' 
 #' ## Specify tuning parameters
-#' lambda <- exp(seq(log(151),log(1.05),length=30))-1
+#' lambda <- exp(seq(log(151), log(1.05), length = 30)) - 1
 #' 
-#' ## Specify control argument, allow for object-specific order effects and penalize intercepts
+#' ## Specify control argument
+#' ## -> allow for object-specific order effects and penalize intercepts
 #' ctrl <- ctrl.BTLLasso(penalize.intercepts = TRUE, object.order.effect = TRUE,
 #'                       penalize.order.effect.diffs = TRUE)
 #' 
 #' ## Simple BTLLasso model for tuning parameters lambda
 #' m.sim <- BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
 #'                   Z2 = SimData$Z2, lambda = lambda, control = ctrl)
+#' print(m.sim)
 #' 
-#' singlepaths(m.sim, x.axis = "loglambda")
+#' singlepaths(m.sim)
 #' 
 #' ## Cross-validate BTLLasso model for tuning parameters lambda
 #' set.seed(5)
 #' m.sim.cv <- cv.BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
 #'                         Z2 = SimData$Z2, lambda = lambda, control = ctrl)
+#' print(m.sim.cv)
 #' 
-#' 
-#' singlepaths(m.sim.cv, x.axis = "loglambda", plot.order.effect = FALSE, plot.intercepts = FALSE, 
-#'             plot.Z2 = FALSE)
-#' paths(m.sim.cv, y.axis="L2")
+#' singlepaths(m.sim.cv, plot.order.effect = FALSE, 
+#'             plot.intercepts = FALSE, plot.Z2 = FALSE)
+#' paths(m.sim.cv, y.axis = 'L2')
 #' 
 #' ## Example for bootstrap confidence intervals for illustration only
-#' ## Don't calculate bootstrap confidence intervals with B = 10
+#' ## Don't calculate bootstrap confidence intervals with B = 10!!!!
 #' set.seed(5)
 #' m.sim.boot <- boot.BTLLasso(m.sim.cv, B = 10, cores = 10)
+#' print(m.sim.boot)
 #' ci.BTLLasso(m.sim.boot)
+#' 
 #' 
 #' ##### Example with small version from GLES data set
 #' data(GLESsmall)
 #' 
+#' ## extract data and center covariates for better interpretability
+#' Y <- GLESsmall$Y
+#' X <- scale(GLESsmall$X, scale = FALSE)
+#' Z1 <- scale(GLESsmall$Z1, scale = FALSE)
+#' 
 #' ## vector of subtitles, containing the coding of the X covariates
-#' subs.X <- c("","female (1); male (0)")
+#' subs.X <- c('', 'female (1); male (0)')
 #' 
 #' ## vector of tuning parameters
-#' lambda <- exp(seq(log(61),log(1),length=30))-1
+#' lambda <- exp(seq(log(61), log(1), length = 30)) - 1
 #' 
 #' 
 #' ## compute BTLLasso model 
-#' m.gles <- BTLLasso(Y = GLESsmall$Y, X = GLESsmall$X, Z1 = GLESsmall$Z1, lambda = lambda)
+#' m.gles <- BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
+#' print(m.gles)
 #' 
-#' singlepaths(m.gles, x.axis = "loglambda", subs.X = subs.X)
-#' paths(m.gles, y.axis="L2")
+#' singlepaths(m.gles, subs.X = subs.X)
+#' paths(m.gles, y.axis = 'L2')
 #' 
 #' ## Cross-validate BTLLasso model 
-#' m.gles.cv <- cv.BTLLasso(Y = GLESsmall$Y, X = GLESsmall$X, Z1 = GLESsmall$Z1, lambda = lambda)
+#' m.gles.cv <- cv.BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
+#' print(m.gles.cv)
 #' 
-#' singlepaths(m.gles.cv, x.axis = "loglambda", subs.X = subs.X)
+#' singlepaths(m.gles.cv, subs.X = subs.X)
 #' }
 #' 
 #' @export singlepaths
-singlepaths <- function(model, rescale = FALSE, colors = NULL, equal.ranges = FALSE,
-                        plot.X = TRUE, plot.Z1 = TRUE, plot.Z2 = TRUE, plot.intercepts = TRUE,
-                        plot.order.effects = TRUE, x.axis = c("penalty", "lambda", "loglambda"), 
-                        columns = NULL, subs.X = NULL, subs.Z1 = NULL, subs.Z2 = NULL){
-
+singlepaths <- function(model, rescale = FALSE, colors = NULL, 
+  equal.ranges = FALSE, plot.X = TRUE, plot.Z1 = TRUE, plot.Z2 = TRUE, 
+  plot.intercepts = TRUE, plot.order.effects = TRUE, x.axis = c("loglambda", 
+    "lambda", "penalty"), columns = NULL, subs.X = NULL, 
+  subs.Z1 = NULL, subs.Z2 = NULL) {
+  
   x.axis <- match.arg(x.axis)
-
+  
   coefs <- model$coefs
-
+  
   
   acoefs <- model$penalty$acoefs
-  norm <- rowSums(abs(coefs%*%acoefs))
+  norm <- rowSums(abs(coefs %*% acoefs))
   norm <- norm/max(norm)
   norm.range <- range(norm)
   
-  if(x.axis == "lambda"){
-  norm <- model$lambda
-  norm.range <- rev(range(norm))
-  }
-  
-  if(x.axis == "loglambda"){
-    norm <- log(model$lambda+1)
+  if (x.axis == "lambda") {
+    norm <- model$lambda
     norm.range <- rev(range(norm))
   }
-
+  
+  if (x.axis == "loglambda") {
+    norm <- log(model$lambda + 1)
+    norm.range <- rev(range(norm))
+  }
+  
   
   m <- model$Y$m
   n.theta <- model$design$n.theta
   n.order <- model$design$n.order
   n.intercepts <- model$design$n.intercepts
-if(n.intercepts>0){
-  n.intercepts <- n.intercepts+1
-}
-
-
-p.X <- model$design$p.X
-p.Z1 <- model$design$p.Z1
-p.Z2 <- model$design$p.Z2
+  if (n.intercepts > 0) {
+    n.intercepts <- n.intercepts + 1
+  }
+  
+  
+  p.X <- model$design$p.X
+  p.Z1 <- model$design$p.Z1
+  p.Z2 <- model$design$p.Z2
   
   labels <- model$Y$object.names
   
   coefs <- model$coefs.repar
-
-  if(n.theta>0){
-    theta <- coefs[,1:n.theta,drop=FALSE]
+  
+  if (n.theta > 0) {
+    theta <- coefs[, 1:n.theta, drop = FALSE]
   }
   
   order.effects <- intercepts <- gamma.X <- gamma.Z1 <- gamma.Z2 <- c()
-
-  if(n.order>0){
-    order.effects <- coefs[,(n.theta+1):(n.theta+n.order)]
+  
+  if (n.order > 0) {
+    order.effects <- coefs[, (n.theta + 1):(n.theta + n.order)]
   }
   
-  if(n.intercepts>0){
-  intercepts <- coefs[,(n.theta+n.order+1):(n.theta+n.order + n.intercepts),drop=FALSE]
-  }
-
-  if(p.X>0){
-  gamma.X <- coefs[,(n.theta+n.order+ n.intercepts + 1): (n.theta+n.order + n.intercepts + p.X*m),drop=FALSE]
-  if(rescale){
-    gamma.X <- t(t(gamma.X)/rep(model$design$sd.X, each = m))
-  }
-  }
-
-  if(p.Z1>0){
-  gamma.Z1 <- coefs[,(n.theta+n.order+ n.intercepts + p.X * m + 1): (n.theta+n.order+ n.intercepts + p.X * m + p.Z1 * m), drop = FALSE]
-  if(rescale){
-    gamma.Z1 <- t(t(gamma.Z1)/rep(model$design$sd.Z1, each = m))
-  }
+  if (n.intercepts > 0) {
+    intercepts <- coefs[, (n.theta + n.order + 1):(n.theta + 
+      n.order + n.intercepts), drop = FALSE]
   }
   
-  if(p.Z2>0){
-  gamma.Z2 <- coefs[,(n.theta+n.order+ n.intercepts + p.X * m + p.Z1 * m + 1): 
-                      (n.theta+n.order+ n.intercepts + p.X * m + p.Z1 * m + p.Z2), drop = FALSE]
-  if(rescale){
-    gamma.Z2 <- t(t(gamma.Z2)/model$design$sd.Z2)
+  if (p.X > 0) {
+    gamma.X <- coefs[, (n.theta + n.order + n.intercepts + 
+      1):(n.theta + n.order + n.intercepts + p.X * m), 
+      drop = FALSE]
+    if (rescale) {
+      gamma.X <- t(t(gamma.X)/rep(model$design$sd.X, each = m))
+    }
   }
+  
+  if (p.Z1 > 0) {
+    gamma.Z1 <- coefs[, (n.theta + n.order + n.intercepts + 
+      p.X * m + 1):(n.theta + n.order + n.intercepts + 
+      p.X * m + p.Z1 * m), drop = FALSE]
+    if (rescale) {
+      gamma.Z1 <- t(t(gamma.Z1)/rep(model$design$sd.Z1, 
+        each = m))
+    }
   }
-
+  
+  if (p.Z2 > 0) {
+    gamma.Z2 <- coefs[, (n.theta + n.order + n.intercepts + 
+      p.X * m + p.Z1 * m + 1):(n.theta + n.order + n.intercepts + 
+      p.X * m + p.Z1 * m + p.Z2), drop = FALSE]
+    if (rescale) {
+      gamma.Z2 <- t(t(gamma.Z2)/model$design$sd.Z2)
+    }
+  }
+  
   p <- p.tot <- 0
   gamma <- c()
   covar <- c()
   all.subs <- c()
-
-  if(plot.X){
+  
+  if (plot.X) {
     gamma <- cbind(gamma, gamma.X)
     p <- p + p.X
     p.tot <- p.tot + p.X
-  covar <- c(covar, model$design$vars.X)
-  if(is.null(subs.X)){
-    subs.X <- rep("",p.X)
+    covar <- c(covar, model$design$vars.X)
+    if (is.null(subs.X)) {
+      subs.X <- rep("", p.X)
+    }
+    all.subs <- c(all.subs, subs.X)
   }
-  all.subs <- c(all.subs,subs.X)
-  }
-
-  if(plot.Z1){
+  
+  if (plot.Z1) {
     gamma <- cbind(gamma, gamma.Z1)
     p <- p + p.Z1
     p.tot <- p.tot + p.Z1
     covar <- c(covar, model$design$vars.Z1)
-    if(is.null(subs.Z1)){
-      subs.Z1 <- rep("",p.Z1)
+    if (is.null(subs.Z1)) {
+      subs.Z1 <- rep("", p.Z1)
     }
-    all.subs <- c(all.subs,subs.Z1)
+    all.subs <- c(all.subs, subs.Z1)
   }
   
-  if(plot.Z2){
+  if (plot.Z2) {
     p.tot <- p.tot + p.Z2
-    covar <- c(covar, model$design$vars.Z2)}
-
+    covar <- c(covar, model$design$vars.Z2)
+  }
   
-  if(plot.intercepts & n.intercepts>0){
+  
+  if (plot.intercepts & n.intercepts > 0) {
     covar <- c("Intercepts", covar)
     gamma <- cbind(intercepts, gamma)
-    p <- 1+ p
+    p <- 1 + p
     p.tot <- p.tot + 1
-    all.subs <- c("",all.subs)
+    all.subs <- c("", all.subs)
   }
   
-  if(plot.order.effects & n.order>0){
+  if (plot.order.effects & n.order > 0) {
     p.tot <- p.tot + 1
-    if(n.order>1){
-      p <- p+1
-    gamma <- cbind(order.effects, gamma)
-    covar <- c(model$control$name.order, covar) 
+    if (n.order > 1) {
+      p <- p + 1
+      gamma <- cbind(order.effects, gamma)
+      covar <- c(model$control$name.order, covar)
     }
   }
   
-if(is.null(columns)){
-  cols <- floor(sqrt(p.tot))
-}else{
-  cols <- columns
-}
+  if (is.null(columns)) {
+    cols <- floor(sqrt(p.tot))
+  } else {
+    cols <- columns
+  }
   rows <- ceiling((p.tot)/cols)
   
-  layout(matrix(1:(rows*cols),nrow=rows,byrow=TRUE))
-
+  layout(matrix(1:(rows * cols), nrow = rows, byrow = TRUE))
+  
   x.axis.name <- x.axis
-  if(x.axis == "loglambda"){
-  x.axis.name <- expression(log(lambda+1))
+  if (x.axis == "loglambda") {
+    x.axis.name <- expression(log(lambda + 1))
   }
-  if(x.axis == "lambda"){
+  if (x.axis == "lambda") {
     x.axis.name <- expression(lambda)
   }
-
+  
   
   y.range <- range(gamma)
   
-  if(!is.null(model$criterion)){
-    x.axis.min <-norm[which.min(model$criterion)]
+  if (!is.null(model$criterion)) {
+    x.axis.min <- norm[which.min(model$criterion)]
   }
   
-  if(plot.order.effects & n.order==1){
-    plot(norm, order.effects,type="l",main=model$control$name.order, ylab="estimates",
-         xlab=x.axis.name, xlim = norm.range)
-    if(!is.null(model$criterion)){
-      abline(v=x.axis.min,lty=2,col=2)
+  if (plot.order.effects & n.order == 1) {
+    plot(norm, order.effects, type = "l", main = model$control$name.order, 
+      ylab = "estimates", xlab = x.axis.name, xlim = norm.range)
+    if (!is.null(model$criterion)) {
+      abline(v = x.axis.min, lty = 2, col = 2)
     }
   }
-
-  if(is.null(colors)){colors <- rep(1,m)}
-
+  
+  if (is.null(colors)) {
+    colors <- rep(1, m)
+  }
+  
   index <- 1
-  for(i in 1:p){
-    if(!equal.ranges){y.range <- range(gamma[,index:(index+m-1)])}
+  for (i in 1:p) {
+    if (!equal.ranges) {
+      y.range <- range(gamma[, index:(index + m - 1)])
+    }
     
-    plot(norm, gamma[,index],ylim=y.range,type="l",main="",ylab="estimates",
-         xlab=x.axis.name, xlim = norm.range,
-         col=colors[1])
-
-    for(u in 1:(m-1)){
-      lines(norm,gamma[,index+u],col=colors[u+1])
+    plot(norm, gamma[, index], ylim = y.range, type = "l", 
+      main = "", ylab = "estimates", xlab = x.axis.name, 
+      xlim = norm.range, col = colors[1])
+    
+    for (u in 1:(m - 1)) {
+      lines(norm, gamma[, index + u], col = colors[u + 
+        1])
     }
-    axis(4,at=gamma[nrow(gamma),index:(index+m-1)],labels = labels, las=2)
-    title(main=covar[i],line=1.2)
-    mtext(all.subs[i],side=3,line=0.2,cex=par()$cex)
-    if(!is.null(model$criterion)){
-    abline(v=x.axis.min,lty=2,col=2)
+    axis(4, at = gamma[nrow(gamma), index:(index + m - 1)], 
+      labels = labels, las = 2)
+    title(main = covar[i], line = 1.2)
+    mtext(all.subs[i], side = 3, line = 0.2, cex = par()$cex)
+    if (!is.null(model$criterion)) {
+      abline(v = x.axis.min, lty = 2, col = 2)
     }
-    index <- index+m
+    index <- index + m
   }
-
-  if(p.Z2>0 & plot.Z2){
-    for(i in 1:p.Z2){
-      plot(norm, gamma.Z2[,i],type="l",main="", ylab="estimates",
-           xlab=x.axis.name,  xlim = norm.range)
-      title(main=model$design$vars.Z2[i],line=1.2)
-      if(!is.null(model$criterion)){
-        abline(v=x.axis.min,lty=2,col=2)
+  
+  if (p.Z2 > 0 & plot.Z2) {
+    for (i in 1:p.Z2) {
+      plot(norm, gamma.Z2[, i], type = "l", main = "", 
+        ylab = "estimates", xlab = x.axis.name, xlim = norm.range)
+      title(main = model$design$vars.Z2[i], line = 1.2)
+      if (!is.null(model$criterion)) {
+        abline(v = x.axis.min, lty = 2, col = 2)
       }
-      if(!is.null(subs.Z2)){
-        mtext(subs.Z2[i],side=3,line=0.2,cex=par()$cex)
+      if (!is.null(subs.Z2)) {
+        mtext(subs.Z2[i], side = 3, line = 0.2, cex = par()$cex)
       }
     }
-
+    
   }
   
   layout(1)
