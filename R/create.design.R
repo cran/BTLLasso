@@ -4,7 +4,7 @@
 create.design <- function(X, Z1, Z2, first.object, second.object, 
   m, subject, control, order.Z1, order.Z2) {
   
-  design.X <- design.Z1 <- design.Z2 <- design.order <- c()
+  design.X <- design.X.repar <- design.Z1 <- design.Z2 <- design.order <- c()
   
   I <- m * (m - 1)/2
   n <- length(first.object)
@@ -17,8 +17,8 @@ create.design <- function(X, Z1, Z2, first.object, second.object,
   }
   
   if (!is.null(X)) {
-    design.X <- create.design.X(design.help[, -m], X[subject, 
-      ])
+    design.X <- create.design.X(design.help[, -m], X[subject,])
+    design.X.repar <- create.design.X(design.help, X[subject,])
   }
   
   if (!is.null(Z1)) {
@@ -59,21 +59,24 @@ create.design <- function(X, Z1, Z2, first.object, second.object,
       design.order <- matrix(1, nrow = n)
     }
   }
+
   
   ## inclusion of intercepts
   if (control$include.intercepts) {
+    design.help.repar <- design.help
     design.help <- design.help[, -m]
   } else {
-    design.help <- c()
+    design.help <- design.help.repar <- c()
   }
   
-  
-  
-  
+
   design <- cbind(design.order, design.help, design.X, design.Z1, 
     design.Z2)
   
-  design
+  design.repar <- cbind(design.order, design.help.repar, design.X.repar, design.Z1, 
+                  design.Z2)
+  
+  return(list(design = design, design.repar = design.repar))
 }
 
 

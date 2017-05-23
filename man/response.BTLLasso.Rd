@@ -4,11 +4,14 @@
 \alias{response.BTLLasso}
 \title{Create response object for BTLLasso}
 \usage{
-response.BTLLasso(response, first.object, second.object, subject = NULL)
+response.BTLLasso(response, first.object = NULL, second.object = NULL,
+  subject = NULL)
 }
 \arguments{
 \item{response}{Vector containing results (binary or ordinal) of single paired
-comparisons.}
+comparisons. Alternatively, also a  \code{\link[psychotools]{paircomp}} object as defined 
+in the package \code{psychotools} could be used. In this case, none of the further 
+arguments are needed.}
 
 \item{first.object}{Vector (character or factor, same length as response) indicating the first
 object of the respective paired comparison from response.}
@@ -25,15 +28,39 @@ Object of class \code{response.BTLLasso}
 \description{
 Create a response object for \code{BTLLasso} and \code{cv.BTLLasso}
 }
-\author{
-Gunther Schauberger\cr \email{gunther@stat.uni-muenchen.de}\cr
-\url{http://www.statistik.lmu.de/~schauberger/}
+\examples{
+
+\dontrun{
+##############################
+##### Example how response object for Bundesliga data Buli1516 was created
+##############################
+
+data(BuliResponse)
+
+Y.Buli <- response.BTLLasso(response = BuliResponse$Result, 
+                            first.object = BuliResponse$TeamHome,
+                            second.object = BuliResponse$TeamAway,
+                            subject = BuliResponse$Matchday)
+
+
+##############################
+##### Example to create response object from paircomp object
+##############################
+data("Topmodel2007", package = "psychotree")
+
+Y.models <- response.BTLLasso(Topmodel2007$preference)
+X.models <- scale(model.matrix(preference~., data = Topmodel2007)[,-1])
+rownames(X.models) <- paste0("Subject",1:nrow(X.models))
+colnames(X.models) <- c("Gender","Age","KnowShow","WatchShow","WatchFinal")
+
+set.seed(5)
+m.models <- cv.BTLLasso(Y = Y.models, X = X.models)
+}
 }
 \references{
-Schauberger, Gunther and Tutz, Gerhard (2015): Modelling
-Heterogeneity in Paired Comparison Data - an L1 Penalty Approach with an
-Application to Party Preference Data, \emph{Department of Statistics, LMU
-Munich}, Technical Report 183
+Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
+of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
+17(3), 223 - 243
 
 Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
 Football Results in the German Bundesliga Using Match-specific Covariates, 
@@ -42,4 +69,7 @@ Football Results in the German Bundesliga Using Match-specific Covariates,
 \seealso{
 \code{\link{BTLLasso}}, \code{\link{cv.BTLLasso}}
 }
-
+\author{
+Gunther Schauberger\cr \email{gunther@stat.uni-muenchen.de}\cr
+\url{http://www.semsto.statistik.uni-muenchen.de/personen/doktoranden/schauberger/index.html}
+}

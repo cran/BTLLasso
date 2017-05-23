@@ -104,7 +104,7 @@ loglik <- function(coef, y, design, kat) {
 }
 
 #### predict function
-predict.BTLLasso <- function(coef, q, design) {
+predBTLLasso <- function(coef, q, design) {
   k <- q + 1
   
   eta <- matrix(design %*% coef, ncol = q, byrow = TRUE)
@@ -125,6 +125,7 @@ predict.BTLLasso <- function(coef, q, design) {
 #### function to reparameterize from reference category to
 #### symmetric side constraints
 reparam <- function(x) {
+
   z <- ncol(x) + 1
   K <- matrix((-1/z), ncol = z - 1, nrow = z - 1)
   diag(K) <- (z - 1)/z
@@ -141,7 +142,7 @@ reparam <- function(x) {
 #### function to create complete coefficient matrix either
 #### together with zero-columns for reference categories or with
 #### symmetric side constraints
-expand.coefs <- function(coef, D, Y, symmetric = TRUE) {
+expand.coefs <- function(coef, D, Y, symmetric = TRUE, name.order = "Order") {
   
   n.theta <- D$n.theta
   n.order <- D$n.order
@@ -166,6 +167,12 @@ expand.coefs <- function(coef, D, Y, symmetric = TRUE) {
   if (n.order > 0) {
     order.effects <- coef[, (n.theta + 1):(n.theta + n.order), 
       drop = FALSE]
+    if(n.order==m){
+      colnames(order.effects) <- paste(name.order, object.names, sep=".")
+    }else{
+      colnames(order.effects) <- name.order
+    }
+    
     coef.new <- cbind(coef.new, order.effects)
   }
   

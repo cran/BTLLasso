@@ -1,41 +1,37 @@
 #' Plot covariate paths for BTLLasso
 #' 
 #' Plots paths for every covariate of a BTLLasso object or a cv.BTLLasso
-#' object. In contrast, to \code{\link{singlepaths}}, only one plot is created,
-#' every covariate is illustrated by one path. For cv.BTLLasso object, the
+#' object. In contrast to \code{\link{plot.BTLLasso}}, only one plot is created,
+#' every covariate is illustrated by one path. For \code{cv.BTLLasso} objects, the
 #' optimal model according to the cross-validation is marked by a vertical
 #' dashed line.
 #' 
-#' Plots for BTLLasso and cv.BTLLasso objects only differ by the additional
-#' vertical line indicating the optimal model according to cross-validation.
-#' 
-#' @param model BTLLasso or cv.BTLLasso object
+#' @param model \code{BTLLasso} or \code{cv.BTLLasso} object
 #' @param y.axis Two possible values for the y-axis. Variables can either be plotted
 #' with regard to their contribution to the total penalty term (\code{y.axis='penalty'}) or
 #' with regard to the $L_2$ norm of the corresponding parameter vector (\code{y.axis='L2'}).
-#' @param x.axis Should the paths be plotted against log(lambda+1), against lambda or
-#' against the scaled penalty term (between 0 and 1)?
+#' @param x.axis Should the paths be plotted against log(lambda+1) or against lambda?' 
 #' @author Gunther Schauberger\cr \email{gunther@@stat.uni-muenchen.de}\cr
-#' \url{http://www.statistik.lmu.de/~schauberger/}
+#' \url{http://www.semsto.statistik.uni-muenchen.de/personen/doktoranden/schauberger/index.html}
 #' @seealso \code{\link{BTLLasso}}, \code{\link{cv.BTLLasso}},
-#' \code{\link{singlepaths}}
-#' @references Schauberger, Gunther and Tutz, Gerhard (2015): Modelling
-#' Heterogeneity in Paired Comparison Data - an L1 Penalty Approach with an
-#' Application to Party Preference Data, \emph{Department of Statistics, LMU
-#' Munich}, Technical Report 183
+#' \code{\link{plot.BTLLasso}}
+#' @references Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
+#' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
+#' 17(3), 223 - 243
 #' 
 #' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
 #' Football Results in the German Bundesliga Using Match-specific Covariates, 
 #' \emph{Department of Statistics, LMU Munich}, Technical Report 197
-#' @keywords BTLLasso paths covariate paths
+#' @keywords BTLLasso covariate paths
 #' @examples
 #' 
 #' \dontrun{
-#' ##### Example with simulated data set containing X, Z1 and Z2
-#' data(SimData)
+#' op <- par(no.readonly = TRUE)
 #' 
-#' ## Specify tuning parameters
-#' lambda <- exp(seq(log(151), log(1.05), length = 30)) - 1
+#' ##############################
+#' ##### Example with simulated data set containing X, Z1 and Z2
+#' ##############################
+#' data(SimData)
 #' 
 #' ## Specify control argument
 #' ## -> allow for object-specific order effects and penalize intercepts
@@ -43,31 +39,39 @@
 #'                       penalize.order.effect.diffs = TRUE)
 #' 
 #' ## Simple BTLLasso model for tuning parameters lambda
-#' m.sim <- BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
-#'                   Z2 = SimData$Z2, lambda = lambda, control = ctrl)
-#' print(m.sim)
+#' m.sim <- BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1,
+#'                   Z2 = SimData$Z2, control = ctrl)
+#' m.sim
 #' 
-#' singlepaths(m.sim)
+#' par(xpd = TRUE)
+#' plot(m.sim)
+#' 
 #' 
 #' ## Cross-validate BTLLasso model for tuning parameters lambda
-#' set.seed(5)
-#' m.sim.cv <- cv.BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
-#'                         Z2 = SimData$Z2, lambda = lambda, control = ctrl)
-#' print(m.sim.cv)
+#' set.seed(1860)
+#' m.sim.cv <- cv.BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1,
+#'                         Z2 = SimData$Z2, control = ctrl)
+#' m.sim.cv
+#' coef(m.sim.cv)
+#' logLik(m.sim.cv)
 #' 
-#' singlepaths(m.sim.cv, plot.order.effect = FALSE, 
-#'             plot.intercepts = FALSE, plot.Z2 = FALSE)
-#' paths(m.sim.cv, y.axis = 'L2')
+#' head(predict(m.sim.cv, type="response"))
+#' head(predict(m.sim.cv, type="trait"))
 #' 
-#' ## Example for bootstrap confidence intervals for illustration only
-#' ## Don't calculate bootstrap confidence intervals with B = 10!!!!
-#' set.seed(5)
-#' m.sim.boot <- boot.BTLLasso(m.sim.cv, B = 10, cores = 10)
-#' print(m.sim.boot)
-#' ci.BTLLasso(m.sim.boot)
+#' plot(m.sim.cv, plots_per_page = 4)
 #' 
 #' 
+#' ## Example for bootstrap intervals for illustration only
+#' ## Don't calculate bootstrap intervals with B = 20!!!!
+#' set.seed(1860)
+#' m.sim.boot <- boot.BTLLasso(m.sim.cv, B = 20, cores = 20)
+#' m.sim.boot
+#' plot(m.sim.boot, plots_per_page = 4)
+#' 
+#' 
+#' ##############################
 #' ##### Example with small version from GLES data set
+#' ##############################
 #' data(GLESsmall)
 #' 
 #' ## extract data and center covariates for better interpretability
@@ -78,27 +82,63 @@
 #' ## vector of subtitles, containing the coding of the X covariates
 #' subs.X <- c('', 'female (1); male (0)')
 #' 
-#' ## vector of tuning parameters
-#' lambda <- exp(seq(log(61), log(1), length = 30)) - 1
+#' ## Cross-validate BTLLasso model
+#' m.gles.cv <- cv.BTLLasso(Y = Y, X = X, Z1 = Z1)
+#' m.gles.cv
+#' 
+#' coef(m.gles.cv)
+#' logLik(m.gles.cv)
+#' 
+#' head(predict(m.gles.cv, type="response"))
+#' head(predict(m.gles.cv, type="trait"))
+#' 
+#' par(xpd = TRUE, mar = c(5,4,4,6))
+#' plot(m.gles.cv, subs.X = subs.X, plots_per_page = 4, which = 2:5)
+#' paths(m.gles.cv, y.axis = 'L2')
 #' 
 #' 
-#' ## compute BTLLasso model 
-#' m.gles <- BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
-#' print(m.gles)
+#' ##############################
+#' ##### Example with Bundesliga data set
+#' ##############################
+#' data(Buli1516)
 #' 
-#' singlepaths(m.gles, subs.X = subs.X)
-#' paths(m.gles, y.axis = 'L2')
+#' Y <- Buli1516$Y5
 #' 
-#' ## Cross-validate BTLLasso model 
-#' m.gles.cv <- cv.BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
-#' print(m.gles.cv)
+#' Z1 <- scale(Buli1516$Z1, scale = FALSE)
 #' 
-#' singlepaths(m.gles.cv, subs.X = subs.X)
+#' ctrl.buli <- ctrl.BTLLasso(object.order.effect = TRUE, 
+#'                            name.order = "Home", 
+#'                            penalize.order.effect.diffs = TRUE, 
+#'                            penalize.order.effect.absolute = FALSE,
+#'                            order.center = TRUE, lambda2 = 1e-2)
+#' 
+#' set.seed(1860)
+#' m.buli <- cv.BTLLasso(Y = Y, Z1 = Z1, control = ctrl.buli)
+#' m.buli
+#' 
+#' par(xpd = TRUE, mar = c(5,4,4,6))
+#' plot(m.buli)
+#' 
+#' 
+#' ##############################
+#' ##### Example with Topmodel data set
+#' ##############################
+#' data("Topmodel2007", package = "psychotree")
+#' 
+#' Y.models <- response.BTLLasso(Topmodel2007$preference)
+#' X.models <- scale(model.matrix(preference~., data = Topmodel2007)[,-1])
+#' rownames(X.models) <- paste0("Subject",1:nrow(X.models))
+#' colnames(X.models) <- c("Gender","Age","KnowShow","WatchShow","WatchFinal")
+#' 
+#' set.seed(5)
+#' m.models <- cv.BTLLasso(Y = Y.models, X = X.models)
+#' plot(m.models, plots_per_page = 6)
+#' 
+#' par(op)
 #' }
-#' 
-#' @export paths
 paths <- function(model, y.axis = c("penalty", "L2"), x.axis = c("loglambda", 
-  "lambda", "penalty")) {
+  "lambda")) {
+
   
   x.axis <- match.arg(x.axis)
   y.axis <- match.arg(y.axis)
@@ -113,41 +153,32 @@ paths <- function(model, y.axis = c("penalty", "L2"), x.axis = c("loglambda",
   coefs <- model$coefs
   covar <- c(model$design$vars.X, model$design$vars.Z1, model$design$vars.Z2)
   
-  acoefs <- model$penalty$acoefs
-  norm <- rowSums(abs(coefs %*% acoefs))
-  norm <- norm/max(norm)
-  norm.range <- range(norm)
-  
+
   if (x.axis == "lambda") {
     norm <- model$lambda
     norm.range <- rev(range(norm))
+    x.axis.name <- expression(lambda)
   }
   
   if (x.axis == "loglambda") {
     norm <- log(model$lambda + 1)
     norm.range <- rev(range(norm))
-  }
-  
-  
-  
-  x.axis.name <- x.axis
-  if (x.axis == "loglambda") {
     x.axis.name <- expression(log(lambda + 1))
   }
-  if (x.axis == "lambda") {
-    x.axis.name <- expression(lambda)
-  }
+  
+  
   
   m <- model$Y$m
   n.theta <- model$design$n.theta
   n.order <- model$design$n.order
   n.intercepts <- model$design$n.intercepts
+  acoefs <- model$penalty$acoefs
+  
   p.X <- model$design$p.X
   p.Z1 <- model$design$p.Z1
   p.Z2 <- model$design$p.Z2
   
-  # acoefs.intercepts <- acoefs.X <- acoefs.Z1 <- acoefs.Z2 <-
-  # c()
+  
   numpen.order <- model$penalty$numpen.order
   numpen.intercepts <- model$penalty$numpen.intercepts
   numpen.X <- model$penalty$numpen.X
@@ -259,15 +290,28 @@ paths <- function(model, y.axis = c("penalty", "L2"), x.axis = c("loglambda",
   
   
   plot(norm, paths[, 1], type = "l", ylim = range(paths), ylab = y.text, 
-    xlab = x.axis.name, xlim = norm.range, las = 1)
+    xlab = x.axis.name, xlim = norm.range, las = 1,lwd=par()$lwd,
+    frame.plot = FALSE)
   for (o in 2:p) {
-    lines(norm, paths[, o])
-  }
-  if (!is.null(criterion)) {
-    abline(v = x.axis.min, lty = 2, col = 2)
+    lines(norm, paths[, o],lwd=par()$lwd)
   }
   
-  axis(4, at = paths[nrow(paths), ], labels = covar, las = 2)
+  if (!is.null(criterion)) {
+    segments( x.axis.min, min(paths),
+              x.axis.min, max(paths) ,
+              col=2,lty=2,lwd=par()$lwd)
+    
+  }
+  
+  
+  x.lab1 <- norm[length(norm)]-abs(diff(range(norm)))*0.02
+  x.lab2 <- norm[length(norm)]-abs(diff(range(norm)))*0.005
+  y.lab1 <- paths[nrow(paths), ]
+  y.lab2 <- spread.labs(y.lab1, 1.2*strheight("A"))
+  
+  text( x.lab1, y.lab2, covar ,pos=4)
+  segments( x.lab2, y.lab1,
+            x.lab1, y.lab2 ,col="gray")
   
   
   

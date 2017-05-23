@@ -71,7 +71,6 @@ bin.fit.Cpp <- function(resp, design, kat, epsilon = 1e-05, penalty,
   }
   
   
-  return(list(coefficients = round(beta.new, log(1/epsilon, 
-    10)), start = start, df = df, weight = weight, df2 = df2))
+  return(list(coefficients = beta.new, start = start, df = df, weight = weight, df2 = df2))
   
 }

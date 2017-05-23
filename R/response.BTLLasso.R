@@ -4,7 +4,9 @@
 #' 
 #' 
 #' @param response Vector containing results (binary or ordinal) of single paired
-#' comparisons.
+#' comparisons. Alternatively, also a  \code{\link[psychotools]{paircomp}} object as defined 
+#' in the package \code{psychotools} could be used. In this case, none of the further 
+#' arguments are needed. 
 #' @param first.object Vector (character or factor, same length as response) indicating the first
 #' object of the respective paired comparison from response.
 #' @param second.object Vector (character or factor, same length as response) indicating the second
@@ -13,20 +15,58 @@
 #' generated the respective paired comparison from response.
 #' @return Object of class \code{response.BTLLasso}
 #' @author Gunther Schauberger\cr \email{gunther@@stat.uni-muenchen.de}\cr
-#' \url{http://www.statistik.lmu.de/~schauberger/}
+#' \url{http://www.semsto.statistik.uni-muenchen.de/personen/doktoranden/schauberger/index.html}
 #' @seealso \code{\link{BTLLasso}}, \code{\link{cv.BTLLasso}}
-#' @references Schauberger, Gunther and Tutz, Gerhard (2015): Modelling
-#' Heterogeneity in Paired Comparison Data - an L1 Penalty Approach with an
-#' Application to Party Preference Data, \emph{Department of Statistics, LMU
-#' Munich}, Technical Report 183
+#' @references Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
+#' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
+#' 17(3), 223 - 243
 #' 
 #' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
 #' Football Results in the German Bundesliga Using Match-specific Covariates, 
 #' \emph{Department of Statistics, LMU Munich}, Technical Report 197
-#' @export response.BTLLasso
-response.BTLLasso <- function(response, first.object, second.object, 
+#' @examples
+#'
+#' \dontrun{
+#' ##############################
+#' ##### Example how response object for Bundesliga data Buli1516 was created
+#' ##############################
+#' 
+#' data(BuliResponse)
+#' 
+#' Y.Buli <- response.BTLLasso(response = BuliResponse$Result, 
+#'                             first.object = BuliResponse$TeamHome,
+#'                             second.object = BuliResponse$TeamAway,
+#'                             subject = BuliResponse$Matchday)
+#' 
+#' 
+#' ##############################
+#' ##### Example to create response object from paircomp object
+#' ##############################
+#' data("Topmodel2007", package = "psychotree")
+#' 
+#' Y.models <- response.BTLLasso(Topmodel2007$preference)
+#' X.models <- scale(model.matrix(preference~., data = Topmodel2007)[,-1])
+#' rownames(X.models) <- paste0("Subject",1:nrow(X.models))
+#' colnames(X.models) <- c("Gender","Age","KnowShow","WatchShow","WatchFinal")
+#' 
+#' set.seed(5)
+#' m.models <- cv.BTLLasso(Y = Y.models, X = X.models)
+#' }
+response.BTLLasso <- function(response, first.object = NULL, second.object = NULL, 
   subject = NULL) {
   
+  if(inherits(response, "paircomp")){
+    response <- as.matrix(response)
+
+    model_names <- str_split(colnames(response),pattern=":")
+    
+    model_names <- matrix(unlist(model_names),nrow=2)
+
+    subject <- paste0("Subject",rep(1:nrow(response),ncol(response)))
+    first.object <- rep(model_names[1,],each=nrow(response))
+    second.object <- rep(model_names[2,],each=nrow(response))
+  }
+
   withS <- FALSE
   if (!is.null(subject)) {
     withS <- TRUE
@@ -46,8 +86,7 @@ response.BTLLasso <- function(response, first.object, second.object,
   if (!all(sapply(list(lo1, lo2, ls), identical, ly))) 
     stop("The arguments response, first.object, second.object and (if specified) subject
      have to be of the same length")
-  
-  
+
   all.objects <- as.factor(as.character(unlist(list(first.object, 
     second.object))))
   object.names <- levels(all.objects)
@@ -68,7 +107,7 @@ response.BTLLasso <- function(response, first.object, second.object,
   ## everything about the subjects
   subject.names <- levels(as.factor(subject))
   n <- length(subject.names)
-  
+
   
   RET <- list(response = response, first.object = first.object, 
     second.object = second.object, subject = subject, withS = withS, 
@@ -79,3 +118,4 @@ response.BTLLasso <- function(response, first.object, second.object,
   
   RET
 }
+

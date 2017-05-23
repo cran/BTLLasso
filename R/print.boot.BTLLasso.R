@@ -1,20 +1,19 @@
 #' Print function for boot.BTLLasso objects
 #' 
-#' Prints the most important output of boot.BTLLasso objects.
+#' Prints the most important output of \code{boot.BTLLasso} objects.
 #' 
 #' @method print boot.BTLLasso
 #' @param x \code{boot.BTLLasso} object
+#' @param quantiles Which empirical quantiles of the bootstrap estimates should be printed?
 #' @param rescale Should the parameter estimates be rescaled for plotting? Only 
 #' applies if \code{scale = TRUE} was specified in \code{BTLLasso} or \code{cv.BTLLasso}.
 #' @param \dots possible further arguments for print command
-#' @return \item{x}{boot.BTLLasso object}
 #' @author Gunther Schauberger\cr \email{gunther@@stat.uni-muenchen.de}\cr
-#' \url{http://www.statistik.lmu.de/~schauberger/}
+#' \url{http://www.semsto.statistik.uni-muenchen.de/personen/doktoranden/schauberger/index.html}
 #' @seealso \code{\link{boot.BTLLasso}}
-#' @references Schauberger, Gunther and Tutz, Gerhard (2015): Modelling
-#' Heterogeneity in Paired Comparison Data - an L1 Penalty Approach with an
-#' Application to Party Preference Data, \emph{Department of Statistics, LMU
-#' Munich}, Technical Report 183
+#' @references Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
+#' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
+#' 17(3), 223 - 243
 #' 
 #' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
 #' Football Results in the German Bundesliga Using Match-specific Covariates, 
@@ -23,11 +22,12 @@
 #' @examples
 #' 
 #' \dontrun{
-#' ##### Example with simulated data set containing X, Z1 and Z2
-#' data(SimData)
+#' op <- par(no.readonly = TRUE)
 #' 
-#' ## Specify tuning parameters
-#' lambda <- exp(seq(log(151), log(1.05), length = 30)) - 1
+#' ##############################
+#' ##### Example with simulated data set containing X, Z1 and Z2
+#' ##############################
+#' data(SimData)
 #' 
 #' ## Specify control argument
 #' ## -> allow for object-specific order effects and penalize intercepts
@@ -35,31 +35,39 @@
 #'                       penalize.order.effect.diffs = TRUE)
 #' 
 #' ## Simple BTLLasso model for tuning parameters lambda
-#' m.sim <- BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
-#'                   Z2 = SimData$Z2, lambda = lambda, control = ctrl)
-#' print(m.sim)
+#' m.sim <- BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1,
+#'                   Z2 = SimData$Z2, control = ctrl)
+#' m.sim
 #' 
-#' singlepaths(m.sim)
+#' par(xpd = TRUE)
+#' plot(m.sim)
+#' 
 #' 
 #' ## Cross-validate BTLLasso model for tuning parameters lambda
-#' set.seed(5)
-#' m.sim.cv <- cv.BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
-#'                         Z2 = SimData$Z2, lambda = lambda, control = ctrl)
-#' print(m.sim.cv)
+#' set.seed(1860)
+#' m.sim.cv <- cv.BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1,
+#'                         Z2 = SimData$Z2, control = ctrl)
+#' m.sim.cv
+#' coef(m.sim.cv)
+#' logLik(m.sim.cv)
 #' 
-#' singlepaths(m.sim.cv, plot.order.effect = FALSE, 
-#'             plot.intercepts = FALSE, plot.Z2 = FALSE)
-#' paths(m.sim.cv, y.axis = 'L2')
+#' head(predict(m.sim.cv, type="response"))
+#' head(predict(m.sim.cv, type="trait"))
 #' 
-#' ## Example for bootstrap confidence intervals for illustration only
-#' ## Don't calculate bootstrap confidence intervals with B = 10!!!!
-#' set.seed(5)
-#' m.sim.boot <- boot.BTLLasso(m.sim.cv, B = 10, cores = 10)
-#' print(m.sim.boot)
-#' ci.BTLLasso(m.sim.boot)
+#' plot(m.sim.cv, plots_per_page = 4)
 #' 
 #' 
+#' ## Example for bootstrap intervals for illustration only
+#' ## Don't calculate bootstrap intervals with B = 20!!!!
+#' set.seed(1860)
+#' m.sim.boot <- boot.BTLLasso(m.sim.cv, B = 20, cores = 20)
+#' m.sim.boot
+#' plot(m.sim.boot, plots_per_page = 4)
+#' 
+#' 
+#' ##############################
 #' ##### Example with small version from GLES data set
+#' ##############################
 #' data(GLESsmall)
 #' 
 #' ## extract data and center covariates for better interpretability
@@ -70,31 +78,73 @@
 #' ## vector of subtitles, containing the coding of the X covariates
 #' subs.X <- c('', 'female (1); male (0)')
 #' 
-#' ## vector of tuning parameters
-#' lambda <- exp(seq(log(61), log(1), length = 30)) - 1
+#' ## Cross-validate BTLLasso model
+#' m.gles.cv <- cv.BTLLasso(Y = Y, X = X, Z1 = Z1)
+#' m.gles.cv
+#' 
+#' coef(m.gles.cv)
+#' logLik(m.gles.cv)
+#' 
+#' head(predict(m.gles.cv, type="response"))
+#' head(predict(m.gles.cv, type="trait"))
+#' 
+#' par(xpd = TRUE, mar = c(5,4,4,6))
+#' plot(m.gles.cv, subs.X = subs.X, plots_per_page = 4, which = 2:5)
+#' paths(m.gles.cv, y.axis = 'L2')
 #' 
 #' 
-#' ## compute BTLLasso model 
-#' m.gles <- BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
-#' print(m.gles)
+#' ##############################
+#' ##### Example with Bundesliga data set
+#' ##############################
+#' data(Buli1516)
 #' 
-#' singlepaths(m.gles, subs.X = subs.X)
-#' paths(m.gles, y.axis = 'L2')
+#' Y <- Buli1516$Y5
 #' 
-#' ## Cross-validate BTLLasso model 
-#' m.gles.cv <- cv.BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
-#' print(m.gles.cv)
+#' Z1 <- scale(Buli1516$Z1, scale = FALSE)
 #' 
-#' singlepaths(m.gles.cv, subs.X = subs.X)
+#' ctrl.buli <- ctrl.BTLLasso(object.order.effect = TRUE, 
+#'                            name.order = "Home", 
+#'                            penalize.order.effect.diffs = TRUE, 
+#'                            penalize.order.effect.absolute = FALSE,
+#'                            order.center = TRUE, lambda2 = 1e-2)
+#' 
+#' set.seed(1860)
+#' m.buli <- cv.BTLLasso(Y = Y, Z1 = Z1, control = ctrl.buli)
+#' m.buli
+#' 
+#' par(xpd = TRUE, mar = c(5,4,4,6))
+#' plot(m.buli)
+#' 
+#' 
+#' ##############################
+#' ##### Example with Topmodel data set
+#' ##############################
+#' data("Topmodel2007", package = "psychotree")
+#' 
+#' Y.models <- response.BTLLasso(Topmodel2007$preference)
+#' X.models <- scale(model.matrix(preference~., data = Topmodel2007)[,-1])
+#' rownames(X.models) <- paste0("Subject",1:nrow(X.models))
+#' colnames(X.models) <- c("Gender","Age","KnowShow","WatchShow","WatchFinal")
+#' 
+#' set.seed(5)
+#' m.models <- cv.BTLLasso(Y = Y.models, X = X.models)
+#' plot(m.models, plots_per_page = 6)
+#' 
+#' par(op)
 #' }
-print.boot.BTLLasso <- function(x, rescale = FALSE, ...) {
+print.boot.BTLLasso <- function(x, quantiles = c(0.025, 0.975), rescale = FALSE, ...) {
   
   model <- x$cv.model
   epsilon <- model$control$epsilon
   accuracy <- -log10(epsilon)
   covariates <- c(model$design$vars.X, model$design$vars.Z1, 
     model$design$vars.Z2)
-  conf.ints <- x$conf.ints.repar
+  
+  # conf.ints <- apply(x$estimatesB, 2, quantile, probs = quantiles,
+  #   type = 1, na.rm = TRUE)
+  conf.ints <- apply(x$estimatesBrepar, 2, quantile, probs = quantiles,
+    type = 1, na.rm = TRUE)
+
   
   m <- model$Y$m
   labels <- model$Y$x.names
@@ -119,7 +169,7 @@ print.boot.BTLLasso <- function(x, rescale = FALSE, ...) {
   start <- 1
   end <- n.theta
   
-  cat("Output after bootstrap estimation of confidence intervals:\n")
+  cat("Bootstrap intervals:\n")
   
   cat("---", "\n")
   

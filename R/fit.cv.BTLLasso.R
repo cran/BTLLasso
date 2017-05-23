@@ -50,9 +50,7 @@ fit.cv.BTLLasso <- function(response, design, penalty, q, m,
     
     coef.fold <- fit.fold$coefs
     
-    
-    
-    if (cv.crit == "Deviance") {
+      if (cv.crit == "Deviance") {
       y.test <- t(cbind(matrix(response.test, ncol = q, 
         byrow = TRUE), 1)) * (1:k)
       y.test[y.test == 0] <- k + 1

@@ -1,13 +1,22 @@
-#' Print function for BTLLasso objects
+#' Predict function for BTLLasso
 #' 
-#' Prints the most important output of \code{BTLLasso} objects.
+#' Predict function for a \code{BTLLasso} object or a \code{cv.BTLLasso}
+#' object. Predictions can be linear predictors, probabilities or the values 
+#' of the latent traits for both competitors in the paired comparisons. 
 #' 
-#' @method print BTLLasso
-#' @param x \code{BTLLasso} object
-#' @param \dots possible further arguments for print command
+#' Results are lists of matrices with prediction for every single tuning parameter 
+#' for \code{BTLLasso} objects
+#' and a single matrix for \code{cv.BTLLasso} objects.
+#' 
+#' @param object \code{BTLLasso} or \code{cv.BTLLasso} object
+#' @param newdata List possibly containing slots Y, X, Z1 and Z2 to use new data for prediction.
+#' @param type Type "link" gives the linear predictors for separate categories, 
+#' type "response" gives the respective probabilities. Type "trait" gives the estimated latent traits
+#' of both competitors/objects in the paired comparisons. 
+#' @param ... Further predict arguments.
 #' @author Gunther Schauberger\cr \email{gunther@@stat.uni-muenchen.de}\cr
 #' \url{http://www.semsto.statistik.uni-muenchen.de/personen/doktoranden/schauberger/index.html}
-#' @seealso \code{\link{BTLLasso}}
+#' @seealso \code{\link{BTLLasso}}, \code{\link{cv.BTLLasso}}
 #' @references Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
 #' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
 #' 17(3), 223 - 243
@@ -15,7 +24,7 @@
 #' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
 #' Football Results in the German Bundesliga Using Match-specific Covariates, 
 #' \emph{Department of Statistics, LMU Munich}, Technical Report 197
-#' @keywords BTLLasso
+#' @keywords BTLLasso paths parameter paths
 #' @examples
 #' 
 #' \dontrun{
@@ -129,54 +138,23 @@
 #' 
 #' par(op)
 #' }
-print.BTLLasso <- function(x, ...) {
+predict.BTLLasso <- function(object, newdata = list(), 
+                                type = c("link", "response", "trait"), ...){
   
-  m <- x$Y$m
-  n <- x$Y$n
-  k <- x$Y$q + 1
-  n.theta <- x$design$n.theta
-  n.intercepts <- x$design$n.intercepts
-  if (n.intercepts != 0) {
-    n.intercepts <- n.intercepts + 1
+  type <- match.arg(type)
+  
+  if(inherits(object,"cv.BTLLasso")){
+    coef.cv <- object$coefs.repar[which.min(object$criterion),,drop=FALSE]
+    
+    ret.list <- predict.help(coef.cv, object = object, newdata = newdata, 
+                             type = type)
+    ret.list <- ret.list[[1]]
+  }else{
+    ret.list <- predict.help(object$coefs.repar, object = object, newdata = newdata, 
+                             type = type)
   }
-  n.order <- x$design$n.order
-  p.X <- x$design$p.X
-  p.Z1 <- x$design$p.Z1
-  p.Z2 <- x$design$p.Z2
-  lambda <- x$lambda
-  
-  vars.X <- x$design$vars.X
-  vars.Z1 <- x$design$vars.Z1
-  vars.Z2 <- x$design$vars.Z2
-  
-  labels <- x$Y$object.names
-  
-  cat("Output of BTLLasso estimation:", "\n")
-  
-  cat("---", "\n")
-  
-  cat("Setting:")
-  cat("\n", n, "subjects")
-  cat("\n", m, "objects")
-  cat("\n", k, "response categories")
-  cat("\n", p.X, "subject-specific covariate(s)")
-  cat("\n", p.Z1, "subject-object-specific covariate(s) with object-specific effects")
-  cat("\n", p.Z2, "(subject-)object-specific covariate(s) with global effects")
-  if (n.order == m) {
-    cat("\n", n.order, "subject-specific order effects")
-  }
-  if (n.order == 1) {
-    cat("\n", "Global order effect")
-  }
-  if (n.order == 0) {
-    cat("\n", "No order effect")
-  }
-  cat("\n", length(lambda), "different tuning parameters", 
-    "\n")
-  
-  
-  invisible(x)
-  
-  
-}
 
+   
+   ret.list
+   
+}

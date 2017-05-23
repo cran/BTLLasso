@@ -41,22 +41,40 @@ The list contains both information on the response (paired comparisons) and diff
 Data from the German Bundesliga from the season 2015/16. 
 The data contain all 306 matches of the season treated as paired comparisons with 5 different 
 response categories. Additionally, different match-specific covariates are given as, for example, 
-the percentage of ball possession or the total distance ran per team and per match.
+the percentage of ball possession or the total running distance per team and per match.
 }
 \examples{
+\dontrun{
+op <- par(no.readonly = TRUE)
 
 data(Buli1516)
 
+Y <- Buli1516$Y5
+Z1 <- scale(Buli1516$Z1, scale = FALSE)
+
+ctrl.buli <- ctrl.BTLLasso(object.order.effect = TRUE, 
+                           name.order = "Home", 
+                           penalize.order.effect.diffs = TRUE, 
+                           penalize.order.effect.absolute = FALSE,
+                           order.center = TRUE, lambda2 = 1e-2)
+
+set.seed(1860)
+m.buli <- cv.BTLLasso(Y = Y, Z1 = Z1, control = ctrl.buli)
+m.buli
+
+par(xpd = TRUE, mar = c(5,4,4,6))
+plot(m.buli)
+
+par(op)
+}
 }
 \references{
-Schauberger, Gunther and Tutz, Gerhard (2015): Modelling
-Heterogeneity in Paired Comparison Data - an L1 Penalty Approach with an
-Application to Party Preference Data, \emph{Department of Statistics, LMU
-Munich}, Technical Report 183
+Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
+of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
+17(3), 223 - 243
 
 Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
 Football Results in the German Bundesliga Using Match-specific Covariates, 
 \emph{Department of Statistics, LMU Munich}, Technical Report 197
 }
 \keyword{datasets}
-

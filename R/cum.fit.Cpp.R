@@ -59,7 +59,6 @@ cum.fit.Cpp <- function(resp, design, kat, epsilon = 1e-05, penalty,
   rownames(beta.new) <- names(start)
 
   
-  return(list(coefficients = round(beta.new, log(1/epsilon, 
-    10)), start = start, df = df, weight = weight))
+  return(list(coefficients = beta.new, start = start, df = df, weight = weight))
   
 }

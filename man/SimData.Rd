@@ -3,7 +3,7 @@
 \docType{data}
 \name{SimData}
 \alias{SimData}
-\title{Simulated Data Set for illustration}
+\title{Simulated data set for illustration}
 \format{A list containing  simulated data for 200 observations. 
 The list contains both information on the response (paired comparisons) and different covariates.
 \describe{ 
@@ -41,11 +41,9 @@ four objects with five different response categories from 200 subjects.
 \examples{
 
 \dontrun{
-##### Example with simulated data set containing X, Z1 and Z2
-data(SimData)
+op <- par(no.readonly = TRUE)
 
-## Specify tuning parameters
-lambda <- exp(seq(log(151), log(1.05), length = 30)) - 1
+data(SimData)
 
 ## Specify control argument
 ## -> allow for object-specific order effects and penalize intercepts
@@ -53,59 +51,36 @@ ctrl <- ctrl.BTLLasso(penalize.intercepts = TRUE, object.order.effect = TRUE,
                       penalize.order.effect.diffs = TRUE)
 
 ## Simple BTLLasso model for tuning parameters lambda
-m.sim <- BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
-                  Z2 = SimData$Z2, lambda = lambda, control = ctrl)
-print(m.sim)
+m.sim <- BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1,
+                  Z2 = SimData$Z2, control = ctrl)
+m.sim
 
-singlepaths(m.sim, x.axis = "loglambda")
+par(xpd = TRUE)
+plot(m.sim)
+
 
 ## Cross-validate BTLLasso model for tuning parameters lambda
-set.seed(5)
-m.sim.cv <- cv.BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
-                        Z2 = SimData$Z2, lambda = lambda, control = ctrl)
-print(m.sim.cv)
+set.seed(1860)
+m.sim.cv <- cv.BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1,
+                        Z2 = SimData$Z2, control = ctrl)
+m.sim.cv
+coef(m.sim.cv)
+logLik(m.sim.cv)
 
-singlepaths(m.sim.cv, x.axis = "loglambda", plot.order.effect = FALSE, 
-            plot.intercepts = FALSE, plot.Z2 = FALSE)
-paths(m.sim.cv, y.axis = "L2")
+head(predict(m.sim.cv, type="response"))
+head(predict(m.sim.cv, type="trait"))
 
-## Example for bootstrap confidence intervals for illustration only
-## Don't calculate bootstrap confidence intervals with B = 10!!!!
-set.seed(5)
-m.sim.boot <- boot.BTLLasso(m.sim.cv, B = 10, cores = 10)
-print(m.sim.boot)
-ci.BTLLasso(m.sim.boot)
+plot(m.sim.cv, plots_per_page = 4)
 
 
-##### Example with small version from GLES data set
-data(GLESsmall)
+## Example for bootstrap intervals for illustration only
+## Don't calculate bootstrap intervals with B = 20!!!!
+set.seed(1860)
+m.sim.boot <- boot.BTLLasso(m.sim.cv, B = 20, cores = 20)
+m.sim.boot
+plot(m.sim.boot, plots_per_page = 4)
 
-## extract data and center covariates for better interpretability
-Y <- GLESsmall$Y
-X <- scale(GLESsmall$X, scale = FALSE)
-Z1 <- scale(GLESsmall$Z1, scale = FALSE)
-
-## vector of subtitles, containing the coding of the X covariates
-subs.X <- c("", "female (1); male (0)")
-
-## vector of tuning parameters
-lambda <- exp(seq(log(61), log(1), length = 30)) - 1
-
-
-## compute BTLLasso model 
-m.gles <- BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
-print(m.gles)
-
-singlepaths(m.gles, x.axis = "loglambda", subs.X = subs.X)
-paths(m.gles, y.axis = "L2")
-
-## Cross-validate BTLLasso model 
-m.gles.cv <- cv.BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
-print(m.gles.cv)
-
-singlepaths(m.gles.cv, x.axis = "loglambda", subs.X = subs.X)
+par(op)
 }
-
 }
 \keyword{datasets}
-

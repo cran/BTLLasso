@@ -1,48 +1,50 @@
-#' Plot confidence intervals for BTLLasso
+#' Plot bootstrap intervals for BTLLasso
 #' 
-#' Plots confidence intervals for every single coefficient. Confidence
+#' Plots bootstrap intervals for every single coefficient based on bootstrap estimates 
+#' calculated by \code{\link{boot.BTLLasso}}. Bootstrap
 #' intervals are separated by covariates, every covariate is plotted
-#' separately. Confidence intervals are based on bootstrap, performed by
-#' \code{\link{boot.BTLLasso}}.
+#' separately. 
 #' 
-#' 
-#' @param object boot.BTLLasso object
+#' @param x boot.BTLLasso object
+#' @param quantiles Which empirical quantiles of the bootstrap estimates should be plotted?
+#' @param plots_per_page Number of plots per page, internally specified by \code{par(mfrow=...)}.
+#' @param ask_new If TRUE, the user is asked before each plot.
 #' @param rescale Should the parameter estimates be rescaled for plotting? Only 
-#' applies if \code{scale = TRUE} was specified in \code{BTLLasso} or \code{cv.BTLLasso}.
-#' @param plot.X Should confidence intervals for variables in \code{X} (if present) be plotted?
-#' @param plot.Z1 Should confidence intervals for variables in \code{Z1} (if present) be plotted?
-#' @param plot.Z2 Should confidence intervals for variables in \code{Z2} (if present) be plotted?
-#' @param plot.intercepts Should confidence intervals for intercepts be plotted separately?
-#' @param plot.order.effects Should confidence intervals for order effects be plotted separately?
+#' applies if \code{scale = TRUE} was specified in \code{cv.BTLLasso}.
+#' @param which Integer vector to specify which parameters/variables to plot. 
 #' @param include.zero Should all plots contain zero?
-#' @param columns Optional argument for the number of columns in the plot.
+#' @param rows Optional argument for the number of rows in the plot. 
+#' Only applies if \code{plots_per_page>1}.
 #' @param subs.X Optional vector of subtitles for variables in \code{X}. Can be used
 #' to note the encoding of the single covariates, especially for dummy
 #' variables.
 #' @param subs.Z1 Optional vector of subtitles for variables in \code{Z1}. Can be used
 #' to note the encoding of the single covariates, especially for dummy
 #' variables.
+#' @param main.Z2 Optional character containg main for plot
+#' containing intervals for Z2 parameters. 
+#' @param ... other parameters to be passed through to plot function.
 #' @author Gunther Schauberger\cr \email{gunther@@stat.uni-muenchen.de}\cr
-#' \url{http://www.statistik.lmu.de/~schauberger/}
+#' \url{http://www.semsto.statistik.uni-muenchen.de/personen/doktoranden/schauberger/index.html}
 #' @seealso \code{\link{boot.BTLLasso}}, \code{\link{BTLLasso}},
 #' \code{\link{cv.BTLLasso}}
-#' @references Schauberger, Gunther and Tutz, Gerhard (2015): Modelling
-#' Heterogeneity in Paired Comparison Data - an L1 Penalty Approach with an
-#' Application to Party Preference Data, \emph{Department of Statistics, LMU
-#' Munich}, Technical Report 183
+#' @references Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
+#' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
+#' 17(3), 223 - 243
 #' 
 #' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
 #' Football Results in the German Bundesliga Using Match-specific Covariates, 
 #' \emph{Department of Statistics, LMU Munich}, Technical Report 197
-#' @keywords BTLLasso confidence interval bootstrap
+#' @keywords BTLLasso interval bootstrap
 #' @examples
 #' 
 #' \dontrun{
-#' ##### Example with simulated data set containing X, Z1 and Z2
-#' data(SimData)
+#' op <- par(no.readonly = TRUE)
 #' 
-#' ## Specify tuning parameters
-#' lambda <- exp(seq(log(151), log(1.05), length = 30)) - 1
+#' ##############################
+#' ##### Example with simulated data set containing X, Z1 and Z2
+#' ##############################
+#' data(SimData)
 #' 
 #' ## Specify control argument
 #' ## -> allow for object-specific order effects and penalize intercepts
@@ -50,31 +52,39 @@
 #'                       penalize.order.effect.diffs = TRUE)
 #' 
 #' ## Simple BTLLasso model for tuning parameters lambda
-#' m.sim <- BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
-#'                   Z2 = SimData$Z2, lambda = lambda, control = ctrl)
-#' print(m.sim)
+#' m.sim <- BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1,
+#'                   Z2 = SimData$Z2, control = ctrl)
+#' m.sim
 #' 
-#' singlepaths(m.sim)
+#' par(xpd = TRUE)
+#' plot(m.sim)
+#' 
 #' 
 #' ## Cross-validate BTLLasso model for tuning parameters lambda
-#' set.seed(5)
-#' m.sim.cv <- cv.BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
-#'                         Z2 = SimData$Z2, lambda = lambda, control = ctrl)
-#' print(m.sim.cv)
+#' set.seed(1860)
+#' m.sim.cv <- cv.BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1,
+#'                         Z2 = SimData$Z2, control = ctrl)
+#' m.sim.cv
+#' coef(m.sim.cv)
+#' logLik(m.sim.cv)
 #' 
-#' singlepaths(m.sim.cv, plot.order.effect = FALSE, 
-#'             plot.intercepts = FALSE, plot.Z2 = FALSE)
-#' paths(m.sim.cv, y.axis = 'L2')
+#' head(predict(m.sim.cv, type="response"))
+#' head(predict(m.sim.cv, type="trait"))
 #' 
-#' ## Example for bootstrap confidence intervals for illustration only
-#' ## Don't calculate bootstrap confidence intervals with B = 10!!!!
-#' set.seed(5)
-#' m.sim.boot <- boot.BTLLasso(m.sim.cv, B = 10, cores = 10)
-#' print(m.sim.boot)
-#' ci.BTLLasso(m.sim.boot)
+#' plot(m.sim.cv, plots_per_page = 4)
 #' 
 #' 
+#' ## Example for bootstrap intervals for illustration only
+#' ## Don't calculate bootstrap intervals with B = 20!!!!
+#' set.seed(1860)
+#' m.sim.boot <- boot.BTLLasso(m.sim.cv, B = 20, cores = 20)
+#' m.sim.boot
+#' plot(m.sim.boot, plots_per_page = 4)
+#' 
+#' 
+#' ##############################
 #' ##### Example with small version from GLES data set
+#' ##############################
 #' data(GLESsmall)
 #' 
 #' ## extract data and center covariates for better interpretability
@@ -85,36 +95,83 @@
 #' ## vector of subtitles, containing the coding of the X covariates
 #' subs.X <- c('', 'female (1); male (0)')
 #' 
-#' ## vector of tuning parameters
-#' lambda <- exp(seq(log(61), log(1), length = 30)) - 1
+#' ## Cross-validate BTLLasso model
+#' m.gles.cv <- cv.BTLLasso(Y = Y, X = X, Z1 = Z1)
+#' m.gles.cv
+#' 
+#' coef(m.gles.cv)
+#' logLik(m.gles.cv)
+#' 
+#' head(predict(m.gles.cv, type="response"))
+#' head(predict(m.gles.cv, type="trait"))
+#' 
+#' par(xpd = TRUE, mar = c(5,4,4,6))
+#' plot(m.gles.cv, subs.X = subs.X, plots_per_page = 4, which = 2:5)
+#' paths(m.gles.cv, y.axis = 'L2')
 #' 
 #' 
-#' ## compute BTLLasso model 
-#' m.gles <- BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
-#' print(m.gles)
+#' ##############################
+#' ##### Example with Bundesliga data set
+#' ##############################
+#' data(Buli1516)
 #' 
-#' singlepaths(m.gles, subs.X = subs.X)
-#' paths(m.gles, y.axis = 'L2')
+#' Y <- Buli1516$Y5
 #' 
-#' ## Cross-validate BTLLasso model 
-#' m.gles.cv <- cv.BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
-#' print(m.gles.cv)
+#' Z1 <- scale(Buli1516$Z1, scale = FALSE)
 #' 
-#' singlepaths(m.gles.cv, subs.X = subs.X)
+#' ctrl.buli <- ctrl.BTLLasso(object.order.effect = TRUE, 
+#'                            name.order = "Home", 
+#'                            penalize.order.effect.diffs = TRUE, 
+#'                            penalize.order.effect.absolute = FALSE,
+#'                            order.center = TRUE, lambda2 = 1e-2)
+#' 
+#' set.seed(1860)
+#' m.buli <- cv.BTLLasso(Y = Y, Z1 = Z1, control = ctrl.buli)
+#' m.buli
+#' 
+#' par(xpd = TRUE, mar = c(5,4,4,6))
+#' plot(m.buli)
+#' 
+#' 
+#' ##############################
+#' ##### Example with Topmodel data set
+#' ##############################
+#' data("Topmodel2007", package = "psychotree")
+#' 
+#' Y.models <- response.BTLLasso(Topmodel2007$preference)
+#' X.models <- scale(model.matrix(preference~., data = Topmodel2007)[,-1])
+#' rownames(X.models) <- paste0("Subject",1:nrow(X.models))
+#' colnames(X.models) <- c("Gender","Age","KnowShow","WatchShow","WatchFinal")
+#' 
+#' set.seed(5)
+#' m.models <- cv.BTLLasso(Y = Y.models, X = X.models)
+#' plot(m.models, plots_per_page = 6)
+#' 
+#' par(op)
 #' }
-#' 
-#' @export ci.BTLLasso
-ci.BTLLasso <- function(object, rescale = FALSE, plot.X = TRUE, 
-  plot.Z1 = TRUE, plot.Z2 = TRUE, plot.intercepts = TRUE, plot.order.effects = TRUE, 
-  include.zero = TRUE, columns = NULL, subs.X = NULL, subs.Z1 = NULL) {
+plot.boot.BTLLasso <- function(x, quantiles = c(0.025, 0.975), 
+                               plots_per_page = 1,  ask_new = TRUE, rescale = FALSE, 
+                               which = "all", include.zero = TRUE, rows = NULL, 
+                               subs.X = NULL, subs.Z1 = NULL,
+                               main.Z2 = "Obj-spec. Covariates", ...){
+
+  op <- par(no.readonly = TRUE)
   
-  model <- object$cv.model
+  ## extract important things from the cv.BTLLasso object
+  model <- x$cv.model
   epsilon <- model$control$epsilon
   accuracy <- -log10(epsilon)
   covariates <- c(model$design$vars.X, model$design$vars.Z1, 
     model$design$vars.Z2)
-  conf.ints <- object$conf.ints.repar
   
+  ## running index for current plot
+  index.num <- 1
+  
+  ## create matrix containing bootstrap intervals
+  conf.ints <- apply(x$estimatesBrepar, 2, quantile, probs = quantiles,
+                     type = 1, na.rm = TRUE)
+  
+  ## some more important parameters
   m <- model$Y$m
   labels <- model$Y$object.names
   
@@ -128,8 +185,7 @@ ci.BTLLasso <- function(object, rescale = FALSE, plot.X = TRUE,
   p.Z1 <- model$design$p.Z1
   p.Z2 <- model$design$p.Z2
   
-  estimates <- model$coefs.repar[which.min(model$criterion), 
-    ]
+  estimates <- model$coefs.repar[which.min(model$criterion),]
   estimates <- round(estimates, accuracy)
   conf.ints <- round(conf.ints, accuracy)
   
@@ -141,7 +197,7 @@ ci.BTLLasso <- function(object, rescale = FALSE, plot.X = TRUE,
   
   all.subs <- c()
   
-  if (plot.order.effects & n.order > 0) {
+  if (n.order > 0) {
     end <- start + n.order - 1
     if (n.order == 1) {
       global <- c(global, estimates[start:end])
@@ -160,7 +216,7 @@ ci.BTLLasso <- function(object, rescale = FALSE, plot.X = TRUE,
   
   start <- n.theta + n.order + 1
   
-  if (n.intercepts > 0 & plot.intercepts) {
+  if (n.intercepts > 0) {
     end <- start + n.intercepts - 1
     covar <- c(covar, "Intercept")
     gamma <- c(gamma, estimates[start:end])
@@ -171,7 +227,7 @@ ci.BTLLasso <- function(object, rescale = FALSE, plot.X = TRUE,
   
   start <- n.theta + n.order + n.intercepts + 1
   
-  if (p.X > 0 & plot.X) {
+  if (p.X > 0) {
     end <- start + p.X * m - 1
     covar <- c(covar, model$design$vars.X)
     if (rescale) {
@@ -194,7 +250,7 @@ ci.BTLLasso <- function(object, rescale = FALSE, plot.X = TRUE,
   
   start <- n.theta + n.order + n.intercepts + p.X * m + 1
   
-  if (p.Z1 > 0 & plot.Z1) {
+  if (p.Z1 > 0) {
     end <- start + p.Z1 * m - 1
     covar <- c(covar, model$design$vars.Z1)
     if (rescale) {
@@ -219,7 +275,7 @@ ci.BTLLasso <- function(object, rescale = FALSE, plot.X = TRUE,
   start <- n.theta + n.order + n.intercepts + p.X * m + p.Z1 * 
     m + 1
   
-  if (p.Z2 > 0 & plot.Z2) {
+  if (p.Z2 > 0) {
     end <- start + p.Z2 - 1
     covar.global <- c(covar.global, model$design$vars.Z2)
     if (rescale) {
@@ -240,48 +296,66 @@ ci.BTLLasso <- function(object, rescale = FALSE, plot.X = TRUE,
   }
   
   
-  if (is.null(columns)) {
-    cols <- floor(sqrt(p.tot))
-  } else {
-    cols <- columns
-  }
-  rows <- ceiling((p.tot)/cols)
+  suppressWarnings(if(which=="all"){
+    which <- 1:p.tot
+  })
+  pages <- ceiling(length(which)/plots_per_page)
   
+  if (is.null(rows)) {
+    rows <- floor(sqrt(plots_per_page))
+  } 
   
-  layout(matrix(1:(rows * cols), nrow = rows, byrow = TRUE))
+  cols <- ceiling(plots_per_page/rows)
   
+  plots_on_page <- 0
+  pages_done <- 0
+  par(mfrow=c(rows, cols))
+
   index <- 1
   for (i in 1:p) {
-    
+    if(i %in% which){
     xlim <- range(gamma.ci[, index:(index + m - 1)])
     if (include.zero) {
       xlim <- range(0, xlim)
     }
     plot(gamma[index:(index + m - 1)], 1:m, xlim = xlim, 
-      pch = 16, yaxt = "n", xlab = "", ylab = "", main = "")
+      pch = 16, yaxt = "n", xlab = "", ylab = "", main = "", ...)
+    
     segments(y0 = 1:m, x0 = gamma.ci[1, index:(index + m - 
       1)], x1 = gamma.ci[2, index:(index + m - 1)])
     axis(2, at = 1:m, labels = labels, las = 2)
     title(covar[i], line = 1.2)
     mtext(all.subs[i], side = 3, line = 0.2, cex = par()$cex)
-    abline(v = 0, lty = 2, col = "lightgray")
+   
+    segments( 0, 1, 0, m , col="lightgray",lty=2,lwd=par()$lwd)
+      
+    plots_on_page <- plots_on_page+1
+    if(plots_on_page==plots_per_page & pages_done<(pages-1)){
+      plots_on_page <- 0
+      pages_done <- pages_done+1
+      if(interactive() & ask_new)
+      {readline("Press enter for next plot!")}
+      par(mfrow=c(rows, cols))
+    }
+    
+    }
     index <- index + m
+    
   }
-  index
-  if (p.global > 0) {
+  
+  if (p.global > 0 & (p+1) %in% which) {
     xlim <- range(global.ci)
     if (include.zero) {
       xlim <- range(0, xlim)
     }
     plot(global, 1:p.global, xlim = xlim, pch = 16, yaxt = "n", 
-      xlab = "", ylab = "", main = "Global Parameters")
-    segments(y0 = 1:p.global, x0 = global.ci[1, ], x1 = global.ci[2, 
-      ])
+      xlab = "", ylab = "", main = "Global Parameters", ...)
+    segments(y0 = 1:p.global, x0 = global.ci[1, ], x1 = global.ci[2,])
     axis(2, at = 1:p.global, labels = covar.global, las = 2)
-    abline(v = 0, lty = 2, col = "lightgray")
+    segments( 0, 1, 0, p.global , col="lightgray",lty=2,lwd=par()$lwd)
   }
   
-  layout(1)
-  
+  par(op)
+  invisible(conf.ints)
 }
 

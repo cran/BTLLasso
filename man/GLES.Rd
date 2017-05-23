@@ -53,8 +53,26 @@ It collects pre- and post-election data for several federal elections, the
 data used here originate from the pre-election study for 2013.
 }
 \examples{
+\dontrun{
+op <- par(no.readonly = TRUE)
 
 data(GLES)
+Y <- GLES$Y
+X <- scale(GLES$X, scale = FALSE)
+
+subs <- c("(in years)","female (1); male (0)","East Germany (1); West Germany (0)",
+          "(very) good (1); else (0)", "Abitur/A levels (1); else (0)", 
+          "currently unemployed (1); else (0)","at least once a month (1); else (0)",
+          "yes (1); no (0)")
+
+set.seed(5)
+m.gles <- cv.BTLLasso(Y = Y, X = X, control = ctrl.BTLLasso(l.lambda = 50))
+
+par(xpd = TRUE, mar = c(5,4,4,6))
+plot(m.gles, subs.X = subs)
+
+par(op)
+}
 
 }
 \references{
@@ -72,4 +90,3 @@ Football Results in the German Bundesliga Using Match-specific Covariates,
 \emph{Department of Statistics, LMU Munich}, Technical Report 197
 }
 \keyword{datasets}
-

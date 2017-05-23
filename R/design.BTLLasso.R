@@ -1,11 +1,14 @@
 design.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL, 
-  control = ctrl.BTLLasso()) {
+  control = ctrl.BTLLasso(), only.first = FALSE, sd.X = NULL,
+  sd.Z1 = NULL, sd.Z2 = NULL) {
   
   #### get all arguments from responseBTLLasso object
-  
   y.ord <- Y$response
   first.object <- Y$first.object
   second.object <- Y$second.object
+  if(only.first){
+    second.object <- rep(NULL, length(second.object))
+  }
   subject <- Y$subject
   withS <- Y$withS
   subject.names <- Y$subject.names
@@ -24,8 +27,8 @@ design.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL,
   #### check X, Z1 and Z2 and initialize p.X, p.Z1 and p.Z2
   withX <- withZ1 <- withZ2 <- FALSE
   p.X <- p.Z1 <- p.Z2 <- 0
-  sd.X <- sd.Z1 <- sd.Z2 <- NULL
-  par.names.X <- par.names.Z1 <- par.names.Z2 <- c()
+  
+  par.names.X <- par.names.X.repar <- par.names.Z1 <- par.names.Z2 <- c()
   vars.X <- vars.Z1 <- vars.Z2 <- c()
   acoefs.X <- acoefs.Z1 <- acoefs.Z2 <- c()
   order.Z1 <- order.Z2 <- order(object.names)
@@ -37,11 +40,14 @@ design.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL,
     if (!is.matrix(X)) 
       stop("X has to be a matrix")
     if (control$scale) {
-      sd.X <- apply(X, 2, sd, na.rm = TRUE)
+      if(is.null(sd.X)){
+        sd.X <- apply(X, 2, sd, na.rm = TRUE)
+      }
       X <- t(t(X)/sd.X)
     }
     par.names.X <- paste(rep(vars.X, each = m - 1), object.names[1:(m - 
       1)], sep = ".")
+    par.names.X.repar <- paste(rep(vars.X, each = m), object.names[1:m], sep = ".")
   }
   
   
@@ -54,7 +60,9 @@ design.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL,
       stop("Z1 has to be a matrix")
     if (control$scale) {
       Z1.help <- matrix(c(Z1), ncol = p.Z1)
-      sd.Z1 <- apply(Z1.help, 2, sd, na.rm = TRUE)
+      if(is.null(sd.Z1)){
+        sd.Z1 <- apply(Z1.help, 2, sd, na.rm = TRUE)
+      }
       Z1 <- matrix(c(t(t(Z1.help)/sd.Z1)), ncol = ncol(Z1), 
         dimnames = list(rownames(Z1), colnames(Z1)))
       Z1.help <- NULL
@@ -77,12 +85,16 @@ design.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL,
     if (control$scale) {
       if (all(apply(Z2, 2, var) == 0)) {
         Z2.help <- matrix(c(Z2[1, ]), ncol = p.Z2)
-        sd.Z2 <- apply(Z2.help, 2, sd, na.rm = TRUE)
+        if(is.null(sd.Z2)){
+          sd.Z2 <- apply(Z2.help, 2, sd, na.rm = TRUE)
+        }
         Z2 <- Z2/rep(sd.Z2, each = m)
         Z2.help <- NULL
       } else {
         Z2.help <- matrix(c(Z2), ncol = p.Z2)
-        sd.Z2 <- apply(Z2.help, 2, sd, na.rm = TRUE)
+        if(is.null(sd.Z2)){
+          sd.Z2 <- apply(Z2.help, 2, sd, na.rm = TRUE)
+        }
         Z2 <- matrix(c(t(t(Z2.help)/sd.Z2)), ncol = ncol(Z2), 
           dimnames = list(rownames(Z2), colnames(Z2)))
         Z2.help <- NULL
@@ -99,6 +111,7 @@ design.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL,
   if (include.intercepts) {
     n.intercepts <- m - 1
     par.names.intercepts <- object.names[1:(m - 1)]
+    par.names.intercepts.repar <- object.names
   }
   
   ## number of order effects
@@ -117,13 +130,20 @@ design.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL,
   #### make design matrix design matrix
   design <- create.design(X, Z1, Z2, first.object, second.object, 
     m, subject, control, order.Z1, order.Z2)
-  
+  design.repar <- design$design.repar
+  design <- design$design
+
   ## enlarge design matrix so that it fits to the dichotomized
   ## cumulative response
   design <- t(matrix(rep(c(design), each = q), nrow = ncol(design), 
     byrow = TRUE))
   colnames(design) <- c(par.names.order, par.names.intercepts, 
     par.names.X, par.names.Z1, par.names.Z2)
+  
+  design.repar <- t(matrix(rep(c(design.repar), each = q), nrow = ncol(design.repar), 
+                     byrow = TRUE))
+  colnames(design.repar) <- c(par.names.order, par.names.intercepts.repar, 
+                        par.names.X.repar, par.names.Z1, par.names.Z2)
   
   
   n.theta <- floor(q/2)
@@ -138,13 +158,14 @@ design.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL,
     }
     
     design <- cbind(theta.design, design)
+    design.repar <- cbind(theta.design, design.repar)
   }
   
   
   RET <- list(design = design, p.X = p.X, p.Z1 = p.Z1, p.Z2 = p.Z2, 
     vars.X = vars.X, vars.Z1 = vars.Z1, vars.Z2 = vars.Z2, 
     n.theta = n.theta, n.intercepts = n.intercepts, n.order = n.order, 
-    sd.X = sd.X, sd.Z1 = sd.Z1, sd.Z2 = sd.Z2)
+    sd.X = sd.X, sd.Z1 = sd.Z1, sd.Z2 = sd.Z2, design.repar = design.repar)
   
   return(RET)
 }

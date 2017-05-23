@@ -43,6 +43,8 @@ originate from the pre-election study for 2013.
 \examples{
 
 \dontrun{
+op <- par(no.readonly = TRUE)
+
 data(GLESsmall)
 
 ## extract data and center covariates for better interpretability
@@ -51,24 +53,23 @@ X <- scale(GLESsmall$X, scale = FALSE)
 Z1 <- scale(GLESsmall$Z1, scale = FALSE)
 
 ## vector of subtitles, containing the coding of the X covariates
-subs.X <- c("", "female (1); male (0)")
+subs.X <- c('', 'female (1); male (0)')
 
-## vector of tuning parameters
-lambda <- exp(seq(log(61), log(1), length = 30)) - 1
+## Cross-validate BTLLasso model
+m.gles.cv <- cv.BTLLasso(Y = Y, X = X, Z1 = Z1)
+m.gles.cv
 
+coef(m.gles.cv)
+logLik(m.gles.cv)
 
-## compute BTLLasso model 
-m.gles <- BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
-print(m.gles)
+head(predict(m.gles.cv, type="response"))
+head(predict(m.gles.cv, type="trait"))
 
-singlepaths(m.gles, x.axis = "loglambda", subs.X = subs.X)
-paths(m.gles, y.axis = "L2")
+par(xpd = TRUE, mar = c(5,4,4,6))
+plot(m.gles.cv, subs.X = subs.X, plots_per_page = 4, which = 2:5)
+paths(m.gles.cv, y.axis = 'L2')
 
-## Cross-validate BTLLasso model 
-m.gles.cv <- cv.BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
-print(m.gles.cv)
-
-singlepaths(m.gles.cv, subs.X = subs.X)
+par(op)
 }
 
 }
@@ -87,4 +88,3 @@ Football Results in the German Bundesliga Using Match-specific Covariates,
 \emph{Department of Statistics, LMU Munich}, Technical Report 197
 }
 \keyword{datasets}
-

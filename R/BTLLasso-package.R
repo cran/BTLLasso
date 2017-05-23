@@ -6,21 +6,19 @@
 #' data. Different types of covariates are allowd to have an influence on the
 #' attractivity/strength of the objects. Covariates can be subject-specific, 
 #' object-specific or subject-object-specific. L1 penalties are used to reduce the 
-#' complexiy of the model by enforcing clusters of equal effects or by elimination of irrelevant
+#' complexity of the model by enforcing clusters of equal effects or by elimination of irrelevant
 #' covariates.  Several additional functions are provided, such as
-#' cross-validation, bootstraped confidence intervals, and plot
-#' functions.
+#' cross-validation, bootstrap intervals, and plot functions.
 #' 
 #' 
 #' @name BTLLasso-package
 #' @docType package
 #' @author Gunther Schauberger\cr \email{gunther@@stat.uni-muenchen.de}\cr
-#' \url{http://www.statistik.lmu.de/~schauberger/}
+#' \url{http://www.semsto.statistik.uni-muenchen.de/personen/doktoranden/schauberger/index.html}
 #' @seealso \code{\link{BTLLasso}}, \code{\link{cv.BTLLasso}}
-#' @references Schauberger, Gunther and Tutz, Gerhard (2015): Modelling
-#' Heterogeneity in Paired Comparison Data - an L1 Penalty Approach with an
-#' Application to Party Preference Data, \emph{Department of Statistics, LMU
-#' Munich}, Technical Report 183
+#' @references Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
+#' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
+#' 17(3), 223 - 243
 #' 
 #' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
 #' Football Results in the German Bundesliga Using Match-specific Covariates, 
@@ -29,11 +27,12 @@
 #' @examples
 #' 
 #' \dontrun{
-#' ##### Example with simulated data set containing X, Z1 and Z2
-#' data(SimData)
+#' op <- par(no.readonly = TRUE)
 #' 
-#' ## Specify tuning parameters
-#' lambda <- exp(seq(log(151), log(1.05), length = 30)) - 1
+#' ##############################
+#' ##### Example with simulated data set containing X, Z1 and Z2
+#' ##############################
+#' data(SimData)
 #' 
 #' ## Specify control argument
 #' ## -> allow for object-specific order effects and penalize intercepts
@@ -41,31 +40,39 @@
 #'                       penalize.order.effect.diffs = TRUE)
 #' 
 #' ## Simple BTLLasso model for tuning parameters lambda
-#' m.sim <- BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
-#'                   Z2 = SimData$Z2, lambda = lambda, control = ctrl)
-#' print(m.sim)
+#' m.sim <- BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1,
+#'                   Z2 = SimData$Z2, control = ctrl)
+#' m.sim
 #' 
-#' singlepaths(m.sim)
+#' par(xpd = TRUE)
+#' plot(m.sim)
+#' 
 #' 
 #' ## Cross-validate BTLLasso model for tuning parameters lambda
-#' set.seed(5)
-#' m.sim.cv <- cv.BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
-#'                         Z2 = SimData$Z2, lambda = lambda, control = ctrl)
-#' print(m.sim.cv)
+#' set.seed(1860)
+#' m.sim.cv <- cv.BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1,
+#'                         Z2 = SimData$Z2, control = ctrl)
+#' m.sim.cv
+#' coef(m.sim.cv)
+#' logLik(m.sim.cv)
 #' 
-#' singlepaths(m.sim.cv, plot.order.effect = FALSE, 
-#'             plot.intercepts = FALSE, plot.Z2 = FALSE)
-#' paths(m.sim.cv, y.axis = 'L2')
+#' head(predict(m.sim.cv, type="response"))
+#' head(predict(m.sim.cv, type="trait"))
 #' 
-#' ## Example for bootstrap confidence intervals for illustration only
-#' ## Don't calculate bootstrap confidence intervals with B = 10!!!!
-#' set.seed(5)
-#' m.sim.boot <- boot.BTLLasso(m.sim.cv, B = 10, cores = 10)
-#' print(m.sim.boot)
-#' ci.BTLLasso(m.sim.boot)
+#' plot(m.sim.cv, plots_per_page = 4)
 #' 
 #' 
+#' ## Example for bootstrap intervals for illustration only
+#' ## Don't calculate bootstrap intervals with B = 20!!!!
+#' set.seed(1860)
+#' m.sim.boot <- boot.BTLLasso(m.sim.cv, B = 20, cores = 20)
+#' m.sim.boot
+#' plot(m.sim.boot, plots_per_page = 4)
+#' 
+#' 
+#' ##############################
 #' ##### Example with small version from GLES data set
+#' ##############################
 #' data(GLESsmall)
 #' 
 #' ## extract data and center covariates for better interpretability
@@ -76,24 +83,60 @@
 #' ## vector of subtitles, containing the coding of the X covariates
 #' subs.X <- c('', 'female (1); male (0)')
 #' 
-#' ## vector of tuning parameters
-#' lambda <- exp(seq(log(61), log(1), length = 30)) - 1
+#' ## Cross-validate BTLLasso model
+#' m.gles.cv <- cv.BTLLasso(Y = Y, X = X, Z1 = Z1)
+#' m.gles.cv
+#' 
+#' coef(m.gles.cv)
+#' logLik(m.gles.cv)
+#' 
+#' head(predict(m.gles.cv, type="response"))
+#' head(predict(m.gles.cv, type="trait"))
+#' 
+#' par(xpd = TRUE, mar = c(5,4,4,6))
+#' plot(m.gles.cv, subs.X = subs.X, plots_per_page = 4, which = 2:5)
+#' paths(m.gles.cv, y.axis = 'L2')
 #' 
 #' 
-#' ## compute BTLLasso model 
-#' m.gles <- BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
-#' print(m.gles)
+#' ##############################
+#' ##### Example with Bundesliga data set
+#' ##############################
+#' data(Buli1516)
 #' 
-#' singlepaths(m.gles, subs.X = subs.X)
-#' paths(m.gles, y.axis = 'L2')
+#' Y <- Buli1516$Y5
 #' 
-#' ## Cross-validate BTLLasso model 
-#' m.gles.cv <- cv.BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
-#' print(m.gles.cv)
+#' Z1 <- scale(Buli1516$Z1, scale = FALSE)
 #' 
-#' singlepaths(m.gles.cv, subs.X = subs.X)
+#' ctrl.buli <- ctrl.BTLLasso(object.order.effect = TRUE, 
+#'                            name.order = "Home", 
+#'                            penalize.order.effect.diffs = TRUE, 
+#'                            penalize.order.effect.absolute = FALSE,
+#'                            order.center = TRUE, lambda2 = 1e-2)
+#' 
+#' set.seed(1860)
+#' m.buli <- cv.BTLLasso(Y = Y, Z1 = Z1, control = ctrl.buli)
+#' m.buli
+#' 
+#' par(xpd = TRUE, mar = c(5,4,4,6))
+#' plot(m.buli)
+#' 
+#' 
+#' ##############################
+#' ##### Example with Topmodel data set
+#' ##############################
+#' data("Topmodel2007", package = "psychotree")
+#' 
+#' Y.models <- response.BTLLasso(Topmodel2007$preference)
+#' X.models <- scale(model.matrix(preference~., data = Topmodel2007)[,-1])
+#' rownames(X.models) <- paste0("Subject",1:nrow(X.models))
+#' colnames(X.models) <- c("Gender","Age","KnowShow","WatchShow","WatchFinal")
+#' 
+#' set.seed(5)
+#' m.models <- cv.BTLLasso(Y = Y.models, X = X.models)
+#' plot(m.models, plots_per_page = 6)
+#' 
+#' par(op)
 #' }
-#' 
 NULL
 
 
@@ -102,7 +145,7 @@ NULL
 #' Data from the German Bundesliga from the season 2015/16. 
 #' The data contain all 306 matches of the season treated as paired comparisons with 5 different 
 #' response categories. Additionally, different match-specific covariates are given as, for example, 
-#' the percentage of ball possession or the total distance ran per team and per match.
+#' the percentage of ball possession or the total running distance per team and per match.
 #' 
 #' @name Buli1516
 #' @docType data
@@ -136,10 +179,9 @@ NULL
 #' }
 #' \item{Z2}{Matrix containing all the average market values of the teams as a team-specific covariate} 
 #' }
-#' @references Schauberger, Gunther and Tutz, Gerhard (2015): Modelling
-#' Heterogeneity in Paired Comparison Data - an L1 Penalty Approach with an
-#' Application to Party Preference Data, \emph{Department of Statistics, LMU
-#' Munich}, Technical Report 183
+#' @references Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
+#' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
+#' 17(3), 223 - 243
 #' 
 #' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
 #' Football Results in the German Bundesliga Using Match-specific Covariates, 
@@ -148,12 +190,65 @@ NULL
 #' \url{http://www.kicker.de/}
 #' @keywords datasets
 #' @examples
+#' \dontrun{
+#' op <- par(no.readonly = TRUE)
 #' 
 #' data(Buli1516)
 #' 
+#' Y <- Buli1516$Y5
+#' Z1 <- scale(Buli1516$Z1, scale = FALSE)
+#' 
+#' ctrl.buli <- ctrl.BTLLasso(object.order.effect = TRUE, 
+#'                            name.order = "Home", 
+#'                            penalize.order.effect.diffs = TRUE, 
+#'                            penalize.order.effect.absolute = FALSE,
+#'                            order.center = TRUE, lambda2 = 1e-2)
+#' 
+#' set.seed(1860)
+#' m.buli <- cv.BTLLasso(Y = Y, Z1 = Z1, control = ctrl.buli)
+#' m.buli
+#' 
+#' par(xpd = TRUE, mar = c(5,4,4,6))
+#' plot(m.buli)
+#' 
+#' par(op)
+#' }
 NULL
 
 
+#' Bundesliga Data Response Data (BuliResponse)
+#' 
+#' Data from the German Bundesliga from the season 2015/16. The data contain all 
+#' variables from the 306 matches that are necessary to create the respective 
+#' \code{response.BTLLasso} object from the data set \code{\link{Buli1516}}.  The purpose
+#' of the data set is to provide an example how \code{response.BTLLasso} objects can be created.
+#' 
+#' @name BuliResponse
+#' @docType data
+#' @format A data set containing all information that is necessary to create a response object
+#' for the Bundesliga data \code{link{Buli1516}}
+#' \describe{ 
+#' \item{Result}{Ordinal, 5-categorical results from Bundesliga season 2015/16.}
+#' \item{TeamHome}{Abbreviation of home team.}
+#' \item{TeamAway}{Abbreviation of away team.}
+#' \item{Matchday}{Matchdays from 1 to 34.}
+#' }
+#' @references Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
+#' Football Results in the German Bundesliga Using Match-specific Covariates, 
+#' \emph{Department of Statistics, LMU Munich}, Technical Report 197
+#' @source
+#' \url{http://www.kicker.de/}
+#' @keywords datasets
+#' @examples
+#' \dontrun{
+#' data(BuliResponse)
+#' 
+#' Y.Buli <- response.BTLLasso(response = BuliResponse$Result, 
+#'                             first.object = BuliResponse$TeamHome,
+#'                             second.object = BuliResponse$TeamAway,
+#'                             subject = BuliResponse$Matchday)
+#' }
+NULL
 
 
 #' German Longitudinal Election Study (GLES)
@@ -220,8 +315,26 @@ NULL
 #' \url{http://gles.eu/wordpress/english/}
 #' @keywords datasets
 #' @examples
+#' \dontrun{
+#' op <- par(no.readonly = TRUE)
 #' 
 #' data(GLES)
+#' Y <- GLES$Y
+#' X <- scale(GLES$X, scale = FALSE)
+#' 
+#' subs <- c("(in years)","female (1); male (0)","East Germany (1); West Germany (0)",
+#'           "(very) good (1); else (0)", "Abitur/A levels (1); else (0)", 
+#'           "currently unemployed (1); else (0)","at least once a month (1); else (0)",
+#'           "yes (1); no (0)")
+#' 
+#' set.seed(5)
+#' m.gles <- cv.BTLLasso(Y = Y, X = X, control = ctrl.BTLLasso(l.lambda = 50))
+#' 
+#' par(xpd = TRUE, mar = c(5,4,4,6))
+#' plot(m.gles, subs.X = subs)
+#' 
+#' par(op)
+#' }
 #' 
 NULL
 
@@ -283,6 +396,8 @@ NULL
 #' @examples
 #' 
 #' \dontrun{
+#' op <- par(no.readonly = TRUE)
+#' 
 #' data(GLESsmall)
 #' 
 #' ## extract data and center covariates for better interpretability
@@ -291,29 +406,28 @@ NULL
 #' Z1 <- scale(GLESsmall$Z1, scale = FALSE)
 #' 
 #' ## vector of subtitles, containing the coding of the X covariates
-#' subs.X <- c("", "female (1); male (0)")
+#' subs.X <- c('', 'female (1); male (0)')
 #' 
-#' ## vector of tuning parameters
-#' lambda <- exp(seq(log(61), log(1), length = 30)) - 1
+#' ## Cross-validate BTLLasso model
+#' m.gles.cv <- cv.BTLLasso(Y = Y, X = X, Z1 = Z1)
+#' m.gles.cv
 #' 
+#' coef(m.gles.cv)
+#' logLik(m.gles.cv)
 #' 
-#' ## compute BTLLasso model 
-#' m.gles <- BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
-#' print(m.gles)
+#' head(predict(m.gles.cv, type="response"))
+#' head(predict(m.gles.cv, type="trait"))
 #' 
-#' singlepaths(m.gles, x.axis = "loglambda", subs.X = subs.X)
-#' paths(m.gles, y.axis = "L2")
+#' par(xpd = TRUE, mar = c(5,4,4,6))
+#' plot(m.gles.cv, subs.X = subs.X, plots_per_page = 4, which = 2:5)
+#' paths(m.gles.cv, y.axis = 'L2')
 #' 
-#' ## Cross-validate BTLLasso model 
-#' m.gles.cv <- cv.BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
-#' print(m.gles.cv)
-#' 
-#' singlepaths(m.gles.cv, subs.X = subs.X)
+#' par(op)
 #' }
 #' 
 NULL
 
-#' Simulated Data Set for illustration
+#' Simulated data set for illustration
 #' 
 #' This data set is a simulated data set including all possible types of covariates (X, Z1 and Z2)
 #' and is intended to serve for illustration purpose. The data set contains paired comparisons between
@@ -354,11 +468,9 @@ NULL
 #' @examples
 #' 
 #' \dontrun{
-#' ##### Example with simulated data set containing X, Z1 and Z2
-#' data(SimData)
+#' op <- par(no.readonly = TRUE)
 #' 
-#' ## Specify tuning parameters
-#' lambda <- exp(seq(log(151), log(1.05), length = 30)) - 1
+#' data(SimData)
 #' 
 #' ## Specify control argument
 #' ## -> allow for object-specific order effects and penalize intercepts
@@ -366,59 +478,37 @@ NULL
 #'                       penalize.order.effect.diffs = TRUE)
 #' 
 #' ## Simple BTLLasso model for tuning parameters lambda
-#' m.sim <- BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
-#'                   Z2 = SimData$Z2, lambda = lambda, control = ctrl)
-#' print(m.sim)
+#' m.sim <- BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1,
+#'                   Z2 = SimData$Z2, control = ctrl)
+#' m.sim
 #' 
-#' singlepaths(m.sim, x.axis = "loglambda")
+#' par(xpd = TRUE)
+#' plot(m.sim)
+#' 
 #' 
 #' ## Cross-validate BTLLasso model for tuning parameters lambda
-#' set.seed(5)
-#' m.sim.cv <- cv.BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1, 
-#'                         Z2 = SimData$Z2, lambda = lambda, control = ctrl)
-#' print(m.sim.cv)
+#' set.seed(1860)
+#' m.sim.cv <- cv.BTLLasso(Y = SimData$Y, X = SimData$X, Z1 = SimData$Z1,
+#'                         Z2 = SimData$Z2, control = ctrl)
+#' m.sim.cv
+#' coef(m.sim.cv)
+#' logLik(m.sim.cv)
 #' 
-#' singlepaths(m.sim.cv, x.axis = "loglambda", plot.order.effect = FALSE, 
-#'             plot.intercepts = FALSE, plot.Z2 = FALSE)
-#' paths(m.sim.cv, y.axis = "L2")
+#' head(predict(m.sim.cv, type="response"))
+#' head(predict(m.sim.cv, type="trait"))
 #' 
-#' ## Example for bootstrap confidence intervals for illustration only
-#' ## Don't calculate bootstrap confidence intervals with B = 10!!!!
-#' set.seed(5)
-#' m.sim.boot <- boot.BTLLasso(m.sim.cv, B = 10, cores = 10)
-#' print(m.sim.boot)
-#' ci.BTLLasso(m.sim.boot)
+#' plot(m.sim.cv, plots_per_page = 4)
 #' 
 #' 
-#' ##### Example with small version from GLES data set
-#' data(GLESsmall)
+#' ## Example for bootstrap intervals for illustration only
+#' ## Don't calculate bootstrap intervals with B = 20!!!!
+#' set.seed(1860)
+#' m.sim.boot <- boot.BTLLasso(m.sim.cv, B = 20, cores = 20)
+#' m.sim.boot
+#' plot(m.sim.boot, plots_per_page = 4)
 #' 
-#' ## extract data and center covariates for better interpretability
-#' Y <- GLESsmall$Y
-#' X <- scale(GLESsmall$X, scale = FALSE)
-#' Z1 <- scale(GLESsmall$Z1, scale = FALSE)
-#' 
-#' ## vector of subtitles, containing the coding of the X covariates
-#' subs.X <- c("", "female (1); male (0)")
-#' 
-#' ## vector of tuning parameters
-#' lambda <- exp(seq(log(61), log(1), length = 30)) - 1
-#' 
-#' 
-#' ## compute BTLLasso model 
-#' m.gles <- BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
-#' print(m.gles)
-#' 
-#' singlepaths(m.gles, x.axis = "loglambda", subs.X = subs.X)
-#' paths(m.gles, y.axis = "L2")
-#' 
-#' ## Cross-validate BTLLasso model 
-#' m.gles.cv <- cv.BTLLasso(Y = Y, X = X, Z1 = Z1, lambda = lambda)
-#' print(m.gles.cv)
-#' 
-#' singlepaths(m.gles.cv, x.axis = "loglambda", subs.X = subs.X)
+#' par(op)
 #' }
-#' 
 NULL
 
 
