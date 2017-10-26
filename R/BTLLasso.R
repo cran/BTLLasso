@@ -38,14 +38,22 @@
 #' @param penalize.intercepts Should intercepts be penalized? If \code{TRUE},
 #' all pairwise differences between intercepts are penalized.
 #' @param penalize.X Should effects from X matrix be penalized? If \code{TRUE},
-#' all pairwise differences corresponding to one covariate are penalized.
+#' all pairwise differences corresponding to one covariate are penalized. Can also be used with
+#' a character vector as input. Then, the character vector contains the names of the variables
+#' from X whose parameters should be penalized.
 #' @param penalize.Z2 Should absolute values of effects from Z2 matrix be
-#' penalized?
+#' penalized? Can also be used with
+#' a character vector as input. Then, the character vector contains the names of the variables
+#' from Z2 whose parameters should be penalized.
 #' @param penalize.Z1.absolute Should absolute values of effects from Z1 matrix
-#' be penalized?
+#' be penalized? Can also be used with
+#' a character vector as input. Then, the character vector contains the names of the variables
+#' from Z1 whose parameters should be penalized.
 #' @param penalize.Z1.diffs Should differences of effects from Z1 matrix be
 #' penalized? If \code{TRUE}, all pairwise differences corresponding to one
-#' covariate are penalized.
+#' covariate are penalized. Can also be used with
+#' a character vector as input. Then, the character vector contains the names of the variables
+#' from Z1 whose parameters should be penalized.
 #' @param penalize.order.effect.absolute Should absolute values of order effect(s) be penalized?
 #' Only relevant if either \code{object.order.effect = TRUE} or \code{order.effect = TRUE}.
 #' @param penalize.order.effect.diffs Should differences of order effects be
@@ -58,9 +66,9 @@
 #' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
 #' 17(3), 223 - 243
 #' 
-#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
-#' Football Results in the German Bundesliga Using Match-specific Covariates, 
-#' \emph{Department of Statistics, LMU Munich}, Technical Report 197
+#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
+#' Analysis of the importance of on-field covariates in the German Bundesliga, 
+#' \emph{Journal of Applied Statistics}, published online
 #' @keywords BTLLasso control
 #' @examples
 #' 
@@ -270,9 +278,9 @@ ctrl.BTLLasso <- function(l.lambda = 30, log.lambda = TRUE, lambda.min = 0.05,
 #' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
 #' 17(3), 223 - 243
 #' 
-#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
-#' Football Results in the German Bundesliga Using Match-specific Covariates, 
-#' \emph{Department of Statistics, LMU Munich}, Technical Report 197
+#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
+#' Analysis of the importance of on-field covariates in the German Bundesliga, 
+#' \emph{Journal of Applied Statistics}, published online
 #' @keywords BTLLasso
 #' @examples
 #' 
@@ -390,7 +398,7 @@ ctrl.BTLLasso <- function(l.lambda = 30, log.lambda = TRUE, lambda.min = 0.05,
 BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL, lambda = NULL, 
   control = ctrl.BTLLasso(), trace = TRUE) {
   
-  
+
   ## create design matrix
   get.design <- design.BTLLasso(Y = Y, X = X, Z1 = Z1, Z2 = Z2, 
     control = control)
@@ -412,17 +420,17 @@ BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL, lambda = NULL,
   
   get.design$design.repar <- get.design$design.repar[!rep(na.total, each = Y$q), 
                                          ]
-  
+
   ## create response vector
-  if (Y$q == 1) {
-    response <- as.numeric(Y$response) - 1
+  if(identical(levels(Y$response),c("0","1"))){
+      response <- as.numeric(Y$response) -1
   } else {
     response <- cumul.response(Y)
   }
-  
+
   ## create penalty matrix
   get.penalties <- penalties.BTLLasso(Y = Y, X = X, Z1 = Z1, 
-    Z2 = Z2, control = control)
+    Z2 = Z2, control = control, get.design = get.design)
   
   ## create sequence of tuning parameters if not pre-specified
   if(is.null(lambda)){

@@ -2,8 +2,8 @@
 #### function to create complete design matrix
 
 create.design <- function(X, Z1, Z2, first.object, second.object, 
-  m, subject, control, order.Z1, order.Z2) {
-  
+  m, subject, control, order.Z1, order.Z2, with.order) {
+
   design.X <- design.X.repar <- design.Z1 <- design.Z2 <- design.order <- c()
   
   I <- m * (m - 1)/2
@@ -17,8 +17,8 @@ create.design <- function(X, Z1, Z2, first.object, second.object,
   }
   
   if (!is.null(X)) {
-    design.X <- create.design.X(design.help[, -m], X[subject,])
-    design.X.repar <- create.design.X(design.help, X[subject,])
+    design.X <- create.design.X(design.help[, -m], X[subject,,drop = FALSE])
+    design.X.repar <- create.design.X(design.help, X[subject,,drop = FALSE])
   }
   
   if (!is.null(Z1)) {
@@ -58,7 +58,10 @@ create.design <- function(X, Z1, Z2, first.object, second.object,
     } else {
       design.order <- matrix(1, nrow = n)
     }
+    design.order[!with.order,] <- 0
   }
+
+
 
   
   ## inclusion of intercepts
@@ -81,6 +84,7 @@ create.design <- function(X, Z1, Z2, first.object, second.object,
 
 
 create.design.X <- function(design.help, X) {
+
   design <- matrix(c(apply(X, 2, function(xx) {
     xx * c(design.help)
   })), nrow = nrow(design.help))

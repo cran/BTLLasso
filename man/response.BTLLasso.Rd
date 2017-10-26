@@ -5,7 +5,7 @@
 \title{Create response object for BTLLasso}
 \usage{
 response.BTLLasso(response, first.object = NULL, second.object = NULL,
-  subject = NULL)
+  subject = NULL, with.order = rep(TRUE, length(response)))
 }
 \arguments{
 \item{response}{Vector containing results (binary or ordinal) of single paired
@@ -21,6 +21,11 @@ object of the respective paired comparison from response.}
 
 \item{subject}{Vector (character, same length as response) indicating the subject that
 generated the respective paired comparison from response.}
+
+\item{with.order}{Boolean vector containing indicators for each paired comparison if an order effect was 
+present. By default, an order effect is assumed for each comparison. This option is relevant whenever 
+only some of the paired comparisons had an order effect and others did not, for example if some matches are
+played on neutral ground. This option is only effective if either \code{order.effect = TRUE} or \code{object.order.effect = TRUE}.}
 }
 \value{
 Object of class \code{response.BTLLasso}
@@ -62,9 +67,9 @@ Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling
 of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
 17(3), 223 - 243
 
-Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
-Football Results in the German Bundesliga Using Match-specific Covariates, 
-\emph{Department of Statistics, LMU Munich}, Technical Report 197
+Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
+Analysis of the importance of on-field covariates in the German Bundesliga, 
+\emph{Journal of Applied Statistics}, published online
 }
 \seealso{
 \code{\link{BTLLasso}}, \code{\link{cv.BTLLasso}}

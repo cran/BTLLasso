@@ -13,6 +13,8 @@ The list contains both information on the response (paired comparisons) and diff
 \item{first.object: Vector containing the first-named object per paired comparison}
 \item{second.object: Vector containing the second-named object per paired comparison}
 \item{subject: Vector containing a subject identifier per paired comparison}
+\item{with.order} Automatically generated vector containing information on order effect. Each paired 
+comparison is associated with an order effect.
 }}
 \item{X}{Matrix containing both subject-specific covariates
 \itemize{

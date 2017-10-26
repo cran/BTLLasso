@@ -1,4 +1,4 @@
-penalties.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL, 
+penalties.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL, get.design = get.design,
   control = ctrl.BTLLasso()) {
   #### get arguments from responseBTLLasso object
   n <- Y$n
@@ -19,6 +19,57 @@ penalties.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL,
   penalize.order.effect.diffs <- control$penalize.order.effect.diffs
   penalize.order.effect.absolute <- control$penalize.order.effect.absolute
   
+  ##  create which.pen vector for X
+  if(!is.logical(penalize.X)){
+    if(all(penalize.X %in% get.design$vars.X)){
+      which.pen.X <- rep(FALSE,get.design$p.X)
+      which.pen.X[which(get.design$vars.X %in% penalize.X)] <- TRUE
+      penalize.X <- TRUE
+    }else{
+      stop("The argument penalize.X must either be logical or a character vector containing variable names of X which should be penalized!")
+    }
+  }else{
+    which.pen.X <- rep(TRUE,get.design$p.X)
+  }
+
+  ##  create which.pen vector for Z1 absolute
+  if(!is.logical(penalize.Z1.absolute)){
+    if(all(penalize.Z1.absolute %in% get.design$vars.Z1)){
+      which.pen.Z1.absolute <- rep(FALSE,get.design$p.Z1)
+      which.pen.Z1.absolute[which(get.design$vars.Z1 %in% penalize.Z1.absolute)] <- TRUE
+      penalize.Z1.absolute <- TRUE
+    }else{
+      stop("The argument penalize.Z1.absolute must either be logical or a character vector containing variable names of Z1 which should be penalized with respect to absolute values!")
+    }
+  }else{
+    which.pen.Z1.absolute <- rep(TRUE,get.design$p.Z1)
+  }
+  
+  ##  create which.pen vector for Z1 diffs
+  if(!is.logical(penalize.Z1.diffs)){
+    if(all(penalize.Z1.diffs %in% get.design$vars.Z1)){
+      which.pen.Z1.diffs <- rep(FALSE,get.design$p.Z1)
+      which.pen.Z1.diffs[which(get.design$vars.Z1 %in% penalize.Z1.diffs)] <- TRUE
+      penalize.Z1.diffs <- TRUE
+    }else{
+      stop("The argument penalize.Z1.diffs must either be logical or a character vector containing variable names of Z1 which should be penalized with respect to absolute differences!")
+    }
+  }else{
+    which.pen.Z1.diffs <- rep(TRUE,get.design$p.Z1)
+  }
+  
+  ##  create which.pen vector for Z2
+  if(!is.logical(penalize.Z2)){
+    if(all(penalize.Z2 %in% get.design$vars.Z2)){
+      which.pen.Z2 <- rep(FALSE,get.design$p.Z2)
+      which.pen.Z2[which(get.design$vars.Z2 %in% penalize.Z2)] <- TRUE
+      penalize.Z2 <- TRUE
+    }else{
+      stop("The argument penalize.Z2 must either be logical or a character vector containing variable names of Z2 which should be penalized!")
+    }
+  }else{
+    which.pen.Z2 <- rep(TRUE,get.design$p.Z2)
+  }
   
   ## number of intercepts
   n.intercepts <- 0
@@ -60,8 +111,8 @@ penalties.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL,
   if (!is.null(X)) {
     p.X <- ncol(X)
     if (penalize.X) {
-      acoefs.X <- diag(p.X * (m - 1))
-      help.pen <- matrix(0, ncol = choose(m - 1, 2), nrow = m - 
+      acoefs.X <- diag(x = as.numeric(rep(which.pen.X,each=m-1)), p.X * (m - 1))
+      help.pen <- help.pen2 <- matrix(0, ncol = choose(m - 1, 2), nrow = m - 
         1)
       combis <- combn(m - 1, 2)
       for (ff in 1:ncol(combis)) {
@@ -75,9 +126,16 @@ penalties.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL,
         m.below <- matrix(rep(matrix(0, ncol = choose(m - 
           1, 2), nrow = m - 1), p.X - pp), ncol = choose(m - 
           1, 2))
-        acoefs.X <- cbind(acoefs.X, rbind(m.above, help.pen, 
-          m.below))
+        if(which.pen.X[pp]){
+          acoefs.X <- cbind(acoefs.X, rbind(m.above, help.pen, 
+                                            m.below))
+        }else{
+          acoefs.X <- cbind(acoefs.X, rbind(m.above, help.pen2, 
+                                            m.below))
+        }
+        
       }
+      acoefs.X <- acoefs.X[,colSums(abs(acoefs.X))>0, drop = FALSE]
       numpen.X <- ncol(acoefs.X)
     }
   }
@@ -90,10 +148,10 @@ penalties.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL,
       
       acoefs.Z1 <- c()
       if (penalize.Z1.absolute) {
-        acoefs.Z1 <- diag(m * p.Z1)
+        acoefs.Z1 <- diag(x = as.numeric(rep(which.pen.Z1.absolute,each=m)), p.Z1 * m)
       }
       if (penalize.Z1.diffs) {
-        help.pen <- matrix(0, ncol = choose(m, 2), nrow = m)
+        help.pen <- help.pen2 <- matrix(0, ncol = choose(m, 2), nrow = m)
         combis <- combn(m, 2)
         for (ff in 1:ncol(combis)) {
           help.pen[combis[1, ff], ff] <- 1
@@ -106,10 +164,17 @@ penalties.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL,
           m.below <- matrix(rep(matrix(0, ncol = choose(m, 
           2), nrow = m), p.Z1 - pp), ncol = choose(m, 
           2))
-          acoefs.Z1 <- cbind(acoefs.Z1, rbind(m.above, 
-          help.pen, m.below))
+          if(which.pen.Z1.diffs[pp]){
+            acoefs.Z1 <- cbind(acoefs.Z1, rbind(m.above, 
+                                                help.pen, m.below))
+          }else{
+            acoefs.Z1 <- cbind(acoefs.Z1, rbind(m.above, 
+                                                help.pen2, m.below))
+          }
+          
         }
       }
+      acoefs.Z1 <- acoefs.Z1[,colSums(abs(acoefs.Z1))>0, drop = FALSE]
       numpen.Z1 <- ncol(acoefs.Z1)
     }
   }
@@ -118,7 +183,8 @@ penalties.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL,
   if (!is.null(Z2)) {
     p.Z2 <- ncol(Z2)/m
     if (penalize.Z2) {
-      acoefs.Z2 <- diag(p.Z2)
+      acoefs.Z2 <- diag(x = as.numeric(which.pen.Z2), p.Z2)
+      acoefs.Z2 <- acoefs.Z2[,colSums(abs(acoefs.Z2))>0, drop = FALSE]
       numpen.Z2 <- ncol(acoefs.Z2)
     }
   }

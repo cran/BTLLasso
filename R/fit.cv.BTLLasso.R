@@ -29,7 +29,7 @@ fit.cv.BTLLasso <- function(response, design, penalty, q, m,
   
   id.fold <- rep(sample(which.fold, n.design, replace = FALSE), 
     each = q)
-  
+
   
   cv.fun <- function(ff) {
     
@@ -40,6 +40,12 @@ fit.cv.BTLLasso <- function(response, design, penalty, q, m,
     design.train <- design[which(id.fold != ff), , drop = FALSE]
     design.test <- design[which(id.fold == ff), , drop = FALSE]
     
+    if(any(apply(design.train,2,var)==0)){
+      stop("In cross-validation one of the parameters is not estimable, 
+probably because all correponding observations were eliminated from the training data.
+Please change your seed and/or increase the number of folds!")
+    }
+
     response.train <- response[which(id.fold != ff)]
     response.test <- response[which(id.fold == ff)]
     
@@ -47,7 +53,7 @@ fit.cv.BTLLasso <- function(response, design, penalty, q, m,
     fit.fold <- fit.BTLLasso(response.train, design.train, 
       penalty = penalty, lambda = lambda, k = k, m = m, 
       control = control, trace = trace)
-    
+
     coef.fold <- fit.fold$coefs
     
       if (cv.crit == "Deviance") {

@@ -13,6 +13,10 @@
 #' object of the respective paired comparison from response.
 #' @param subject Vector (character, same length as response) indicating the subject that
 #' generated the respective paired comparison from response.
+#' @param with.order Boolean vector containing indicators for each paired comparison if an order effect was 
+#' present. By default, an order effect is assumed for each comparison. This option is relevant whenever 
+#' only some of the paired comparisons had an order effect and others did not, for example if some matches are
+#' played on neutral ground. This option is only effective if either \code{order.effect = TRUE} or \code{object.order.effect = TRUE}.
 #' @return Object of class \code{response.BTLLasso}
 #' @author Gunther Schauberger\cr \email{gunther@@stat.uni-muenchen.de}\cr
 #' \url{http://www.semsto.statistik.uni-muenchen.de/personen/doktoranden/schauberger/index.html}
@@ -21,9 +25,9 @@
 #' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
 #' 17(3), 223 - 243
 #' 
-#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
-#' Football Results in the German Bundesliga Using Match-specific Covariates, 
-#' \emph{Department of Statistics, LMU Munich}, Technical Report 197
+#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
+#' Analysis of the importance of on-field covariates in the German Bundesliga, 
+#' \emph{Journal of Applied Statistics}, published online
 #' @examples
 #'
 #' \dontrun{
@@ -53,7 +57,7 @@
 #' m.models <- cv.BTLLasso(Y = Y.models, X = X.models)
 #' }
 response.BTLLasso <- function(response, first.object = NULL, second.object = NULL, 
-  subject = NULL) {
+  subject = NULL, with.order = rep(TRUE, length(response))) {
   
   if(inherits(response, "paircomp")){
     response <- as.matrix(response)
@@ -82,9 +86,10 @@ response.BTLLasso <- function(response, first.object = NULL, second.object = NUL
   lo1 <- length(first.object)
   lo2 <- length(second.object)
   ls <- length(subject)
+  lorder <- length(with.order)
   
-  if (!all(sapply(list(lo1, lo2, ls), identical, ly))) 
-    stop("The arguments response, first.object, second.object and (if specified) subject
+  if (!all(sapply(list(lo1, lo2, ls,lorder), identical, ly))) 
+    stop("The arguments response, first.object, second.object and (if specified) subject and with.order
      have to be of the same length")
 
   all.objects <- as.factor(as.character(unlist(list(first.object, 
@@ -112,7 +117,7 @@ response.BTLLasso <- function(response, first.object = NULL, second.object = NUL
   RET <- list(response = response, first.object = first.object, 
     second.object = second.object, subject = subject, withS = withS, 
     subject.names = subject.names, object.names = object.names, 
-    n = n, m = m, k = k, q = q)
+    n = n, m = m, k = k, q = q, with.order = with.order)
   
   class(RET) <- "responseBTLLasso"
   

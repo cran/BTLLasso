@@ -2,6 +2,7 @@ design.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL,
   control = ctrl.BTLLasso(), only.first = FALSE, sd.X = NULL,
   sd.Z1 = NULL, sd.Z2 = NULL) {
   
+
   #### get all arguments from responseBTLLasso object
   y.ord <- Y$response
   first.object <- Y$first.object
@@ -13,6 +14,7 @@ design.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL,
   withS <- Y$withS
   subject.names <- Y$subject.names
   object.names <- Y$object.names
+  with.order <- Y$with.order
   n <- Y$n
   m <- Y$m
   k <- Y$k
@@ -107,7 +109,7 @@ design.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL,
   
   ## number of intercepts
   n.intercepts <- 0
-  par.names.intercepts <- c()
+  par.names.intercepts <- par.names.intercepts.repar <- c()
   if (include.intercepts) {
     n.intercepts <- m - 1
     par.names.intercepts <- object.names[1:(m - 1)]
@@ -129,7 +131,7 @@ design.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL,
   
   #### make design matrix design matrix
   design <- create.design(X, Z1, Z2, first.object, second.object, 
-    m, subject, control, order.Z1, order.Z2)
+    m, subject, control, order.Z1, order.Z2, with.order)
   design.repar <- design$design.repar
   design <- design$design
 

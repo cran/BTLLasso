@@ -14,6 +14,8 @@ The list contains both information on the response (paired comparisons) and diff
 \item{first.object: Vector containing the first-named party per paired comparison}
 \item{second.object: Vector containing the second-named party per paired comparison}
 \item{subject: Vector containing a person identifier per paired comparison}
+\item{with.order} Automatically generated vector containing information on order effect. Irrelevant, because 
+no order effect needs to be included in the analysis of GLES data. 
 }}
 \item{X}{Matrix containing all eight person-specific covariates
 \itemize{
@@ -85,8 +87,8 @@ Heterogeneity in Paired Comparison Data - an L1 Penalty Approach with an
 Application to Party Preference Data, \emph{Department of Statistics, LMU
 Munich}, Technical Report 183
 
-Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
-Football Results in the German Bundesliga Using Match-specific Covariates, 
-\emph{Department of Statistics, LMU Munich}, Technical Report 197
+Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
+Analysis of the importance of on-field covariates in the German Bundesliga, 
+\emph{Journal of Applied Statistics}, published online
 }
 \keyword{datasets}

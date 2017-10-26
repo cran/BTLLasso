@@ -1,8 +1,8 @@
 Package: BTLLasso
 Type: Package
 Title: Modelling Heterogeneity in Paired Comparison Data
-Version: 0.1-6
-Date: 2017-05-23
+Version: 0.1-7
+Date: 2017-10-26
 Author: Gunther Schauberger
 Maintainer: Gunther Schauberger <gunther@stat.uni-muenchen.de>
 Description: Performs 'BTLLasso' (Schauberger and Tutz, 2017: Subject-Specific Modelling of Paired Comparison Data - a Lasso-Type Penalty Approach), a method to include different types of variables in paired
@@ -10,12 +10,12 @@ Description: Performs 'BTLLasso' (Schauberger and Tutz, 2017: Subject-Specific M
     can have an influence on the attractiveness/strength of the objects. Suitable L1 penalty terms are used 
     to cluster certain effects and to reduce the complexity of the models.
 License: GPL (>= 2)
-Imports: Rcpp (>= 0.11.3), stringr
+Imports: Rcpp (>= 0.11.3), stringr, psychotools
 Depends: Matrix, parallel, TeachingDemos
 LinkingTo: Rcpp, RcppArmadillo
 SystemRequirements: C++11
 RoxygenNote: 6.0.1
 NeedsCompilation: yes
-Packaged: 2017-05-23 11:52:56 UTC; schaubergerg
+Packaged: 2017-10-26 10:42:35 UTC; schaubergerg
 Repository: CRAN
-Date/Publication: 2017-05-23 17:27:22 UTC
+Date/Publication: 2017-10-26 10:56:51 UTC

@@ -78,9 +78,9 @@
 #' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
 #' 17(3), 223 - 243
 #' 
-#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
-#' Football Results in the German Bundesliga Using Match-specific Covariates, 
-#' \emph{Department of Statistics, LMU Munich}, Technical Report 197
+#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
+#' Analysis of the importance of on-field covariates in the German Bundesliga, 
+#' \emph{Journal of Applied Statistics}, published online
 #' @keywords BTLLasso cross validation
 #' @examples
 #' 
@@ -222,14 +222,14 @@ cv.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL, folds = 10,
   get.design$design.repar <- get.design$design.repar[!rep(na.total, each = Y$q),]
   
   ## create response vector
-  if (Y$q == 1) {
-    response <- as.numeric(Y$response) - 1
+  if(identical(levels(Y$response),c("0","1"))){
+    response <- as.numeric(Y$response) -1
   } else {
     response <- cumul.response(Y)
   }
-  
+
   get.penalties <- penalties.BTLLasso(Y = Y, X = X, Z1 = Z1, 
-    Z2 = Z2, control = control)
+    Z2 = Z2, control = control, get.design = get.design)
   
   ## create sequence of tuning parameters if not pre-specified
   if(is.null(lambda)){

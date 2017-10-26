@@ -32,8 +32,8 @@ Y.Buli <- response.BTLLasso(response = BuliResponse$Result,
 }
 }
 \references{
-Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
-Football Results in the German Bundesliga Using Match-specific Covariates, 
-\emph{Department of Statistics, LMU Munich}, Technical Report 197
+Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
+Analysis of the importance of on-field covariates in the German Bundesliga, 
+\emph{Journal of Applied Statistics}, published online
 }
 \keyword{datasets}

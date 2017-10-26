@@ -21,9 +21,9 @@
 #' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
 #' 17(3), 223 - 243
 #' 
-#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
-#' Football Results in the German Bundesliga Using Match-specific Covariates, 
-#' \emph{Department of Statistics, LMU Munich}, Technical Report 197
+#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
+#' Analysis of the importance of on-field covariates in the German Bundesliga, 
+#' \emph{Journal of Applied Statistics}, published online
 #' @keywords BTLLasso paths parameter paths
 #' @examples
 #' 

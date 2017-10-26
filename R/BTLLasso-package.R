@@ -20,9 +20,9 @@
 #' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
 #' 17(3), 223 - 243
 #' 
-#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
-#' Football Results in the German Bundesliga Using Match-specific Covariates, 
-#' \emph{Department of Statistics, LMU Munich}, Technical Report 197
+#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
+#' Analysis of the importance of on-field covariates in the German Bundesliga, 
+#' \emph{Journal of Applied Statistics}, published online
 #' @keywords package BTL Bradley-Terry BTLLasso
 #' @examples
 #' 
@@ -143,7 +143,7 @@ NULL
 #' Bundesliga Data 2015/16 (Buli1516)
 #' 
 #' Data from the German Bundesliga from the season 2015/16. 
-#' The data contain all 306 matches of the season treated as paired comparisons with 5 different 
+#' The data contain all 306 matches of the season treated as paired comparisons with  5 (Y5) or 3 (Y3) different 
 #' response categories. Additionally, different match-specific covariates are given as, for example, 
 #' the percentage of ball possession or the total running distance per team and per match.
 #' 
@@ -158,6 +158,7 @@ NULL
 #' \item{first.object: Vector containing the first-named team per paired comparison (home team)}
 #' \item{second.object: Vector containing the second-named team per paired comparison (away team)}
 #' \item{subject: Vector containing a match-day identifier per paired comparison}
+#' \item{with.order} Vector containing information that each match has to be considered including an order effect.
 #' }}
 #' \item{Y3}{A response.BTLLasso object with 3 response categories for the Buli1516 data including
 #' \itemize{
@@ -165,6 +166,7 @@ NULL
 #' \item{first.object: Vector containing the first-named team per paired comparison (home team)}
 #' \item{second.object: Vector containing the second-named team per paired comparison (away team)}
 #' \item{subject: Vector containing a match-day identifier per paired comparison}
+#' \item{with.order} Vector containing information that each match has to be considered including an order effect.
 #' }}
 #' \item{Z1}{Matrix containing all team-match-specific covariates
 #' \itemize{
@@ -183,12 +185,13 @@ NULL
 #' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
 #' 17(3), 223 - 243
 #' 
-#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
-#' Football Results in the German Bundesliga Using Match-specific Covariates, 
-#' \emph{Department of Statistics, LMU Munich}, Technical Report 197
+#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
+#' Analysis of the importance of on-field covariates in the German Bundesliga, 
+#' \emph{Journal of Applied Statistics}, published online
 #' @source
 #' \url{http://www.kicker.de/}
 #' @keywords datasets
+#' @seealso \code{\link{Buli1415}}, \code{\link{Buli1617}}
 #' @examples
 #' \dontrun{
 #' op <- par(no.readonly = TRUE)
@@ -197,6 +200,162 @@ NULL
 #' 
 #' Y <- Buli1516$Y5
 #' Z1 <- scale(Buli1516$Z1, scale = FALSE)
+#' 
+#' ctrl.buli <- ctrl.BTLLasso(object.order.effect = TRUE, 
+#'                            name.order = "Home", 
+#'                            penalize.order.effect.diffs = TRUE, 
+#'                            penalize.order.effect.absolute = FALSE,
+#'                            order.center = TRUE, lambda2 = 1e-2)
+#' 
+#' set.seed(1860)
+#' m.buli <- cv.BTLLasso(Y = Y, Z1 = Z1, control = ctrl.buli)
+#' m.buli
+#' 
+#' par(xpd = TRUE, mar = c(5,4,4,6))
+#' plot(m.buli)
+#' 
+#' par(op)
+#' }
+NULL
+
+#' Bundesliga Data 2014/15 (Buli1415)
+#' 
+#' Data from the German Bundesliga from the season 2014/15. 
+#' The data contain all 306 matches of the season treated as paired comparisons with 5 (Y5) or 3 (Y3) different 
+#' response categories. Additionally, different match-specific covariates are given as, for example, 
+#' the percentage of ball possession or the total running distance per team and per match.
+#' 
+#' @name Buli1415
+#' @docType data
+#' @format A list containing data from the German Bundesliga with 306 observations. 
+#' The list contains both information on the response (paired comparisons) and different covariates.
+#' \describe{ 
+#' \item{Y5}{A response.BTLLasso object with 5 response categories for the Buli1516 data including
+#' \itemize{
+#' \item{response: Ordinal paired comparison response vector} 
+#' \item{first.object: Vector containing the first-named team per paired comparison (home team)}
+#' \item{second.object: Vector containing the second-named team per paired comparison (away team)}
+#' \item{subject: Vector containing a match-day identifier per paired comparison}
+#' \item{with.order} Vector containing information that each match has to be considered including an order effect.
+#' }}
+#' \item{Y3}{A response.BTLLasso object with 3 response categories for the Buli1516 data including
+#' \itemize{
+#' \item{response: Ordinal paired comparison response vector} 
+#' \item{first.object: Vector containing the first-named team per paired comparison (home team)}
+#' \item{second.object: Vector containing the second-named team per paired comparison (away team)}
+#' \item{subject: Vector containing a match-day identifier per paired comparison}
+#' \item{with.order} Vector containing information that each match has to be considered including an order effect.
+#' }}
+#' \item{Z1}{Matrix containing all team-match-specific covariates
+#' \itemize{
+#' \item{Distance: Total amount of km run} 
+#' \item{BallPossession: Percentage of ball possession}
+#' \item{TacklingRate: Rate of won tacklings}
+#' \item{ShotsonGoal: Total number of shots on goal} 
+#' \item{CompletionRate: Percentage of passes reaching teammates} 
+#' \item{FoulsSuffered: Number of fouls suffered} 
+#' \item{Offside: Number of offsides (in attack)}
+#' }
+#' }
+#' }
+#' @references Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
+#' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
+#' 17(3), 223 - 243
+#' 
+#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
+#' Analysis of the importance of on-field covariates in the German Bundesliga, 
+#' \emph{Journal of Applied Statistics}, published online
+#' @source
+#' \url{http://www.kicker.de/}
+#' @keywords datasets
+#' @seealso \code{\link{Buli1516}}, \code{\link{Buli1617}}
+#' @examples
+#' \dontrun{
+#' op <- par(no.readonly = TRUE)
+#' 
+#' data(Buli1415)
+#' 
+#' Y <- Buli1415$Y5
+#' Z1 <- scale(Buli1415$Z1, scale = FALSE)
+#' 
+#' ctrl.buli <- ctrl.BTLLasso(object.order.effect = TRUE, 
+#'                            name.order = "Home", 
+#'                            penalize.order.effect.diffs = TRUE, 
+#'                            penalize.order.effect.absolute = FALSE,
+#'                            order.center = TRUE, lambda2 = 1e-2)
+#' 
+#' set.seed(1860)
+#' m.buli <- cv.BTLLasso(Y = Y, Z1 = Z1, control = ctrl.buli)
+#' m.buli
+#' 
+#' par(xpd = TRUE, mar = c(5,4,4,6))
+#' plot(m.buli)
+#' 
+#' par(op)
+#' }
+NULL
+
+
+#' Bundesliga Data 2016/17 (Buli1617)
+#' 
+#' Data from the German Bundesliga from the season 2016/17. 
+#' The data contain all 306 matches of the season treated as paired comparisons with 5 (Y5) or 3 (Y3) different 
+#' response categories. Additionally, different match-specific covariates are given as, for example, 
+#' the percentage of ball possession or the total running distance per team and per match.
+#' 
+#' @name Buli1617
+#' @docType data
+#' @format A list containing data from the German Bundesliga with 306 observations. 
+#' The list contains both information on the response (paired comparisons) and different covariates.
+#' \describe{ 
+#' \item{Y5}{A response.BTLLasso object with 5 response categories for the Buli1516 data including
+#' \itemize{
+#' \item{response: Ordinal paired comparison response vector} 
+#' \item{first.object: Vector containing the first-named team per paired comparison (home team)}
+#' \item{second.object: Vector containing the second-named team per paired comparison (away team)}
+#' \item{subject: Vector containing a match-day identifier per paired comparison}
+#' \item{with.order} Vector containing information that each match has to be considered including an order effect.
+#' }}
+#' \item{Y3}{A response.BTLLasso object with 3 response categories for the Buli1516 data including
+#' \itemize{
+#' \item{response: Ordinal paired comparison response vector} 
+#' \item{first.object: Vector containing the first-named team per paired comparison (home team)}
+#' \item{second.object: Vector containing the second-named team per paired comparison (away team)}
+#' \item{subject: Vector containing a match-day identifier per paired comparison}
+#' \item{with.order} Vector containing information that each match has to be considered including an order effect.
+#' }}
+#' \item{Z1}{Matrix containing all team-match-specific covariates
+#' \itemize{
+#' \item{Distance: Total amount of km run} 
+#' \item{BallPossession: Percentage of ball possession}
+#' \item{TacklingRate: Rate of won tacklings}
+#' \item{ShotsonGoal: Total number of shots on goal} 
+#' \item{CompletionRate: Percentage of passes reaching teammates} 
+#' \item{FoulsSuffered: Number of fouls suffered} 
+#' \item{Offside: Number of offsides (in attack)}
+#' \item{Corners: Number of corners (in attack)}
+#' }
+#' }
+#' }
+#' @references Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
+#' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
+#' 17(3), 223 - 243
+#' 
+#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
+#' Analysis of the importance of on-field covariates in the German Bundesliga, 
+#' \emph{Journal of Applied Statistics}, published online
+#' @source
+#' \url{http://www.kicker.de/}
+#' @keywords datasets
+#' @seealso \code{\link{Buli1415}}, \code{\link{Buli1516}}
+#' @examples
+#' \dontrun{
+#' op <- par(no.readonly = TRUE)
+#' 
+#' data(Buli1617)
+#' 
+#' Y <- Buli1617$Y5
+#' Z1 <- scale(Buli1617$Z1, scale = FALSE)
 #' 
 #' ctrl.buli <- ctrl.BTLLasso(object.order.effect = TRUE, 
 #'                            name.order = "Home", 
@@ -233,9 +392,9 @@ NULL
 #' \item{TeamAway}{Abbreviation of away team.}
 #' \item{Matchday}{Matchdays from 1 to 34.}
 #' }
-#' @references Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
-#' Football Results in the German Bundesliga Using Match-specific Covariates, 
-#' \emph{Department of Statistics, LMU Munich}, Technical Report 197
+#' @references Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
+#' Analysis of the importance of on-field covariates in the German Bundesliga, 
+#' \emph{Journal of Applied Statistics}, published online
 #' @source
 #' \url{http://www.kicker.de/}
 #' @keywords datasets
@@ -270,6 +429,8 @@ NULL
 #' \item{first.object: Vector containing the first-named party per paired comparison}
 #' \item{second.object: Vector containing the second-named party per paired comparison}
 #' \item{subject: Vector containing a person identifier per paired comparison}
+#' \item{with.order} Automatically generated vector containing information on order effect. Irrelevant, because 
+#' no order effect needs to be included in the analysis of GLES data. 
 #' }}
 #' \item{X}{Matrix containing all eight person-specific covariates
 #' \itemize{
@@ -308,9 +469,9 @@ NULL
 #' Application to Party Preference Data, \emph{Department of Statistics, LMU
 #' Munich}, Technical Report 183
 #' 
-#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
-#' Football Results in the German Bundesliga Using Match-specific Covariates, 
-#' \emph{Department of Statistics, LMU Munich}, Technical Report 197
+#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
+#' Analysis of the importance of on-field covariates in the German Bundesliga, 
+#' \emph{Journal of Applied Statistics}, published online
 #' @source
 #' \url{http://gles.eu/wordpress/english/}
 #' @keywords datasets
@@ -362,6 +523,8 @@ NULL
 #' \item{first.object: Vector containing the first-named party per paired comparison}
 #' \item{second.object: Vector containing the second-named party per paired comparison}
 #' \item{subject: Vector containing a person identifier per paired comparison}
+#' \item{with.order} Automatically generated vector containing information on order effect. Irrelevant, because 
+#' no order effect needs to be included in the analysis of GLES data. 
 #' }}
 #' \item{X}{Matrix containing all eight person-specific covariates
 #' \itemize{
@@ -387,12 +550,13 @@ NULL
 #' Application to Party Preference Data, \emph{Department of Statistics, LMU
 #' Munich}, Technical Report 183
 #' 
-#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
-#' Football Results in the German Bundesliga Using Match-specific Covariates, 
-#' \emph{Department of Statistics, LMU Munich}, Technical Report 197
+#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
+#' Analysis of the importance of on-field covariates in the German Bundesliga, 
+#' \emph{Journal of Applied Statistics}, published online
 #' @source
 #' \url{http://gles.eu/wordpress/english/}
 #' @keywords datasets
+#' @seealso \code{\link{GLES}}
 #' @examples
 #' 
 #' \dontrun{
@@ -444,6 +608,8 @@ NULL
 #' \item{first.object: Vector containing the first-named object per paired comparison}
 #' \item{second.object: Vector containing the second-named object per paired comparison}
 #' \item{subject: Vector containing a subject identifier per paired comparison}
+#' \item{with.order} Automatically generated vector containing information on order effect. Each paired 
+#' comparison is associated with an order effect.
 #' }}
 #' \item{X}{Matrix containing both subject-specific covariates
 #' \itemize{

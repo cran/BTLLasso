@@ -68,17 +68,25 @@ dummy coding.}
 all pairwise differences between intercepts are penalized.}
 
 \item{penalize.X}{Should effects from X matrix be penalized? If \code{TRUE},
-all pairwise differences corresponding to one covariate are penalized.}
+all pairwise differences corresponding to one covariate are penalized. Can also be used with
+a character vector as input. Then, the character vector contains the names of the variables
+from X whose parameters should be penalized.}
 
 \item{penalize.Z2}{Should absolute values of effects from Z2 matrix be
-penalized?}
+penalized? Can also be used with
+a character vector as input. Then, the character vector contains the names of the variables
+from Z2 whose parameters should be penalized.}
 
 \item{penalize.Z1.absolute}{Should absolute values of effects from Z1 matrix
-be penalized?}
+be penalized? Can also be used with
+a character vector as input. Then, the character vector contains the names of the variables
+from Z1 whose parameters should be penalized.}
 
 \item{penalize.Z1.diffs}{Should differences of effects from Z1 matrix be
 penalized? If \code{TRUE}, all pairwise differences corresponding to one
-covariate are penalized.}
+covariate are penalized. Can also be used with
+a character vector as input. Then, the character vector contains the names of the variables
+from Z1 whose parameters should be penalized.}
 
 \item{penalize.order.effect.absolute}{Should absolute values of order effect(s) be penalized?
 Only relevant if either \code{object.order.effect = TRUE} or \code{order.effect = TRUE}.}
@@ -209,9 +217,9 @@ Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling
 of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
 17(3), 223 - 243
 
-Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2016): Modelling 
-Football Results in the German Bundesliga Using Match-specific Covariates, 
-\emph{Department of Statistics, LMU Munich}, Technical Report 197
+Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
+Analysis of the importance of on-field covariates in the German Bundesliga, 
+\emph{Journal of Applied Statistics}, published online
 }
 \seealso{
 \code{\link{BTLLasso}}, \code{\link{cv.BTLLasso}}
