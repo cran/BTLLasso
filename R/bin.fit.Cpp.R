@@ -5,8 +5,7 @@ bin.fit.Cpp <- function(resp, design, kat, epsilon = 1e-05, penalty,
   lambda, max.iter = 200, start = NULL, adaptive = NULL, norm = "L1", 
   control = list(c = 1e-06, gama = 20, index = NULL), m, hat.matrix = FALSE, 
   lambda2 = 1e-04) {
-  
-  
+
   N <- length(resp)
   q <- kat - 1
   n <- N/q
@@ -14,9 +13,10 @@ bin.fit.Cpp <- function(resp, design, kat, epsilon = 1e-05, penalty,
   acoefs <- penalty$acoefs
   
   if (is.null(start)) {
-    start <- coef(glm.fit(y = resp, x = design, family = binomial()))
-    
-    start[which(rowSums(acoefs) != 0)] <- 0
+    start <- rep(0,ncol(design))
+    if(any(which(rowSums(abs(acoefs)) == 0))){
+      start[which(rowSums(abs(acoefs)) == 0)] <- coef(glm.fit(y = resp, x = design[,which(rowSums(abs(acoefs)) == 0)], family = binomial()))
+    }
     if (any(is.na(start))) {
       start[which(is.na(start))] <- 0
     }

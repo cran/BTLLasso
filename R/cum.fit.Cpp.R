@@ -11,9 +11,10 @@ cum.fit.Cpp <- function(resp, design, kat, epsilon = 1e-05, penalty,
   acoefs <- penalty$acoefs
   
   if (is.null(start)) {
-    start <- rep(0, ncol(design))
-    start[which(rowSums(abs(acoefs)) == 0)] <- coef(glm.fit(y = resp, 
-      x = design[, which(rowSums(abs(acoefs)) == 0)], family = binomial()))
+    start <- rep(0,ncol(design))
+    if(any(which(rowSums(abs(acoefs)) == 0))){
+      start[which(rowSums(abs(acoefs)) == 0)] <- coef(glm.fit(y = resp, x = design[,which(rowSums(abs(acoefs)) == 0)], family = binomial()))
+    }
     if (any(is.na(start))) {
       start[which(is.na(start))] <- 0
     }

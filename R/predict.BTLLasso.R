@@ -14,16 +14,19 @@
 #' type "response" gives the respective probabilities. Type "trait" gives the estimated latent traits
 #' of both competitors/objects in the paired comparisons. 
 #' @param ... Further predict arguments.
-#' @author Gunther Schauberger\cr \email{gunther@@stat.uni-muenchen.de}\cr
-#' \url{http://www.semsto.statistik.uni-muenchen.de/personen/doktoranden/schauberger/index.html}
+#' @author Gunther Schauberger\cr \email{gunther.schauberger@@tum.de}
 #' @seealso \code{\link{BTLLasso}}, \code{\link{cv.BTLLasso}}
-#' @references Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
+#' @references Schauberger, Gunther and Tutz, Gerhard (2019): BTLLasso - A Common Framework and Software 
+#' Package for the Inclusion  and Selection of Covariates in Bradley-Terry Models, \emph{Journal of 
+#' Statistical Software}, to appear
+#' 
+#' Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
 #' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
 #' 17(3), 223 - 243
 #' 
-#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
+#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2018): 
 #' Analysis of the importance of on-field covariates in the German Bundesliga, 
-#' \emph{Journal of Applied Statistics}, published online
+#' \emph{Journal of Applied Statistics}, 45(9), 1561 - 1578
 #' @keywords BTLLasso paths parameter paths
 #' @examples
 #' 

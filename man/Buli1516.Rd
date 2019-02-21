@@ -35,7 +35,18 @@ The list contains both information on the response (paired comparisons) and diff
 }
 }
 \item{Z2}{Matrix containing all the average market values of the teams as a team-specific covariate} 
-}}
+}
+ @references Schauberger, Gunther and Tutz, Gerhard (2019): BTLLasso - A Common Framework and Software 
+Package for the Inclusion  and Selection of Covariates in Bradley-Terry Models, \emph{Journal of 
+Statistical Software}, to appear
+
+Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
+of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
+17(3), 223 - 243
+
+Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2018): 
+Analysis of the importance of on-field covariates in the German Bundesliga, 
+\emph{Journal of Applied Statistics}, 45(9), 1561 - 1578}
 \source{
 \url{http://www.kicker.de/}
 }
@@ -70,16 +81,7 @@ plot(m.buli)
 par(op)
 }
 }
-\references{
-Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
-of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
-17(3), 223 - 243
-
-Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
-Analysis of the importance of on-field covariates in the German Bundesliga, 
-\emph{Journal of Applied Statistics}, published online
-}
 \seealso{
-\code{\link{Buli1415}}, \code{\link{Buli1617}}
+\code{\link{Buli1415}}, \code{\link{Buli1617}}, \code{\link{Buli1718}}
 }
 \keyword{datasets}

@@ -82,13 +82,12 @@ Rattinger, H., S. Rossteutscher, R. Schmitt-Beck, B. Wessels,
 and C. Wolf (2014): Pre-election cross section (GLES 2013). \emph{GESIS Data
 Archive, Cologne ZA5700 Data file Version 2.0.0.}
 
-Schauberger, Gunther and Tutz, Gerhard (2015): Modelling
-Heterogeneity in Paired Comparison Data - an L1 Penalty Approach with an
-Application to Party Preference Data, \emph{Department of Statistics, LMU
-Munich}, Technical Report 183
+Schauberger, Gunther and Tutz, Gerhard (2019): BTLLasso - A Common Framework and Software 
+Package for the Inclusion  and Selection of Covariates in Bradley-Terry Models, \emph{Journal of 
+Statistical Software}, to appear
 
-Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
-Analysis of the importance of on-field covariates in the German Bundesliga, 
-\emph{Journal of Applied Statistics}, published online
+Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
+of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
+17(3), 223 - 243
 }
 \keyword{datasets}

@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // cumfit
 List cumfit(NumericMatrix betanew2, double epsilon, int maxiter, NumericMatrix acoefs2, double lambda, NumericMatrix weight2, List control, NumericMatrix design2, int N, int n, double q, NumericMatrix resp2, NumericVector index, double c, double gama, std::string norm, int hatmatrix, double lambda2, NumericMatrix checktheta2);
-RcppExport SEXP BTLLasso_cumfit(SEXP betanew2SEXP, SEXP epsilonSEXP, SEXP maxiterSEXP, SEXP acoefs2SEXP, SEXP lambdaSEXP, SEXP weight2SEXP, SEXP controlSEXP, SEXP design2SEXP, SEXP NSEXP, SEXP nSEXP, SEXP qSEXP, SEXP resp2SEXP, SEXP indexSEXP, SEXP cSEXP, SEXP gamaSEXP, SEXP normSEXP, SEXP hatmatrixSEXP, SEXP lambda2SEXP, SEXP checktheta2SEXP) {
+RcppExport SEXP _BTLLasso_cumfit(SEXP betanew2SEXP, SEXP epsilonSEXP, SEXP maxiterSEXP, SEXP acoefs2SEXP, SEXP lambdaSEXP, SEXP weight2SEXP, SEXP controlSEXP, SEXP design2SEXP, SEXP NSEXP, SEXP nSEXP, SEXP qSEXP, SEXP resp2SEXP, SEXP indexSEXP, SEXP cSEXP, SEXP gamaSEXP, SEXP normSEXP, SEXP hatmatrixSEXP, SEXP lambda2SEXP, SEXP checktheta2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -37,7 +37,7 @@ END_RCPP
 }
 // binfit
 List binfit(NumericMatrix betanew2, double epsilon, int maxiter, NumericMatrix acoefs2, double lambda, NumericMatrix weight2, List control, NumericMatrix design2, int N, int n, int q, NumericMatrix resp2, NumericVector index, double c, double gama, std::string norm, int hatmatrix, double lambda2);
-RcppExport SEXP BTLLasso_binfit(SEXP betanew2SEXP, SEXP epsilonSEXP, SEXP maxiterSEXP, SEXP acoefs2SEXP, SEXP lambdaSEXP, SEXP weight2SEXP, SEXP controlSEXP, SEXP design2SEXP, SEXP NSEXP, SEXP nSEXP, SEXP qSEXP, SEXP resp2SEXP, SEXP indexSEXP, SEXP cSEXP, SEXP gamaSEXP, SEXP normSEXP, SEXP hatmatrixSEXP, SEXP lambda2SEXP) {
+RcppExport SEXP _BTLLasso_binfit(SEXP betanew2SEXP, SEXP epsilonSEXP, SEXP maxiterSEXP, SEXP acoefs2SEXP, SEXP lambdaSEXP, SEXP weight2SEXP, SEXP controlSEXP, SEXP design2SEXP, SEXP NSEXP, SEXP nSEXP, SEXP qSEXP, SEXP resp2SEXP, SEXP indexSEXP, SEXP cSEXP, SEXP gamaSEXP, SEXP normSEXP, SEXP hatmatrixSEXP, SEXP lambda2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -62,4 +62,15 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(binfit(betanew2, epsilon, maxiter, acoefs2, lambda, weight2, control, design2, N, n, q, resp2, index, c, gama, norm, hatmatrix, lambda2));
     return rcpp_result_gen;
 END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_BTLLasso_cumfit", (DL_FUNC) &_BTLLasso_cumfit, 19},
+    {"_BTLLasso_binfit", (DL_FUNC) &_BTLLasso_binfit, 18},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_BTLLasso(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }

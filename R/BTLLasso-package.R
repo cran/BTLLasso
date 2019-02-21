@@ -13,16 +13,19 @@
 #' 
 #' @name BTLLasso-package
 #' @docType package
-#' @author Gunther Schauberger\cr \email{gunther@@stat.uni-muenchen.de}\cr
-#' \url{http://www.semsto.statistik.uni-muenchen.de/personen/doktoranden/schauberger/index.html}
+#' @author Gunther Schauberger\cr \email{gunther.schauberger@@tum.de}
 #' @seealso \code{\link{BTLLasso}}, \code{\link{cv.BTLLasso}}
-#' @references Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
+#' @references Schauberger, Gunther and Tutz, Gerhard (2019): BTLLasso - A Common Framework and Software 
+#' Package for the Inclusion  and Selection of Covariates in Bradley-Terry Models, \emph{Journal of 
+#' Statistical Software}, to appear
+#' 
+#' Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
 #' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
 #' 17(3), 223 - 243
 #' 
-#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
+#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2018): 
 #' Analysis of the importance of on-field covariates in the German Bundesliga, 
-#' \emph{Journal of Applied Statistics}, published online
+#' \emph{Journal of Applied Statistics}, 45(9), 1561 - 1578
 #' @keywords package BTL Bradley-Terry BTLLasso
 #' @examples
 #' 
@@ -181,17 +184,21 @@ NULL
 #' }
 #' \item{Z2}{Matrix containing all the average market values of the teams as a team-specific covariate} 
 #' }
-#' @references Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
+#'  @references Schauberger, Gunther and Tutz, Gerhard (2019): BTLLasso - A Common Framework and Software 
+#' Package for the Inclusion  and Selection of Covariates in Bradley-Terry Models, \emph{Journal of 
+#' Statistical Software}, to appear
+#' 
+#' Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
 #' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
 #' 17(3), 223 - 243
 #' 
-#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
+#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2018): 
 #' Analysis of the importance of on-field covariates in the German Bundesliga, 
-#' \emph{Journal of Applied Statistics}, published online
+#' \emph{Journal of Applied Statistics}, 45(9), 1561 - 1578
 #' @source
 #' \url{http://www.kicker.de/}
 #' @keywords datasets
-#' @seealso \code{\link{Buli1415}}, \code{\link{Buli1617}}
+#' @seealso \code{\link{Buli1415}}, \code{\link{Buli1617}}, \code{\link{Buli1718}}
 #' @examples
 #' \dontrun{
 #' op <- par(no.readonly = TRUE)
@@ -258,17 +265,21 @@ NULL
 #' }
 #' }
 #' }
-#' @references Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
+#' @references Schauberger, Gunther and Tutz, Gerhard (2019): BTLLasso - A Common Framework and Software 
+#' Package for the Inclusion  and Selection of Covariates in Bradley-Terry Models, \emph{Journal of 
+#' Statistical Software}, to appear
+#' 
+#' Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
 #' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
 #' 17(3), 223 - 243
 #' 
-#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
+#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2018): 
 #' Analysis of the importance of on-field covariates in the German Bundesliga, 
-#' \emph{Journal of Applied Statistics}, published online
+#' \emph{Journal of Applied Statistics}, 45(9), 1561 - 1578
 #' @source
 #' \url{http://www.kicker.de/}
 #' @keywords datasets
-#' @seealso \code{\link{Buli1516}}, \code{\link{Buli1617}}
+#' @seealso \code{\link{Buli1516}}, \code{\link{Buli1617}}, \code{\link{Buli1718}}
 #' @examples
 #' \dontrun{
 #' op <- par(no.readonly = TRUE)
@@ -337,17 +348,21 @@ NULL
 #' }
 #' }
 #' }
-#' @references Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
+#'  @references Schauberger, Gunther and Tutz, Gerhard (2019): BTLLasso - A Common Framework and Software 
+#' Package for the Inclusion  and Selection of Covariates in Bradley-Terry Models, \emph{Journal of 
+#' Statistical Software}, to appear
+#' 
+#' Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
 #' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
 #' 17(3), 223 - 243
 #' 
-#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
+#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2018): 
 #' Analysis of the importance of on-field covariates in the German Bundesliga, 
-#' \emph{Journal of Applied Statistics}, published online
+#' \emph{Journal of Applied Statistics}, 45(9), 1561 - 1578
 #' @source
 #' \url{http://www.kicker.de/}
 #' @keywords datasets
-#' @seealso \code{\link{Buli1415}}, \code{\link{Buli1516}}
+#' @seealso \code{\link{Buli1415}}, \code{\link{Buli1516}}, \code{\link{Buli1718}}
 #' @examples
 #' \dontrun{
 #' op <- par(no.readonly = TRUE)
@@ -392,9 +407,17 @@ NULL
 #' \item{TeamAway}{Abbreviation of away team.}
 #' \item{Matchday}{Matchdays from 1 to 34.}
 #' }
-#' @references Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
+#'  @references Schauberger, Gunther and Tutz, Gerhard (2019): BTLLasso - A Common Framework and Software 
+#' Package for the Inclusion  and Selection of Covariates in Bradley-Terry Models, \emph{Journal of 
+#' Statistical Software}, to appear
+#' 
+#' Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
+#' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
+#' 17(3), 223 - 243
+#' 
+#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2018): 
 #' Analysis of the importance of on-field covariates in the German Bundesliga, 
-#' \emph{Journal of Applied Statistics}, published online
+#' \emph{Journal of Applied Statistics}, 45(9), 1561 - 1578
 #' @source
 #' \url{http://www.kicker.de/}
 #' @keywords datasets
@@ -464,14 +487,13 @@ NULL
 #' and C. Wolf (2014): Pre-election cross section (GLES 2013). \emph{GESIS Data
 #' Archive, Cologne ZA5700 Data file Version 2.0.0.}
 #' 
-#' Schauberger, Gunther and Tutz, Gerhard (2015): Modelling
-#' Heterogeneity in Paired Comparison Data - an L1 Penalty Approach with an
-#' Application to Party Preference Data, \emph{Department of Statistics, LMU
-#' Munich}, Technical Report 183
+#' Schauberger, Gunther and Tutz, Gerhard (2019): BTLLasso - A Common Framework and Software 
+#' Package for the Inclusion  and Selection of Covariates in Bradley-Terry Models, \emph{Journal of 
+#' Statistical Software}, to appear
 #' 
-#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
-#' Analysis of the importance of on-field covariates in the German Bundesliga, 
-#' \emph{Journal of Applied Statistics}, published online
+#' Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
+#' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
+#' 17(3), 223 - 243
 #' @source
 #' \url{http://gles.eu/wordpress/english/}
 #' @keywords datasets
@@ -545,14 +567,13 @@ NULL
 #' and C. Wolf (2014): Pre-election cross section (GLES 2013). \emph{GESIS Data
 #' Archive, Cologne ZA5700 Data file Version 2.0.0.}
 #' 
-#' Schauberger, Gunther and Tutz, Gerhard (2015): Modelling
-#' Heterogeneity in Paired Comparison Data - an L1 Penalty Approach with an
-#' Application to Party Preference Data, \emph{Department of Statistics, LMU
-#' Munich}, Technical Report 183
+#' Schauberger, Gunther and Tutz, Gerhard (2019): BTLLasso - A Common Framework and Software 
+#' Package for the Inclusion  and Selection of Covariates in Bradley-Terry Models, \emph{Journal of 
+#' Statistical Software}, to appear
 #' 
-#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
-#' Analysis of the importance of on-field covariates in the German Bundesliga, 
-#' \emph{Journal of Applied Statistics}, published online
+#' Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
+#' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
+#' 17(3), 223 - 243
 #' @source
 #' \url{http://gles.eu/wordpress/english/}
 #' @keywords datasets
@@ -672,6 +693,88 @@ NULL
 #' m.sim.boot <- boot.BTLLasso(m.sim.cv, B = 20, cores = 20)
 #' m.sim.boot
 #' plot(m.sim.boot, plots_per_page = 4)
+#' 
+#' par(op)
+#' }
+NULL
+
+#' Bundesliga Data 2017/18 (Buli1718)
+#' 
+#' Data from the German Bundesliga from the season 2017/18. 
+#' The data contain all 306 matches of the season treated as paired comparisons with 5 (Y5) or 3 (Y3) different 
+#' response categories. Additionally, different match-specific covariates are given as, for example, 
+#' the percentage of ball possession or the total running distance per team and per match.
+#' 
+#' @name Buli1718
+#' @docType data
+#' @format A list containing data from the German Bundesliga with 306 observations. 
+#' The list contains both information on the response (paired comparisons) and different covariates.
+#' \describe{ 
+#' \item{Y5}{A response.BTLLasso object with 5 response categories for the Buli1516 data including
+#' \itemize{
+#' \item{response: Ordinal paired comparison response vector} 
+#' \item{first.object: Vector containing the first-named team per paired comparison (home team)}
+#' \item{second.object: Vector containing the second-named team per paired comparison (away team)}
+#' \item{subject: Vector containing a match-day identifier per paired comparison}
+#' \item{with.order} Vector containing information that each match has to be considered including an order effect.
+#' }}
+#' \item{Y3}{A response.BTLLasso object with 3 response categories for the Buli1516 data including
+#' \itemize{
+#' \item{response: Ordinal paired comparison response vector} 
+#' \item{first.object: Vector containing the first-named team per paired comparison (home team)}
+#' \item{second.object: Vector containing the second-named team per paired comparison (away team)}
+#' \item{subject: Vector containing a match-day identifier per paired comparison}
+#' \item{with.order} Vector containing information that each match has to be considered including an order effect.
+#' }}
+#' \item{Z1}{Matrix containing all team-match-specific covariates
+#' \itemize{
+#' \item{Distance: Total amount of km run} 
+#' \item{BallPossession: Percentage of ball possession}
+#' \item{TacklingRate: Rate of won tacklings}
+#' \item{ShotsonGoal: Total number of shots on goal} 
+#' \item{CompletionRate: Percentage of passes reaching teammates} 
+#' \item{FoulsSuffered: Number of fouls suffered} 
+#' \item{Offside: Number of offsides (in attack)}
+#' \item{Corners: Number of corners (in attack)}
+#' }
+#' }
+#' }
+#'  @references Schauberger, Gunther and Tutz, Gerhard (2019): BTLLasso - A Common Framework and Software 
+#' Package for the Inclusion  and Selection of Covariates in Bradley-Terry Models, \emph{Journal of 
+#' Statistical Software}, to appear
+#' 
+#' Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
+#' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
+#' 17(3), 223 - 243
+#' 
+#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2018): 
+#' Analysis of the importance of on-field covariates in the German Bundesliga, 
+#' \emph{Journal of Applied Statistics}, 45(9), 1561 - 1578
+#' @source
+#' \url{http://www.kicker.de/}
+#' @keywords datasets
+#' @seealso \code{\link{Buli1415}}, \code{\link{Buli1516}}, \code{\link{Buli1617}}
+#' @examples
+#' \dontrun{
+#' op <- par(no.readonly = TRUE)
+#' 
+#' data(Buli1718)
+#' 
+#' Y <- Buli1718$Y5
+#' Z1 <- scale(Buli1718$Z1, scale = FALSE)
+#' 
+#' ctrl.buli <- ctrl.BTLLasso(object.order.effect = TRUE, 
+#'                            name.order = "Home", 
+#'                            penalize.order.effect.diffs = TRUE, 
+#'                            penalize.order.effect.absolute = FALSE,
+#'                            order.center = TRUE, lambda2 = 1e-2)
+#' 
+#' set.seed(1860)
+#' m.buli <- cv.BTLLasso(Y = Y, Z1 = Z1, control = ctrl.buli)
+#' m.buli
+#' 
+#' par(xpd = TRUE, mar = c(5,4,4,6))
+#' plot(m.buli)
 #' 
 #' par(op)
 #' }

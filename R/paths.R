@@ -11,17 +11,20 @@
 #' with regard to their contribution to the total penalty term (\code{y.axis='penalty'}) or
 #' with regard to the $L_2$ norm of the corresponding parameter vector (\code{y.axis='L2'}).
 #' @param x.axis Should the paths be plotted against log(lambda+1) or against lambda?' 
-#' @author Gunther Schauberger\cr \email{gunther@@stat.uni-muenchen.de}\cr
-#' \url{http://www.semsto.statistik.uni-muenchen.de/personen/doktoranden/schauberger/index.html}
+#' @author Gunther Schauberger\cr \email{gunther.schauberger@@tum.de}
 #' @seealso \code{\link{BTLLasso}}, \code{\link{cv.BTLLasso}},
 #' \code{\link{plot.BTLLasso}}
-#' @references Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
+#' @references Schauberger, Gunther and Tutz, Gerhard (2019): BTLLasso - A Common Framework and Software 
+#' Package for the Inclusion  and Selection of Covariates in Bradley-Terry Models, \emph{Journal of 
+#' Statistical Software}, to appear
+#' 
+#' Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
 #' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
 #' 17(3), 223 - 243
 #' 
-#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2017): 
+#' Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2018): 
 #' Analysis of the importance of on-field covariates in the German Bundesliga, 
-#' \emph{Journal of Applied Statistics}, published online
+#' \emph{Journal of Applied Statistics}, 45(9), 1561 - 1578
 #' @keywords BTLLasso covariate paths
 #' @examples
 #' 

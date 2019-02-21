@@ -32,8 +32,8 @@ fit.cv.BTLLasso <- function(response, design, penalty, q, m,
 
   
   cv.fun <- function(ff) {
-    
-    if (trace.cv) {
+
+      if (trace.cv) {
       cat("CV-fold:", ff, "out of", folds, "\n")
     }
     
