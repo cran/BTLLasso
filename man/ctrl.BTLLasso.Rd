@@ -5,13 +5,14 @@
 \title{Control function for BTLLasso}
 \usage{
 ctrl.BTLLasso(l.lambda = 30, log.lambda = TRUE, lambda.min = 0.05,
-  adaptive = TRUE, scale = TRUE, norm = c("L1", "L2"), epsilon = 1e-04,
-  lambda2 = 1e-04, c = 1e-09, precision = 3, weight.penalties = TRUE,
-  include.intercepts = TRUE, order.effect = FALSE,
-  object.order.effect = FALSE, order.center = FALSE, name.order = "Order",
-  penalize.intercepts = FALSE, penalize.X = TRUE, penalize.Z2 = FALSE,
-  penalize.Z1.absolute = TRUE, penalize.Z1.diffs = TRUE,
-  penalize.order.effect.absolute = TRUE,
+  adaptive = TRUE, scale = TRUE, norm = c("L1", "L2"),
+  epsilon = 1e-04, lambda2 = 1e-04, c = 1e-09, precision = 3,
+  weight.penalties = TRUE, include.intercepts = TRUE,
+  order.effect = FALSE, object.order.effect = FALSE,
+  order.center = FALSE, name.order = "Order",
+  penalize.intercepts = FALSE, penalize.X = TRUE,
+  penalize.Z2 = FALSE, penalize.Z1.absolute = TRUE,
+  penalize.Z1.diffs = TRUE, penalize.order.effect.absolute = TRUE,
   penalize.order.effect.diffs = FALSE)
 }
 \arguments{

@@ -4,7 +4,8 @@
 \alias{paths}
 \title{Plot covariate paths for BTLLasso}
 \usage{
-paths(model, y.axis = c("penalty", "L2"), x.axis = c("loglambda", "lambda"))
+paths(model, y.axis = c("penalty", "L2"), x.axis = c("loglambda",
+  "lambda"))
 }
 \arguments{
 \item{model}{\code{BTLLasso} or \code{cv.BTLLasso} object}

@@ -6,7 +6,7 @@ importFrom(stringr,word)
 importFrom(stringr,fixed)
 importFrom(stringr,str_split)
 importFrom(TeachingDemos, spread.labs)
-importFrom(parallel, makeCluster,clusterExport,parLapply,stopCluster,parSapply)
+importFrom(parallel, makeCluster,clusterExport,parLapply,stopCluster,parSapply, clusterSetRNGStream)
 importFrom(psychotools, paircomp)
 
 export(BTLLasso,

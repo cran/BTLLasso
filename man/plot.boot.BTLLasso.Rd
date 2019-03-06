@@ -5,9 +5,9 @@
 \title{Plot bootstrap intervals for BTLLasso}
 \usage{
 \method{plot}{boot.BTLLasso}(x, quantiles = c(0.025, 0.975),
-  plots_per_page = 1, ask_new = TRUE, rescale = FALSE, which = "all",
-  include.zero = TRUE, rows = NULL, subs.X = NULL, subs.Z1 = NULL,
-  main.Z2 = "Obj-spec. Covariates", ...)
+  plots_per_page = 1, ask_new = TRUE, rescale = FALSE,
+  which = "all", include.zero = TRUE, rows = NULL, subs.X = NULL,
+  subs.Z1 = NULL, main.Z2 = "Obj-spec. Covariates", ...)
 }
 \arguments{
 \item{x}{boot.BTLLasso object}

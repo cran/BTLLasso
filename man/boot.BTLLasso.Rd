@@ -4,8 +4,8 @@
 \alias{boot.BTLLasso}
 \title{Bootstrap function for BTLLasso}
 \usage{
-boot.BTLLasso(model, B = 500, lambda = NULL, cores = 1, trace = TRUE,
-  trace.cv = TRUE, with.cv = TRUE)
+boot.BTLLasso(model, B = 500, lambda = NULL, cores = 1,
+  trace = TRUE, trace.cv = TRUE, with.cv = TRUE)
 }
 \arguments{
 \item{model}{A \code{cv.BTLLasso} object.}

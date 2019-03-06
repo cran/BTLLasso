@@ -5,8 +5,8 @@
 \title{Cross-validation function for BTLLasso}
 \usage{
 cv.BTLLasso(Y, X = NULL, Z1 = NULL, Z2 = NULL, folds = 10,
-  lambda = NULL, control = ctrl.BTLLasso(), cores = folds, trace = TRUE,
-  trace.cv = TRUE, cv.crit = c("RPS", "Deviance"))
+  lambda = NULL, control = ctrl.BTLLasso(), cores = folds,
+  trace = TRUE, trace.cv = TRUE, cv.crit = c("RPS", "Deviance"))
 }
 \arguments{
 \item{Y}{A \code{response.BTLLasso} object created by

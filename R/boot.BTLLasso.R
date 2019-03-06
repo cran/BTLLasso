@@ -229,7 +229,7 @@ boot.BTLLasso <- function(model, B = 500, lambda = NULL, cores = 1,
   
   if (cores > 1) {
     cl <- makeCluster(cores, outfile = "")
-    
+    clusterSetRNGStream(cl, NULL)
     clusterExport(cl, varlist = c("design", "response", "penalty", 
       "q", "m", "control", "folds", "lambda", "cores", 
       "B", "n.design", "trace", "trace.cv", "cv.crit"), 
