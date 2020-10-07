@@ -4,7 +4,8 @@
 \name{Buli1516}
 \alias{Buli1516}
 \title{Bundesliga Data 2015/16 (Buli1516)}
-\format{A list containing data from the German Bundesliga with 306 observations. 
+\format{
+A list containing data from the German Bundesliga with 306 observations. 
 The list contains both information on the response (paired comparisons) and different covariates.
 \describe{ 
 \item{Y5}{A response.BTLLasso object with 5 response categories for the Buli1516 data including
@@ -46,9 +47,10 @@ of paired comparison data: A lasso-type penalty approach, \emph{Statistical Mode
 
 Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2018): 
 Analysis of the importance of on-field covariates in the German Bundesliga, 
-\emph{Journal of Applied Statistics}, 45(9), 1561 - 1578}
+\emph{Journal of Applied Statistics}, 45(9), 1561 - 1578
+}
 \source{
-\url{http://www.kicker.de/}
+\url{https://www.kicker.de/}
 }
 \description{
 Data from the German Bundesliga from the season 2015/16. 

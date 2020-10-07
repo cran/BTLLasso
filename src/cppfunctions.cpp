@@ -1,5 +1,5 @@
 //#define ARMA_64BIT_WORD
-#define ARMA_DONT_USE_CXX11
+// #define ARMA_DONT_USE_CXX11
 
 // [[Rcpp::depends(RcppArmadillo)]]
 

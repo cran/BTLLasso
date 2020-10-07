@@ -4,7 +4,8 @@
 \name{Buli1415}
 \alias{Buli1415}
 \title{Bundesliga Data 2014/15 (Buli1415)}
-\format{A list containing data from the German Bundesliga with 306 observations. 
+\format{
+A list containing data from the German Bundesliga with 306 observations. 
 The list contains both information on the response (paired comparisons) and different covariates.
 \describe{ 
 \item{Y5}{A response.BTLLasso object with 5 response categories for the Buli1516 data including
@@ -34,9 +35,10 @@ The list contains both information on the response (paired comparisons) and diff
 \item{Offside: Number of offsides (in attack)}
 }
 }
-}}
+}
+}
 \source{
-\url{http://www.kicker.de/}
+\url{https://www.kicker.de/}
 }
 \description{
 Data from the German Bundesliga from the season 2014/15. 

@@ -4,10 +4,20 @@
 \alias{plot.BTLLasso}
 \title{Plot parameter paths for BTLLasso}
 \usage{
-\method{plot}{BTLLasso}(x, plots_per_page = 1, ask_new = TRUE,
-  rescale = FALSE, which = "all", equal.ranges = FALSE,
-  x.axis = c("loglambda", "lambda"), rows = NULL, subs.X = NULL,
-  subs.Z1 = NULL, main.Z2 = "Obj-spec. Covariates", ...)
+\method{plot}{BTLLasso}(
+  x,
+  plots_per_page = 1,
+  ask_new = TRUE,
+  rescale = FALSE,
+  which = "all",
+  equal.ranges = FALSE,
+  x.axis = c("loglambda", "lambda"),
+  rows = NULL,
+  subs.X = NULL,
+  subs.Z1 = NULL,
+  main.Z2 = "Obj-spec. Covariates",
+  ...
+)
 }
 \arguments{
 \item{x}{BTLLasso or cv.BTLLasso object}
@@ -166,7 +176,7 @@ par(op)
 \references{
 Schauberger, Gunther and Tutz, Gerhard (2019): BTLLasso - A Common Framework and Software 
 Package for the Inclusion  and Selection of Covariates in Bradley-Terry Models, \emph{Journal of 
-Statistical Software}, 88(9), 1-29, \url{http://doi.org/10.18637/jss.v088.i09}
+Statistical Software}, 88(9), 1-29, \url{https://doi.org/10.18637/jss.v088.i09}
 
 Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
 of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},

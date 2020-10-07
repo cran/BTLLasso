@@ -17,7 +17,7 @@
 #' @seealso \code{\link{BTLLasso}}, \code{\link{cv.BTLLasso}}
 #' @references Schauberger, Gunther and Tutz, Gerhard (2019): BTLLasso - A Common Framework and Software 
 #' Package for the Inclusion  and Selection of Covariates in Bradley-Terry Models, \emph{Journal of 
-#' Statistical Software}, 88(9), 1-29, \url{http://doi.org/10.18637/jss.v088.i09}
+#' Statistical Software}, 88(9), 1-29, \url{https://doi.org/10.18637/jss.v088.i09}
 #' 
 #' Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
 #' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
@@ -196,7 +196,7 @@ NULL
 #' Analysis of the importance of on-field covariates in the German Bundesliga, 
 #' \emph{Journal of Applied Statistics}, 45(9), 1561 - 1578
 #' @source
-#' \url{http://www.kicker.de/}
+#' \url{https://www.kicker.de/}
 #' @keywords datasets
 #' @seealso \code{\link{Buli1415}}, \code{\link{Buli1617}}, \code{\link{Buli1718}}
 #' @examples
@@ -277,7 +277,7 @@ NULL
 #' Analysis of the importance of on-field covariates in the German Bundesliga, 
 #' \emph{Journal of Applied Statistics}, 45(9), 1561 - 1578
 #' @source
-#' \url{http://www.kicker.de/}
+#' \url{https://www.kicker.de/}
 #' @keywords datasets
 #' @seealso \code{\link{Buli1516}}, \code{\link{Buli1617}}, \code{\link{Buli1718}}
 #' @examples
@@ -360,7 +360,7 @@ NULL
 #' Analysis of the importance of on-field covariates in the German Bundesliga, 
 #' \emph{Journal of Applied Statistics}, 45(9), 1561 - 1578
 #' @source
-#' \url{http://www.kicker.de/}
+#' \url{https://www.kicker.de/}
 #' @keywords datasets
 #' @seealso \code{\link{Buli1415}}, \code{\link{Buli1516}}, \code{\link{Buli1718}}
 #' @examples
@@ -419,7 +419,7 @@ NULL
 #' Analysis of the importance of on-field covariates in the German Bundesliga, 
 #' \emph{Journal of Applied Statistics}, 45(9), 1561 - 1578
 #' @source
-#' \url{http://www.kicker.de/}
+#' \url{https://www.kicker.de/}
 #' @keywords datasets
 #' @examples
 #' \dontrun{
@@ -495,7 +495,7 @@ NULL
 #' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
 #' 17(3), 223 - 243
 #' @source
-#' \url{http://gles.eu/wordpress/english/}
+#' \url{https://gles-en.eu/}
 #' @keywords datasets
 #' @examples
 #' \dontrun{
@@ -575,7 +575,7 @@ NULL
 #' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
 #' 17(3), 223 - 243
 #' @source
-#' \url{http://gles.eu/wordpress/english/}
+#' \url{https://gles-en.eu/}
 #' @keywords datasets
 #' @seealso \code{\link{GLES}}
 #' @examples
@@ -751,7 +751,7 @@ NULL
 #' Analysis of the importance of on-field covariates in the German Bundesliga, 
 #' \emph{Journal of Applied Statistics}, 45(9), 1561 - 1578
 #' @source
-#' \url{http://www.kicker.de/}
+#' \url{https://www.kicker.de/}
 #' @keywords datasets
 #' @seealso \code{\link{Buli1415}}, \code{\link{Buli1516}}, \code{\link{Buli1617}}
 #' @examples

@@ -4,7 +4,8 @@
 \name{BuliResponse}
 \alias{BuliResponse}
 \title{Bundesliga Data Response Data (BuliResponse)}
-\format{A data set containing all information that is necessary to create a response object
+\format{
+A data set containing all information that is necessary to create a response object
 for the Bundesliga data \code{link{Buli1516}}
 \describe{ 
 \item{Result}{Ordinal, 5-categorical results from Bundesliga season 2015/16.}
@@ -22,9 +23,10 @@ of paired comparison data: A lasso-type penalty approach, \emph{Statistical Mode
 
 Schauberger, Gunther, Groll Andreas and Tutz, Gerhard (2018): 
 Analysis of the importance of on-field covariates in the German Bundesliga, 
-\emph{Journal of Applied Statistics}, 45(9), 1561 - 1578}
+\emph{Journal of Applied Statistics}, 45(9), 1561 - 1578
+}
 \source{
-\url{http://www.kicker.de/}
+\url{https://www.kicker.de/}
 }
 \description{
 Data from the German Bundesliga from the season 2015/16. The data contain all 

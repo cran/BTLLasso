@@ -4,7 +4,8 @@
 \name{SimData}
 \alias{SimData}
 \title{Simulated data set for illustration}
-\format{A list containing  simulated data for 200 observations. 
+\format{
+A list containing  simulated data for 200 observations. 
 The list contains both information on the response (paired comparisons) and different covariates.
 \describe{ 
 \item{Y}{A response.BTLLasso object with simulated responses including
@@ -34,7 +35,8 @@ comparison is associated with an order effect.
 \item{Z2_var2}
 }
 }
-}}
+}
+}
 \description{
 This data set is a simulated data set including all possible types of covariates (X, Z1 and Z2)
 and is intended to serve for illustration purpose. The data set contains paired comparisons between

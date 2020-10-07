@@ -4,7 +4,8 @@
 \name{GLES}
 \alias{GLES}
 \title{German Longitudinal Election Study (GLES)}
-\format{A list containing data from the German Longitudinal Election Study with 2003 
+\format{
+A list containing data from the German Longitudinal Election Study with 2003 
 (partly incomplete) observations. 
 The list contains both information on the response (paired comparisons) and different covariates.
 \describe{ 
@@ -44,9 +45,10 @@ ones attitude towards socio-economic issues.}
 ones attitude towards immigration.}
 }
 }
-}}
+}
+}
 \source{
-\url{http://gles.eu/wordpress/english/}
+\url{https://gles-en.eu/}
 }
 \description{
 Data from the German Longitudinal Election Study (GLES), see Rattinger et

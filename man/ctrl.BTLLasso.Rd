@@ -4,16 +4,31 @@
 \alias{ctrl.BTLLasso}
 \title{Control function for BTLLasso}
 \usage{
-ctrl.BTLLasso(l.lambda = 30, log.lambda = TRUE, lambda.min = 0.05,
-  adaptive = TRUE, scale = TRUE, norm = c("L1", "L2"),
-  epsilon = 1e-04, lambda2 = 1e-04, c = 1e-09, precision = 3,
-  weight.penalties = TRUE, include.intercepts = TRUE,
-  order.effect = FALSE, object.order.effect = FALSE,
-  order.center = FALSE, name.order = "Order",
-  penalize.intercepts = FALSE, penalize.X = TRUE,
-  penalize.Z2 = FALSE, penalize.Z1.absolute = TRUE,
-  penalize.Z1.diffs = TRUE, penalize.order.effect.absolute = TRUE,
-  penalize.order.effect.diffs = FALSE)
+ctrl.BTLLasso(
+  l.lambda = 30,
+  log.lambda = TRUE,
+  lambda.min = 0.05,
+  adaptive = TRUE,
+  scale = TRUE,
+  norm = c("L1", "L2"),
+  epsilon = 1e-04,
+  lambda2 = 1e-04,
+  c = 1e-09,
+  precision = 3,
+  weight.penalties = TRUE,
+  include.intercepts = TRUE,
+  order.effect = FALSE,
+  object.order.effect = FALSE,
+  order.center = FALSE,
+  name.order = "Order",
+  penalize.intercepts = FALSE,
+  penalize.X = TRUE,
+  penalize.Z2 = FALSE,
+  penalize.Z1.absolute = TRUE,
+  penalize.Z1.diffs = TRUE,
+  penalize.order.effect.absolute = TRUE,
+  penalize.order.effect.diffs = FALSE
+)
 }
 \arguments{
 \item{l.lambda}{Number of tuning parameters. Applies only if \code{lambda = NULL} in the 
@@ -216,7 +231,7 @@ par(op)
 \references{
 Schauberger, Gunther and Tutz, Gerhard (2019): BTLLasso - A Common Framework and Software 
 Package for the Inclusion  and Selection of Covariates in Bradley-Terry Models, \emph{Journal of 
-Statistical Software}, 88(9), 1-29, \url{http://doi.org/10.18637/jss.v088.i09}
+Statistical Software}, 88(9), 1-29, \url{https://doi.org/10.18637/jss.v088.i09}
 
 Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
 of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},

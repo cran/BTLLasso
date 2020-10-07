@@ -4,9 +4,19 @@
 \alias{cv.BTLLasso}
 \title{Cross-validation function for BTLLasso}
 \usage{
-cv.BTLLasso(Y, X = NULL, Z1 = NULL, Z2 = NULL, folds = 10,
-  lambda = NULL, control = ctrl.BTLLasso(), cores = folds,
-  trace = TRUE, trace.cv = TRUE, cv.crit = c("RPS", "Deviance"))
+cv.BTLLasso(
+  Y,
+  X = NULL,
+  Z1 = NULL,
+  Z2 = NULL,
+  folds = 10,
+  lambda = NULL,
+  control = ctrl.BTLLasso(),
+  cores = folds,
+  trace = TRUE,
+  trace.cv = TRUE,
+  cv.crit = c("RPS", "Deviance")
+)
 }
 \arguments{
 \item{Y}{A \code{response.BTLLasso} object created by
@@ -209,7 +219,7 @@ par(op)
 \references{
 Schauberger, Gunther and Tutz, Gerhard (2019): BTLLasso - A Common Framework and Software 
 Package for the Inclusion  and Selection of Covariates in Bradley-Terry Models, \emph{Journal of 
-Statistical Software}, 88(9), 1-29, \url{http://doi.org/10.18637/jss.v088.i09}
+Statistical Software}, 88(9), 1-29, \url{https://doi.org/10.18637/jss.v088.i09}
 
 Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
 of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},

@@ -4,7 +4,8 @@
 \name{GLESsmall}
 \alias{GLESsmall}
 \title{Subset of the GLES data set with 200 observations and 4 covariates.}
-\format{A list containing data from the German Longitudinal Election Study with 200 observations. 
+\format{
+A list containing data from the German Longitudinal Election Study with 200 observations. 
 The list contains both information on the response (paired comparisons) and different covariates.
 \describe{ 
 \item{Y}{A response.BTLLasso object for the GLES data including
@@ -30,9 +31,10 @@ ones attitude towards climate change.}
 ones attitude towards immigration.}
 }
 }
-}}
+}
+}
 \source{
-\url{http://gles.eu/wordpress/english/}
+\url{https://gles-en.eu/}
 }
 \description{
 This is a subset of the \code{\link{GLES}} data set from the German

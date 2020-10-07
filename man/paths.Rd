@@ -4,8 +4,7 @@
 \alias{paths}
 \title{Plot covariate paths for BTLLasso}
 \usage{
-paths(model, y.axis = c("penalty", "L2"), x.axis = c("loglambda",
-  "lambda"))
+paths(model, y.axis = c("penalty", "L2"), x.axis = c("loglambda", "lambda"))
 }
 \arguments{
 \item{model}{\code{BTLLasso} or \code{cv.BTLLasso} object}
@@ -140,7 +139,7 @@ par(op)
 \references{
 Schauberger, Gunther and Tutz, Gerhard (2019): BTLLasso - A Common Framework and Software 
 Package for the Inclusion  and Selection of Covariates in Bradley-Terry Models, \emph{Journal of 
-Statistical Software}, 88(9), 1-29, \url{http://doi.org/10.18637/jss.v088.i09}
+Statistical Software}, 88(9), 1-29, \url{https://doi.org/10.18637/jss.v088.i09}
 
 Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
 of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},

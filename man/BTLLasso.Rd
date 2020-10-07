@@ -4,8 +4,15 @@
 \alias{BTLLasso}
 \title{Function to perform BTLLasso}
 \usage{
-BTLLasso(Y, X = NULL, Z1 = NULL, Z2 = NULL, lambda = NULL,
-  control = ctrl.BTLLasso(), trace = TRUE)
+BTLLasso(
+  Y,
+  X = NULL,
+  Z1 = NULL,
+  Z2 = NULL,
+  lambda = NULL,
+  control = ctrl.BTLLasso(),
+  trace = TRUE
+)
 }
 \arguments{
 \item{Y}{A \code{response.BTLLasso} object created by
