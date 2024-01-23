@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // cumfit
 List cumfit(NumericMatrix betanew2, double epsilon, int maxiter, NumericMatrix acoefs2, double lambda, NumericMatrix weight2, List control, NumericMatrix design2, int N, int n, double q, NumericMatrix resp2, NumericVector index, double c, double gama, std::string norm, int hatmatrix, double lambda2, NumericMatrix checktheta2);
 RcppExport SEXP _BTLLasso_cumfit(SEXP betanew2SEXP, SEXP epsilonSEXP, SEXP maxiterSEXP, SEXP acoefs2SEXP, SEXP lambdaSEXP, SEXP weight2SEXP, SEXP controlSEXP, SEXP design2SEXP, SEXP NSEXP, SEXP nSEXP, SEXP qSEXP, SEXP resp2SEXP, SEXP indexSEXP, SEXP cSEXP, SEXP gamaSEXP, SEXP normSEXP, SEXP hatmatrixSEXP, SEXP lambda2SEXP, SEXP checktheta2SEXP) {

@@ -34,7 +34,7 @@ ones attitude towards immigration.}
 }
 }
 \source{
-\url{https://gles-en.eu/}
+\url{https://www.gesis.org/en/gles/about-gles}
 }
 \description{
 This is a subset of the \code{\link{GLES}} data set from the German

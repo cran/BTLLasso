@@ -75,7 +75,7 @@ of tuning parameters.}
 }
 \description{
 Performs BTLLasso, a method to model heterogeneity in paired comparison
-data. Different types of covariates are allowd to have an influence on the
+data. Different types of covariates are allowed to have an influence on the
 attractivity/strength of the objects. Covariates can be subject-specific, 
 object-specific or subject-object-specific. L1 penalties are used to reduce the 
 complexiy of the model by enforcing clusters of equal effects or by elimination of irrelevant

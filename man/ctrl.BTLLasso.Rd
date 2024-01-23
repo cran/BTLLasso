@@ -56,8 +56,7 @@ clustering and variable selection.}
 Should be small, only used to stabilize results.}
 
 \item{c}{Internal parameter for the quadratic approximation of the L1
-penalty. Should be sufficiently small. For details see
-\code{\link[gvcm.cat]{cat_control}}.}
+penalty. Should be sufficiently small.}
 
 \item{precision}{Precision for final parameter estimates, specifies number of decimals.}
 
@@ -231,7 +230,7 @@ par(op)
 \references{
 Schauberger, Gunther and Tutz, Gerhard (2019): BTLLasso - A Common Framework and Software 
 Package for the Inclusion  and Selection of Covariates in Bradley-Terry Models, \emph{Journal of 
-Statistical Software}, 88(9), 1-29, \url{https://doi.org/10.18637/jss.v088.i09}
+Statistical Software}, 88(9), 1-29, \doi{10.18637/jss.v088.i09}
 
 Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
 of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},

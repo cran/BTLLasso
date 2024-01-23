@@ -48,7 +48,7 @@ ones attitude towards immigration.}
 }
 }
 \source{
-\url{https://gles-en.eu/}
+\url{https://www.gesis.org/en/gles/about-gles}
 }
 \description{
 Data from the German Longitudinal Election Study (GLES), see Rattinger et

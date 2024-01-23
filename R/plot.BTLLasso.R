@@ -31,7 +31,7 @@
 #' \code{\link{paths}}
 #' @references Schauberger, Gunther and Tutz, Gerhard (2019): BTLLasso - A Common Framework and Software 
 #' Package for the Inclusion  and Selection of Covariates in Bradley-Terry Models, \emph{Journal of 
-#' Statistical Software}, 88(9), 1-29, \url{https://doi.org/10.18637/jss.v088.i09}
+#' Statistical Software}, 88(9), 1-29, \doi{10.18637/jss.v088.i09}
 #' 
 #' Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
 #' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
@@ -313,7 +313,7 @@ plot.BTLLasso <- function(x, plots_per_page = 1, ask_new = TRUE,
   for(u in 1:n.plots){
     if(u %in% which){
       
-      plot.comp(u, norm, coef.plot, index.plots,
+      plothelp.comp(u, norm, coef.plot, index.plots,
                 all.labs, all.mains, all.subs, y.range,
                 x.axis.name, x$criterion, norm.range, ...)
         
@@ -334,7 +334,7 @@ plot.BTLLasso <- function(x, plots_per_page = 1, ask_new = TRUE,
 }
 
 
-plot.comp <- function(u, norm, coef.plot, index.plots,
+plothelp.comp <- function(u, norm, coef.plot, index.plots,
                       all.labs, all.mains, all.subs, y.range,
                       x.axis.name, criterion, norm.range, ...){
   

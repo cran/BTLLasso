@@ -19,8 +19,7 @@
 #' @param lambda2 Tuning parameter for ridge penalty on all coefficients.
 #' Should be small, only used to stabilize results.
 #' @param c Internal parameter for the quadratic approximation of the L1
-#' penalty. Should be sufficiently small. For details see
-#' \code{\link[gvcm.cat]{cat_control}}.
+#' penalty. Should be sufficiently small. 
 #' @param precision Precision for final parameter estimates, specifies number of decimals.
 #' @param weight.penalties Should the penalties across the different model components 
 #' (i.e. intercepts, order effects, X, Z1, Z2) be weighted according to the number of
@@ -63,7 +62,7 @@
 #' @seealso \code{\link{BTLLasso}}, \code{\link{cv.BTLLasso}}
 #' @references Schauberger, Gunther and Tutz, Gerhard (2019): BTLLasso - A Common Framework and Software 
 #' Package for the Inclusion  and Selection of Covariates in Bradley-Terry Models, \emph{Journal of 
-#' Statistical Software}, 88(9), 1-29, \url{https://doi.org/10.18637/jss.v088.i09}
+#' Statistical Software}, 88(9), 1-29, \doi{10.18637/jss.v088.i09}
 #' 
 #' Schauberger, Gunther and Tutz, Gerhard (2017): Subject-specific modelling 
 #' of paired comparison data: A lasso-type penalty approach, \emph{Statistical Modelling},
@@ -215,7 +214,7 @@ ctrl.BTLLasso <- function(l.lambda = 30, log.lambda = TRUE, lambda.min = 0.05,
 #' Function to perform BTLLasso
 #' 
 #' Performs BTLLasso, a method to model heterogeneity in paired comparison
-#' data. Different types of covariates are allowd to have an influence on the
+#' data. Different types of covariates are allowed to have an influence on the
 #' attractivity/strength of the objects. Covariates can be subject-specific, 
 #' object-specific or subject-object-specific. L1 penalties are used to reduce the 
 #' complexiy of the model by enforcing clusters of equal effects or by elimination of irrelevant
