@@ -169,7 +169,7 @@ plot.BTLLasso <- function(x, plots_per_page = 1, ask_new = TRUE,
   ## get correct x axis
   x.axis <- match.arg(x.axis)
   
-  
+  # browser()
   if (x.axis == "lambda") {
     norm <- x$lambda
     norm.range <- rev(range(norm))
@@ -295,7 +295,7 @@ plot.BTLLasso <- function(x, plots_per_page = 1, ask_new = TRUE,
   
   n.plots <- index.num-1
   
-  suppressWarnings(if(which=="all"){
+  suppressWarnings(if(identical(which,"all")){
     which <- 1:n.plots
   })
   pages <- ceiling(length(which)/plots_per_page)

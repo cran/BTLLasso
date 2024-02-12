@@ -1,5 +1,5 @@
-d8194b3cbb2a032dc82df027e038686a *DESCRIPTION
-b6fe962f930a839f8e5764a35c9977f8 *NAMESPACE
+c11a56f11172c86e9d3a8ccf17a6b752 *DESCRIPTION
+b0c0c3d0686a776053a33341dfd4aa79 *NAMESPACE
 81cc51fa243e96bf7dbd201b71c76684 *R/BTLLasso-package.R
 ba95adf58f0355d01c8cb8f3fc932b80 *R/BTLLasso.R
 8cb6c714b400c21ce9daa7dfb70d3ce1 *R/RcppExports.R
@@ -17,7 +17,7 @@ ce691871da505a8b3e21a1382f33a123 *R/fit.BTLLasso.R
 0c69af86f35364b88a6aec9dd4e82ea4 *R/functions.R
 d2d026dde16190215bdd3eb78b1697d4 *R/paths.R
 51170160f8e66512553f504da8a73caf *R/penalties.BTLLasso.R
-0762e6a83d4c5b80285502aa97c91f78 *R/plot.BTLLasso.R
+4df260a83ea2e3d3a32630b10747519b *R/plot.BTLLasso.R
 7afa2e854b8ceac5ce65bdb437a848a3 *R/plot.boot.BTLLasso.R
 2b57b13e40046410d70cadf051219e9d *R/predict.BTLLasso.R
 eb253eab7000f42ea7aeaaeb128dd7f8 *R/predict.help.R
@@ -25,7 +25,8 @@ eb253eab7000f42ea7aeaaeb128dd7f8 *R/predict.help.R
 d2848197c96430c1741d27979074d30b *R/print.boot.BTLLasso.R
 d2b00572a17c4512d7cee42142f0f1c4 *R/print.cv.BTLLasso.R
 24835b5b10a5f2266bafc1b4a8a38bd5 *R/response.BTLLasso.R
-afbe4209b3bb961ba3e41cbfe79ea507 *build/partial.rdb
+9da6d9ac8c488640dd9f15b25344571f *R/spread.labs.R
+b943a1546a1e17be4eea235ec7b4616b *build/partial.rdb
 b93ef27b84060977fd96fa45f019526e *data/Buli1415.RData
 6dc8c84a35e65fa26ca6e948e1a969ef *data/Buli1516.RData
 200421747530d01961f0b83387346835 *data/Buli1617.RData
