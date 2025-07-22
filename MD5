@@ -1,6 +1,6 @@
-c11a56f11172c86e9d3a8ccf17a6b752 *DESCRIPTION
+fe0bd3b528b353675be97c101c63366c *DESCRIPTION
 b0c0c3d0686a776053a33341dfd4aa79 *NAMESPACE
-81cc51fa243e96bf7dbd201b71c76684 *R/BTLLasso-package.R
+ee1ace15f6bb0c67f523a55614b42e43 *R/BTLLasso-package.R
 ba95adf58f0355d01c8cb8f3fc932b80 *R/BTLLasso.R
 8cb6c714b400c21ce9daa7dfb70d3ce1 *R/RcppExports.R
 6764a5b9374351f71959b85d1a1daeb9 *R/bin.fit.Cpp.R
@@ -9,7 +9,7 @@ b544e2dfbe5e4cb4dc1f77546bfa4671 *R/coef.cv.BTLLasso.R
 e689a1df0dea981e4b18adebaeb3ca5a *R/create.design.R
 a3d233fcdf0db4a73660e5f598867c8b *R/cum.fit.Cpp.R
 7be5125b437b19856a8d8557fddd6f01 *R/cv.BTLLasso.R
-29a39799073f9122c448f4b88cbd4559 *R/design.BTLLasso.R
+1ba2dd492890539eafd7f175c571e068 *R/design.BTLLasso.R
 d520a3449dddcf391d2140f7b4e877ba *R/df.BTLLasso.R
 878ac1069f3b6c0fd7a0c703ecad5e06 *R/find.lambda.R
 ce691871da505a8b3e21a1382f33a123 *R/fit.BTLLasso.R
@@ -26,7 +26,7 @@ d2848197c96430c1741d27979074d30b *R/print.boot.BTLLasso.R
 d2b00572a17c4512d7cee42142f0f1c4 *R/print.cv.BTLLasso.R
 24835b5b10a5f2266bafc1b4a8a38bd5 *R/response.BTLLasso.R
 9da6d9ac8c488640dd9f15b25344571f *R/spread.labs.R
-b943a1546a1e17be4eea235ec7b4616b *build/partial.rdb
+24bc7c3f5a645905c53152bd3d0b8f61 *build/partial.rdb
 b93ef27b84060977fd96fa45f019526e *data/Buli1415.RData
 6dc8c84a35e65fa26ca6e948e1a969ef *data/Buli1516.RData
 200421747530d01961f0b83387346835 *data/Buli1617.RData
@@ -36,7 +36,7 @@ a3ff2974c602572bf14802421eb96a42 *data/GLES.RData
 68734588fc79d5edd63122f164d1e014 *data/GLESsmall.RData
 53700782c3febeaf7bdf430b80a438c4 *data/SimData.RData
 f14c2354837b3b5531f9096799730513 *inst/CITATION
-81d2b07d18d4bc9d0467ea2ebb65c705 *man/BTLLasso-package.Rd
+ed1c04d71b4bd2193a30b359899a01e9 *man/BTLLasso-package.Rd
 48d81d248ccbfbdf9e92c3575be218b1 *man/BTLLasso.Rd
 869aa2e0268ce5d716e82d5c29db125d *man/Buli1415.Rd
 311ff9df84941731184e2f532d73798c *man/Buli1516.Rd

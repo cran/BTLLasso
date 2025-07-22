@@ -144,6 +144,9 @@ Analysis of the importance of on-field covariates in the German Bundesliga,
 \code{\link{BTLLasso}}, \code{\link{cv.BTLLasso}}
 }
 \author{
+\strong{Maintainer}: Gunther Schauberger \email{gunther.schauberger@tum.de}
+
+
 Gunther Schauberger\cr \email{gunther.schauberger@tum.de}
 }
 \keyword{BTL}

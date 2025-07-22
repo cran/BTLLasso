@@ -10,9 +10,8 @@
 #' covariates.  Several additional functions are provided, such as
 #' cross-validation, bootstrap intervals, and plot functions.
 #' 
-#' 
+"_PACKAGE"
 #' @name BTLLasso-package
-#' @docType package
 #' @author Gunther Schauberger\cr \email{gunther.schauberger@@tum.de}
 #' @seealso \code{\link{BTLLasso}}, \code{\link{cv.BTLLasso}}
 #' @references Schauberger, Gunther and Tutz, Gerhard (2019): BTLLasso - A Common Framework and Software 

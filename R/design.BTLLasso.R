@@ -2,7 +2,7 @@ design.BTLLasso <- function(Y, X = NULL, Z1 = NULL, Z2 = NULL,
   control = ctrl.BTLLasso(), only.first = FALSE, sd.X = NULL,
   sd.Z1 = NULL, sd.Z2 = NULL) {
   
-
+  # browser()
   #### get all arguments from responseBTLLasso object
   y.ord <- Y$response
   first.object <- Y$first.object
